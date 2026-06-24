@@ -88,9 +88,9 @@ export default function Header() {
 
           {/* Right actions */}
           <div className="niser-header__actions">
-            <Link href="/search" className="btn btn--ghost btn--sm niser-search-btn" aria-label="Search">
+            <Link href="/search" className="niser-nav-btn niser-nav-btn--search" aria-label="Search">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
                 aria-hidden="true">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.3-4.3" />
@@ -189,30 +189,34 @@ export default function Header() {
         }
         .niser-nav__link {
           display: inline-block;
-          padding: 0.5rem 0.875rem;
-          border-radius: var(--radius-md);
+          padding: 0.5rem 1rem;
+          border-radius: var(--radius-lg);
           font-size: 0.9375rem;
           font-weight: 500;
-          color: var(--gray-700);
-          transition: color var(--transition-base), background var(--transition-base);
+          color: var(--gray-600);
+          transition: all var(--transition-smooth);
           text-decoration: none;
           position: relative;
+          border-bottom: 2px solid transparent;
         }
         .niser-nav__link:hover {
           color: var(--niser-green);
-          background: var(--niser-green-pale);
+          background: rgba(0, 107, 63, 0.05);
+          border-bottom-color: var(--niser-green);
         }
         .niser-nav__link--active {
           color: var(--niser-green);
           font-weight: 600;
+          background: rgba(0, 107, 63, 0.08);
+          border-bottom-color: var(--niser-green);
         }
         .niser-nav__link--active::after {
           content: '';
           position: absolute;
           bottom: -2px;
-          left: 0.875rem;
-          right: 0.875rem;
-          height: 2px;
+          left: 1rem;
+          right: 1rem;
+          height: 2.5px;
           background: var(--niser-green);
           border-radius: 1px;
         }
@@ -220,24 +224,56 @@ export default function Header() {
         .niser-header__actions {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.75rem;
           margin-left: auto;
         }
-        .niser-search-btn {
+        /* Navigation buttons */
+        .niser-nav-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          border-radius: var(--radius-lg);
           color: var(--gray-600);
+          background: transparent;
+          border: var(--border-thin) solid transparent;
+          transition: all var(--transition-base);
+          cursor: pointer;
+          text-decoration: none;
+          font-weight: 500;
+        }
+        .niser-nav-btn:hover {
+          color: var(--niser-green);
+          background: var(--niser-green-pale);
+          border-color: rgba(0, 107, 63, 0.2);
+        }
+        .niser-nav-btn:active {
+          transform: scale(0.95);
+        }
+        .niser-nav-btn--search {
+          gap: 0.4rem;
         }
         .niser-hamburger {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 40px;
-          height: 40px;
-          border-radius: var(--radius-md);
+          width: 38px;
+          height: 38px;
+          border-radius: var(--radius-lg);
           color: var(--gray-700);
-          transition: background var(--transition-base), color var(--transition-base);
+          background: transparent;
+          border: var(--border-thin) solid transparent;
+          transition: all var(--transition-base);
+          cursor: pointer;
         }
         .niser-hamburger:hover {
-          background: var(--gray-100);
+          color: var(--niser-green);
+          background: var(--niser-green-pale);
+          border-color: rgba(0, 107, 63, 0.2);
+        }
+        .niser-hamburger:active {
+          transform: scale(0.95);
         }
         @media (min-width: 1024px) {
           .niser-hamburger { display: none; }
