@@ -48,11 +48,21 @@ export default function Header() {
         <div className="container niser-header__inner">
           {/* Logo */}
           <Link href="/" className="niser-logo" aria-label="NISER — Go to homepage">
-            <div className="niser-logo__emblem" aria-hidden="true">N</div>
-            <div className="niser-logo__text">
-              <span className="niser-logo__name">NISER</span>
-              <span className="niser-logo__tagline">National Institute of Social &amp; Economic Research</span>
-            </div>
+            <svg className="niser-logo__mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="nigerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{stopColor:'#006B3F', stopOpacity:'1'}} />
+                  <stop offset="100%" style={{stopColor:'#004d2d', stopOpacity:'1'}} />
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="45" fill="none" stroke="url(#nigerGrad)" strokeWidth="8" opacity="0.8"/>
+              <circle cx="50" cy="50" r="30" fill="none" stroke="#FFB81C" strokeWidth="5" opacity="0.9"/>
+              <circle cx="50" cy="30" r="3.5" fill="#FFB81C"/>
+              <circle cx="65" cy="50" r="3.5" fill="#FFB81C"/>
+              <circle cx="50" cy="70" r="3.5" fill="#FFB81C"/>
+              <circle cx="35" cy="50" r="3.5" fill="#FFB81C"/>
+              <circle cx="50" cy="50" r="2" fill="#006B3F"/>
+            </svg>
           </Link>
 
           {/* Desktop navigation */}
@@ -143,43 +153,23 @@ export default function Header() {
         .niser-logo {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 0;
           text-decoration: none;
           flex-shrink: 0;
+          transition: transform var(--transition-base);
         }
-        .niser-logo__emblem {
-          width: 40px;
-          height: 40px;
-          background: var(--niser-green);
-          color: #fff;
-          border-radius: var(--radius-md);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: var(--font-serif);
-          font-size: 1.25rem;
-          font-weight: 700;
+        .niser-logo:hover {
+          transform: scale(1.05);
+        }
+        .niser-logo__mark {
+          width: 48px;
+          height: 48px;
           flex-shrink: 0;
+          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+          transition: filter var(--transition-base);
         }
-        .niser-logo__text {
-          display: flex;
-          flex-direction: column;
-          line-height: 1.2;
-        }
-        .niser-logo__name {
-          font-family: var(--font-serif);
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: var(--niser-green);
-          letter-spacing: 0.04em;
-        }
-        .niser-logo__tagline {
-          font-size: 0.625rem;
-          color: var(--gray-500);
-          letter-spacing: 0.02em;
-          text-transform: uppercase;
-          font-weight: 500;
-          max-width: 18ch;
+        .niser-logo:hover .niser-logo__mark {
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
         }
         /* Desktop nav */
         .niser-nav {
