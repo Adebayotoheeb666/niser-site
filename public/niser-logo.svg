@@ -1,0 +1,24 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="NISER Logo">
+  <!-- Main geometric shape - represents policy, data, and growth -->
+  <defs>
+    <linearGradient id="nigerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#006B3F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#004d2d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer circle ring (policy framework) -->
+  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#nigerGradient)" stroke-width="8" opacity="0.8"/>
+  
+  <!-- Inner circle ring (data foundation) -->
+  <circle cx="50" cy="50" r="30" fill="none" stroke="#FFB81C" stroke-width="5" opacity="0.9"/>
+  
+  <!-- Center accent dots (pillars of research) -->
+  <circle cx="50" cy="30" r="3.5" fill="#FFB81C"/>
+  <circle cx="65" cy="50" r="3.5" fill="#FFB81C"/>
+  <circle cx="50" cy="70" r="3.5" fill="#FFB81C"/>
+  <circle cx="35" cy="50" r="3.5" fill="#FFB81C"/>
+  
+  <!-- Core center dot -->
+  <circle cx="50" cy="50" r="2" fill="#006B3F"/>
+</svg>
