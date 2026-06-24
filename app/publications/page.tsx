@@ -56,11 +56,11 @@ export default async function PublicationsPage({ searchParams }: PublicationsPag
       <Header />
       <main id="main-content">
         {/* Page header */}
-        <div className="page-hero">
+        <div className="page-hero animate-fade-in">
           <div className="container">
             <div className="page-hero__content">
-              <h1 className="page-hero__title">Publications</h1>
-              <p className="page-hero__desc">
+              <h1 className="page-hero__title animate-slide-up-stagger-1">Publications</h1>
+              <p className="page-hero__desc animate-slide-up-stagger-2">
                 Browse NISER&apos;s complete archive of research outputs — working papers,
                 policy briefs, journal articles, and institutional reports.
               </p>
@@ -131,8 +131,10 @@ export default async function PublicationsPage({ searchParams }: PublicationsPag
             {/* Grid */}
             {publications.length > 0 ? (
               <div className="grid--3">
-                {publications.map((pub) => (
-                  <PublicationCard key={pub.id} publication={pub} />
+                {publications.map((pub, idx) => (
+                  <div key={pub.id} className="animate-slide-up" style={{ animationDelay: `${(idx % 9) * 50}ms` }}>
+                    <PublicationCard publication={pub} />
+                  </div>
                 ))}
               </div>
             ) : (
@@ -150,4 +152,3 @@ export default async function PublicationsPage({ searchParams }: PublicationsPag
     </>
   );
 }
-
