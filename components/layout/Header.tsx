@@ -232,24 +232,39 @@ export default function Header() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 38px;
-          height: 38px;
+          width: 44px;
+          height: 44px;
+          padding: 0.625rem;
           border-radius: var(--radius-lg);
           color: var(--gray-600);
           background: transparent;
-          border: var(--border-thin) solid transparent;
-          transition: all var(--transition-base);
+          border: 1.5px solid var(--gray-300);
+          transition: all var(--transition-smooth);
           cursor: pointer;
           text-decoration: none;
           font-weight: 500;
+          position: relative;
+        }
+        .niser-nav-btn::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: var(--radius-lg);
+          background: var(--niser-green);
+          opacity: 0;
+          transition: opacity var(--transition-smooth);
+          z-index: -1;
         }
         .niser-nav-btn:hover {
           color: var(--niser-green);
+          border-color: var(--niser-green);
           background: var(--niser-green-pale);
-          border-color: rgba(0, 107, 63, 0.2);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 107, 63, 0.15);
         }
         .niser-nav-btn:active {
-          transform: scale(0.95);
+          transform: translateY(0);
+          box-shadow: 0 2px 6px rgba(0, 107, 63, 0.1);
         }
         .niser-nav-btn--search {
           gap: 0.4rem;
@@ -258,22 +273,37 @@ export default function Header() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 38px;
-          height: 38px;
+          width: 44px;
+          height: 44px;
+          padding: 0.625rem;
           border-radius: var(--radius-lg);
           color: var(--gray-700);
           background: transparent;
-          border: var(--border-thin) solid transparent;
-          transition: all var(--transition-base);
+          border: 1.5px solid var(--gray-300);
+          transition: all var(--transition-smooth);
           cursor: pointer;
+          position: relative;
+        }
+        .niser-hamburger::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: var(--radius-lg);
+          background: var(--niser-green);
+          opacity: 0;
+          transition: opacity var(--transition-smooth);
+          z-index: -1;
         }
         .niser-hamburger:hover {
           color: var(--niser-green);
+          border-color: var(--niser-green);
           background: var(--niser-green-pale);
-          border-color: rgba(0, 107, 63, 0.2);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 107, 63, 0.15);
         }
         .niser-hamburger:active {
-          transform: scale(0.95);
+          transform: translateY(0);
+          box-shadow: 0 2px 6px rgba(0, 107, 63, 0.1);
         }
         @media (min-width: 1024px) {
           .niser-hamburger { display: none; }

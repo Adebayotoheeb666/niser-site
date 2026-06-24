@@ -28,10 +28,10 @@ export default async function EventsPage() {
     <>
       <Header />
       <main id="main-content">
-        <div className="events-hero">
+        <div className="events-hero animate-fade-in">
           <div className="container">
-            <h1 className="events-hero__title">Events & Seminars</h1>
-            <p className="events-hero__desc">
+            <h1 className="events-hero__title animate-slide-up-stagger-1">Events & Seminars</h1>
+            <p className="events-hero__desc animate-slide-up-stagger-2">
               NISER seminars, public lectures, workshops, and international conferences.
               Register to attend or watch recordings of past events.
             </p>
@@ -48,7 +48,11 @@ export default async function EventsPage() {
                   description={`${upcoming.length} event${upcoming.length !== 1 ? 's' : ''} coming up`}
                 />
                 <div className="grid--2" style={{ marginBottom: '3rem' }}>
-                  {upcoming.map((evt) => <EventCard key={evt.id} event={evt} />)}
+                  {upcoming.map((evt, idx) => (
+                    <div key={evt.id} className="animate-slide-up" style={{ animationDelay: `${(idx % 4) * 50}ms` }}>
+                      <EventCard event={evt} />
+                    </div>
+                  ))}
                 </div>
               </>
             ) : (
@@ -65,7 +69,11 @@ export default async function EventsPage() {
                   description="Browse recordings and materials from previous NISER events."
                 />
                 <div className="grid--2">
-                  {past.map((evt) => <EventCard key={evt.id} event={evt} />)}
+                  {past.map((evt, idx) => (
+                    <div key={evt.id} className="animate-slide-up" style={{ animationDelay: `${(idx % 4) * 50}ms` }}>
+                      <EventCard event={evt} />
+                    </div>
+                  ))}
                 </div>
               </>
             )}
@@ -76,4 +84,3 @@ export default async function EventsPage() {
     </>
   );
 }
-

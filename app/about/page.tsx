@@ -40,15 +40,15 @@ export default async function AboutPage() {
       <Header />
       <main id="main-content">
         {/* Page hero */}
-        <div className="about-hero">
+        <div className="about-hero animate-fade-in">
           <div className="container">
-            <div className="about-hero__badge">
+            <div className="about-hero__badge animate-slide-down">
               <span>Est. 1960</span>
             </div>
-            <h1 className="about-hero__title">
+            <h1 className="about-hero__title animate-slide-up-stagger-1">
               About NISER
             </h1>
-            <p className="about-hero__desc">
+            <p className="about-hero__desc animate-slide-up-stagger-2">
               The National Institute of Social and Economic Research is Nigeria&apos;s
               foremost policy research institution — providing evidence-based analysis
               to government, development partners, and civil society since 1960.
@@ -59,24 +59,24 @@ export default async function AboutPage() {
         {/* Mission & Vision */}
         <section className="section" aria-labelledby="mission-heading">
           <div className="container about-mv-grid">
-            <div className="about-mv-card">
-              <div className="about-mv-card__icon" aria-hidden="true">🎯</div>
+            <div className="about-mv-card animate-slide-up-stagger-1">
+              <div className="about-mv-card__icon hover:scale-110 transition-transform" aria-hidden="true">🎯</div>
               <h2 id="mission-heading" className="about-mv-card__title">Our Mission</h2>
               <p className="about-mv-card__text">
                 To conduct rigorous, multidisciplinary, policy-relevant research and disseminate
                 findings to inform national development decision-making in Nigeria.
               </p>
             </div>
-            <div className="about-mv-card">
-              <div className="about-mv-card__icon" aria-hidden="true">🔭</div>
+            <div className="about-mv-card animate-slide-up-stagger-2">
+              <div className="about-mv-card__icon hover:scale-110 transition-transform" aria-hidden="true">🔭</div>
               <h2 className="about-mv-card__title">Our Vision</h2>
               <p className="about-mv-card__text">
                 To be Africa&apos;s leading policy research institution, recognised globally for
                 intellectual excellence, policy impact, and institutional integrity.
               </p>
             </div>
-            <div className="about-mv-card">
-              <div className="about-mv-card__icon" aria-hidden="true">📜</div>
+            <div className="about-mv-card animate-slide-up-stagger-3">
+              <div className="about-mv-card__icon hover:scale-110 transition-transform" aria-hidden="true">📜</div>
               <h2 className="about-mv-card__title">Our Mandate</h2>
               <p className="about-mv-card__text">
                 Established by the Federal Government of Nigeria in 1960 to advise on economic
@@ -189,4 +189,3 @@ export default async function AboutPage() {
     </>
   );
 }
-

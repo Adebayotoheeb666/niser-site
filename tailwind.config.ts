@@ -50,6 +50,42 @@ const config: Config = {
       padding: {
         "margin-desktop": "1.5rem",
       },
+      animation: {
+        "fade-in": "fadeIn 600ms ease-out forwards",
+        "fade-in-slow": "fadeIn 1000ms ease-out forwards",
+        "slide-up": "slideUp 600ms ease-out forwards",
+        "slide-up-stagger": "slideUp 600ms ease-out forwards",
+        "slide-down": "slideDown 400ms ease-out forwards",
+        "scale-in": "scaleIn 500ms ease-out forwards",
+        "pulse-soft": "pulseSoft 2s ease-in-out infinite",
+        "bounce-light": "bounceLight 2s ease-in-out infinite",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        slideUp: {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        slideDown: {
+          "0%": { opacity: "0", transform: "translateY(-10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        scaleIn: {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        pulseSoft: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
+        },
+        bounceLight: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-4px)" },
+        },
+      },
     },
   },
   plugins: [],
