@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
 
+/* ─── Font Imports ──────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+
 /* ─── NISER Brand Design Tokens ─────────────────────────────────────── */
 :root {
   /* Brand Colours */
@@ -1901,8 +1904,16 @@ p {
 }
 .about-quick-links a:hover { text-decoration: underline; }
 
+/* ─── Custom Utilities ──────────────────────────────────────────────── */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* ─── Tailwind overrides ────────────────────────────────────────────── */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
