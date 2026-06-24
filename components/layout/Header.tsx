@@ -14,7 +14,9 @@ const navLinks = [
   { href: '/training', label: 'Training' },
   { href: '/data', label: 'Data' },
   { href: '/news', label: 'News' },
+  { href: '/policy-briefs', label: 'Policy Briefs' },
   { href: '/about', label: 'About' },
+  { href: '/careers', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
 ];
 
