@@ -1,229 +1,248 @@
 import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import PublicationCard from '@/components/ui/PublicationCard';
-import InsightCard from '@/components/ui/InsightCard';
-import EventCard from '@/components/ui/EventCard';
-import SectionHeader from '@/components/ui/SectionHeader';
-import {
-  getPublications,
-  getInsights,
-  getEvents,
-  getDivisions,
-} from '@/lib/cms/client';
 import Link from 'next/link';
-import NewsletterForm from '@/components/ui/NewsletterForm';
 
-export const revalidate = 3600; // ISR: 1 hour
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'NISER — National Institute of Social and Economic Research',
-  description:
-    'Evidence-based research and analysis informing Nigeria\'s national development. Explore publications, policy briefs, and expert insights from NISER Ibadan.',
-};
-
-const divisionIcons: Record<string, string> = {
-  macroeconomics: '📈',
-  poverty_social: '🤝',
-  agriculture: '🌾',
-  governance: '🏛️',
-  industry: '🏗️',
+  title: 'NISER | Nigerian Institute of Social and Economic Research',
+  description: 'Advancing National Development Through Excellence in Policy Research. Explore publications, insights, data, and more from Nigeria\'s premier think-tank.',
 };
 
 export default async function HomePage() {
-  // Fetch all homepage data in parallel
-  const [publications, insights, events, divisions] = await Promise.allSettled([
-    getPublications({ limit: 6 }),
-    getInsights({ limit: 3 }),
-    getEvents({ limit: 3 }),
-    getDivisions(),
-  ]);
+  // Mock data - replace with CMS calls as needed
+  const publications = [
+    {
+      id: 1,
+      title: 'Monetary Policy Transmission in Nigeria: An Empirical Review',
+      category: 'Working Paper',
+      date: 'Oct 2024',
+      image: '📊',
+    },
+    {
+      id: 2,
+      title: 'Leveraging Digital Economy for Youth Employment in Oyo State',
+      category: 'Policy Brief',
+      date: 'Sept 2024',
+      image: '💻',
+    },
+    {
+      id: 3,
+      title: 'Climate Change Impacts on Smallholder Farming Systems',
+      category: 'Working Paper',
+      date: 'Aug 2024',
+      image: '🌱',
+    },
+  ];
 
-  const pubs = publications.status === 'fulfilled' ? publications.value : [];
-  const posts = insights.status === 'fulfilled' ? insights.value : [];
-  const upcomingEvents = events.status === 'fulfilled' ? events.value : [];
-  const divisionList = divisions.status === 'fulfilled' ? divisions.value : [];
+  const events = [
+    { month: 'NOV', day: '14', title: 'Annual Policy Dialogue on Industrial Growth', location: 'NISER Conference Hall, Ibadan | 09:00 AM' },
+    { month: 'NOV', day: '28', title: 'Seminar: Data Science in Public Policy Analysis', location: 'Virtual Event via Zoom | 11:00 AM' },
+    { month: 'DEC', day: '05', title: 'Research Methodology Workshop for Ph.D Fellows', location: 'Division Training Room | 10:00 AM' },
+  ];
+
+  const insights = [
+    {
+      id: 1,
+      title: 'Addressing the Revenue-to-Debt Ratio Challenge in Nigeria',
+      category: 'FISCAL POLICY',
+      author: 'Dr. Omolola Adeyemi',
+      image: '📈',
+    },
+    {
+      id: 2,
+      title: 'The Economic Imperative of Off-Grid Solar for Rural SMEs',
+      category: 'SUSTAINABLE ENERGY',
+      author: 'Prof. Ibrahim Salami',
+      image: '☀️',
+    },
+    {
+      id: 3,
+      title: 'E-Governance and Public Service Delivery in Nigerian States',
+      category: 'GOVERNANCE',
+      author: 'Dr. Chinedu Okafor',
+      image: '💼',
+    },
+  ];
+
+  const divisions = [
+    { title: 'Macroeconomics', description: 'Strategic analysis of fiscal policies and monetary frameworks.', icon: '📊' },
+    { title: 'Poverty', description: 'Social protection strategies and welfare impact assessments.', icon: '👥' },
+    { title: 'Agriculture', description: 'Food security, value chains, and rural development policies.', icon: '🌾' },
+    { title: 'Governance', description: 'Institutional reform, political economy, and public sector efficiency.', icon: '🏛️' },
+    { title: 'Industry', description: 'Industrialization pathways and trade competitiveness studies.', icon: '🏭' },
+  ];
 
   return (
     <>
       <Header />
-      <main id="main-content">
+      <main className="pt-20">
+        {/* Hero Section */}
+        <section className="relative bg-surface-container-lowest overflow-hidden h-[600px] flex items-center">
+          <div className="absolute inset-0 z-0">
+            <div
+              className="w-full h-full bg-cover bg-center opacity-40"
+              style={{
+                backgroundImage:
+                  'linear-gradient(rgba(19, 51, 6, 0.3), rgba(19, 51, 6, 0.3)), url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 600%22%3E%3Crect fill=%22%23133306%22 width=%221200%22 height=%22600%22/%3E%3Cpath fill=%22%232D7012%22 opacity=%220.1%22 d=%22M0 300L100 250L200 300L300 250L400 300L500 250L600 300L700 250L800 300L900 250L1000 300L1100 250L1200 300V600H0Z%22/%3E%3C/svg%3E")',
+              }}
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-surface-container-lowest/80 to-transparent" />
 
-        {/* ─── Hero ──────────────────────────────────────────────────────── */}
-        <section className="hero" aria-label="Welcome to NISER">
-          <div className="container hero__content">
-            <p className="hero__eyebrow">
-              <span aria-hidden="true">⚡</span>
-              Since 1960 · Ibadan, Nigeria
-            </p>
-            <h1 className="hero__title">
-              Nigeria&apos;s Premier<br />
-              Policy Research Institute
-            </h1>
-            <p className="hero__description">
-              Producing evidence-based research to inform economic and social
-              development policy across Nigeria and the African continent.
-            </p>
-            <div className="hero__actions">
-              <Link href="/publications" className="btn btn--lg hero__btn-primary">
-                Browse Publications
-              </Link>
-              <Link href="/search" className="btn btn--lg hero__btn-outline">
-                Search Research
-              </Link>
+          <div className="relative z-10 w-full px-margin-desktop max-w-max-width mx-auto">
+            <div className="max-w-2xl">
+              <span className="text-nigeria-green-vibrant font-label-md tracking-widest block mb-4 uppercase">
+                ESTABLISHED 1960
+              </span>
+              <h1 className="font-display-lg text-display-lg text-nigeria-green-deep mb-6">
+                Advancing National Development Through Excellence in Policy Research.
+              </h1>
+              <p className="font-body-lg text-body-lg text-on-surface-variant mb-8 leading-relaxed">
+                NISER stands as Nigeria&apos;s premier think-tank, dedicated to providing high-quality socioeconomic intelligence and strategic policy frameworks that drive sustainable national growth.
+              </p>
+              <div className="flex gap-4 flex-wrap">
+                <Link
+                  href="/publications"
+                  className="bg-nigeria-green-deep text-on-primary px-8 py-3 rounded shadow-lg font-label-md hover:translate-y-[-2px] transition-all"
+                >
+                  Explore Publications
+                </Link>
+                <Link
+                  href="/about"
+                  className="border border-nigeria-green-deep text-nigeria-green-deep px-8 py-3 rounded font-label-md hover:bg-surface-container-low transition-all"
+                >
+                  About the Institute
+                </Link>
+              </div>
             </div>
+          </div>
+        </section>
 
-            {/* Stats strip */}
-            <div className="hero__stats" role="list">
-              {[
-                { value: '60+', label: 'Years of Research' },
-                { value: '500+', label: 'Publications' },
-                { value: '5', label: 'Research Divisions' },
-                { value: '40+', label: 'Active Researchers' },
-              ].map((stat) => (
-                <div key={stat.label} className="hero__stat" role="listitem">
-                  <span className="hero__stat-value">{stat.value}</span>
-                  <span className="hero__stat-label">{stat.label}</span>
+        {/* Research Divisions */}
+        <section className="py-20 bg-surface">
+          <div className="px-margin-desktop max-w-max-width mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+              <div>
+                <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-2">Research Divisions</h2>
+                <p className="text-on-surface-variant max-w-xl">
+                  Our multidisciplinary approach covers the critical pillars of Nigeria&apos;s socioeconomic landscape.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              {divisions.map((div) => (
+                <div
+                  key={div.title}
+                  className="bg-surface-container-lowest border border-surface-gray p-6 hover:border-nigeria-green-vibrant transition-colors group cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-research-blue mb-4 text-3xl block">{div.icon}</span>
+                  <h3 className="font-headline-md text-headline-md text-nigeria-green-deep mb-2">{div.title}</h3>
+                  <p className="text-label-md text-on-surface-variant">{div.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ─── Latest Publications ──────────────────────────────────────── */}
-        <section className="section" aria-labelledby="publications-heading">
-          <div className="container">
-            <SectionHeader
-              title="Latest Research"
-              viewAllHref="/publications"
-              viewAllLabel="All Publications"
-              description="Working papers, policy briefs, and journal articles from NISER researchers."
-            />
-            {pubs.length > 0 ? (
-              <div className="grid--3">
-                {pubs.map((pub) => (
-                  <PublicationCard key={pub.id} publication={pub} />
-                ))}
+        {/* Latest Publications & Events */}
+        <section className="py-20 border-y border-surface-gray">
+          <div className="px-margin-desktop max-w-max-width mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+            {/* Latest Publications */}
+            <div className="lg:col-span-8">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep">Latest Publications</h2>
+                <Link href="/publications" className="text-nigeria-green-vibrant font-label-md flex items-center hover:underline">
+                  View All Publications
+                  <span className="material-symbols-outlined ml-1">arrow_forward</span>
+                </Link>
               </div>
-            ) : (
-              <p className="homepage-empty">No publications available at this time.</p>
-            )}
-          </div>
-        </section>
-
-        {/* ─── Research Divisions ───────────────────────────────────────── */}
-        {divisionList.length > 0 && (
-          <section className="section homepage-divisions" aria-labelledby="divisions-heading">
-            <div className="container">
-              <SectionHeader
-                title="Research Divisions"
-                description="NISER's five centres of excellence, driving interdisciplinary policy analysis."
-              />
-              <div className="homepage-divisions__grid">
-                {divisionList.map((div) => (
-                  <div key={div.id} className="division-card card">
-                    <div className="card__body division-card__body">
-                      <span className="division-card__icon" aria-hidden="true">
-                        {divisionIcons[div.slug?.split('-')[0] ?? ''] ?? '🔬'}
-                      </span>
-                      <h3 className="division-card__name">{div.name}</h3>
-                      {div.description && (
-                        <p className="division-card__desc">
-                          {div.description.slice(0, 100)}…
-                        </p>
-                      )}
-                      {div.headOfDivision && (
-                        <p className="division-card__head">
-                          Head: {div.headOfDivision.fullName}
-                        </p>
-                      )}
+              <div className="flex overflow-x-auto gap-6 pb-6 no-scrollbar snap-x snap-mandatory">
+                {publications.map((pub) => (
+                  <div key={pub.id} className="min-w-[300px] md:min-w-[350px] snap-start">
+                    <div className="bg-surface-container-lowest border border-surface-gray p-0 rounded overflow-hidden hover:shadow-lg transition-shadow">
+                      <div className="h-40 bg-surface-container-low flex items-center justify-center p-8">
+                        <span className="text-5xl">{pub.image}</span>
+                      </div>
+                      <div className="p-6">
+                        <span className="text-research-blue font-label-sm uppercase tracking-wider mb-2 block">{pub.category}</span>
+                        <h4 className="font-headline-md text-headline-md text-nigeria-green-deep mb-3 line-clamp-2">{pub.title}</h4>
+                        <div className="flex justify-between items-center text-label-sm text-outline">
+                          <span>{pub.date}</span>
+                          <button className="text-nigeria-green-vibrant flex items-center font-bold">
+                            PDF <span className="material-symbols-outlined text-sm ml-1">download</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          </section>
-        )}
 
-        {/* ─── Policy Insights ─────────────────────────────────────────── */}
-        {posts.length > 0 && (
-          <section className="section" aria-labelledby="insights-heading">
-            <div className="container">
-              <SectionHeader
-                title="Policy Insights"
-                viewAllHref="/insights"
-                viewAllLabel="All Insights"
-                description="Expert commentary and rapid-response analysis from NISER researchers."
-              />
-              <div className="grid--3">
-                {posts.map((post) => (
-                  <InsightCard key={post.id} insight={post} />
+            {/* Upcoming Events */}
+            <div className="lg:col-span-4 border-l border-surface-gray lg:pl-8">
+              <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-8">Events &amp; Seminars</h2>
+              <div className="space-y-6">
+                {events.map((event, idx) => (
+                  <div key={idx} className="flex gap-4 group cursor-pointer">
+                    <div className="flex flex-col items-center justify-center min-w-[60px] h-[60px] bg-nigeria-green-deep text-on-primary rounded">
+                      <span className="font-label-sm">{event.month}</span>
+                      <span className="font-headline-md text-headline-md">{event.day}</span>
+                    </div>
+                    <div>
+                      <h5 className="font-label-md text-nigeria-green-deep group-hover:text-nigeria-green-vibrant transition-colors">
+                        {event.title}
+                      </h5>
+                      <p className="text-label-sm text-on-surface-variant">{event.location}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
-          </section>
-        )}
-
-        {/* ─── Events ──────────────────────────────────────────────────── */}
-        {upcomingEvents.length > 0 && (
-          <section className="section homepage-events-section" aria-labelledby="events-heading">
-            <div className="container">
-              <SectionHeader
-                title="Upcoming Events"
-                viewAllHref="/events"
-                viewAllLabel="All Events"
-                description="Seminars, workshops, and conferences hosted by NISER."
-              />
-              <div className="grid--2">
-                {upcomingEvents.map((evt) => (
-                  <EventCard key={evt.id} event={evt} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ─── Research Chatbot CTA ─────────────────────────────────────── */}
-        <section className="section homepage-ai-cta" aria-label="AI Research Assistant">
-          <div className="container">
-            <div className="homepage-ai-cta__inner">
-              <div className="homepage-ai-cta__content">
-                <span className="homepage-ai-cta__icon" aria-hidden="true">🤖</span>
-                <div>
-                  <h2 className="homepage-ai-cta__title">Ask the NISER Research Assistant</h2>
-                  <p className="homepage-ai-cta__desc">
-                    Our AI-powered chatbot can help you find publications, understand policy research,
-                    and navigate NISER&apos;s knowledge base — grounded entirely in NISER&apos;s documents.
-                  </p>
-                </div>
-              </div>
-              <Link href="/chatbot" className="btn btn--primary btn--lg">
-                Start Conversation
+              <Link
+                href="/events"
+                className="block mt-8 py-3 border border-outline text-on-surface-variant font-label-md rounded hover:bg-surface-container-low transition-all text-center"
+              >
+                View All Events
               </Link>
             </div>
           </div>
         </section>
 
-        {/* ─── Newsletter ───────────────────────────────────────────────── */}
-        <section className="section homepage-newsletter" aria-label="Newsletter subscription">
-          <div className="container">
-            <div className="homepage-newsletter__inner">
-              <div className="homepage-newsletter__text">
-                <h2 className="homepage-newsletter__title">Stay Informed</h2>
-                <p>Receive NISER&apos;s latest publications, policy briefs, and event updates directly in your inbox.</p>
-              </div>
-              <NewsletterForm
-                className="homepage-newsletter__form"
-                placeholder="Enter your email address"
-                id="hero-email"
-              />
+        {/* Recent Insights */}
+        <section className="py-20 bg-surface-container-lowest">
+          <div className="px-margin-desktop max-w-max-width mx-auto">
+            <div className="mb-12">
+              <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-2">Recent Insights</h2>
+              <p className="text-on-surface-variant">Brief, actionable intelligence for policymakers and stakeholders.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {insights.map((insight) => (
+                <article key={insight.id} className="flex flex-col h-full border-b border-surface-gray pb-8">
+                  <div className="h-48 w-full mb-6 overflow-hidden rounded bg-gradient-to-br from-nigeria-green-deep to-research-blue flex items-center justify-center">
+                    <span className="text-6xl">{insight.image}</span>
+                  </div>
+                  <span className="text-nigeria-green-vibrant font-label-sm mb-2">{insight.category}</span>
+                  <h3 className="font-headline-md text-headline-md text-nigeria-green-deep mb-4 hover:text-research-blue cursor-pointer transition-colors">
+                    {insight.title}
+                  </h3>
+                  <p className="text-body-md text-on-surface-variant mb-6 flex-grow">
+                    Evidence-based insights into how policy decisions impact economic growth and social welfare across Nigeria&apos;s regions.
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+                      <span className="material-symbols-outlined text-sm">person</span>
+                    </div>
+                    <span className="text-label-sm font-bold">{insight.author}</span>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </section>
-
       </main>
       <Footer />
     </>
   );
 }
-
