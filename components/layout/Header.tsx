@@ -10,9 +10,12 @@ const navLinks = [
   { href: '/publications', label: 'Research' },
   { href: '/people', label: 'People' },
   { href: '/insights', label: 'Insights' },
-  { href: '/events', label: 'Events' },
-  { href: '/chatbot', label: 'Ask NISER' },
+  { href: '/services', label: 'Services' },
+  { href: '/training', label: 'Training' },
+  { href: '/data', label: 'Data' },
+  { href: '/news', label: 'News' },
   { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 export default function Header() {
