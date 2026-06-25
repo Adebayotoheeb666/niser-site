@@ -102,7 +102,7 @@ export default function SovereignIntelligencePage() {
               <div className="mb-8">
                 <h2 className="font-display-lg text-display-lg text-nigeria-green-deep mb-4">Select Source Materials</h2>
                 <p className="font-body-lg text-on-surface-variant max-w-2xl">
-                  Choose up to 3 research papers from NISER's database to synthesize into your policy brief.
+                  Choose up to 3 research papers from NISER&apos;s database to synthesize into your policy brief.
                 </p>
               </div>
 

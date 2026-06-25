@@ -44,7 +44,7 @@ export default function LiteratureAssistantPage() {
               <h1 className="font-headline-md text-headline-md font-bold">Literature Review Assistant</h1>
             </div>
             <p className="font-body-lg text-on-surface-variant max-w-3xl">
-              Accelerate your research with AI-powered literature synthesis. Identify research gaps and generate comprehensive reviews using NISER's research corpus.
+              Accelerate your research with AI-powered literature synthesis. Identify research gaps and generate comprehensive reviews using NISER&apos;s research corpus.
             </p>
           </section>
 

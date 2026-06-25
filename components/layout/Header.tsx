@@ -72,9 +72,9 @@ export default function Header() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`niser-nav__link ${
+                    className={`btn btn--nav ${
                       (link.href === '/' ? pathname === '/' : pathname.startsWith(link.href))
-                        ? 'niser-nav__link--active'
+                        ? 'is-active'
                         : ''
                     }`}
                     aria-current={pathname === link.href ? 'page' : undefined}
@@ -182,43 +182,10 @@ export default function Header() {
         .niser-nav__list {
           display: flex;
           align-items: center;
-          gap: 0.25rem;
+          gap: 0.125rem;
           list-style: none;
           margin: 0;
           padding: 0;
-        }
-        .niser-nav__link {
-          display: inline-block;
-          padding: 0.5rem 1rem;
-          border-radius: var(--radius-lg);
-          font-size: 0.9375rem;
-          font-weight: 500;
-          color: var(--gray-600);
-          transition: all var(--transition-smooth);
-          text-decoration: none;
-          position: relative;
-          border-bottom: 2px solid transparent;
-        }
-        .niser-nav__link:hover {
-          color: var(--niser-green);
-          background: rgba(0, 107, 63, 0.05);
-          border-bottom-color: var(--niser-green);
-        }
-        .niser-nav__link--active {
-          color: var(--niser-green);
-          font-weight: 600;
-          background: rgba(0, 107, 63, 0.08);
-          border-bottom-color: var(--niser-green);
-        }
-        .niser-nav__link--active::after {
-          content: '';
-          position: absolute;
-          bottom: -2px;
-          left: 1rem;
-          right: 1rem;
-          height: 2.5px;
-          background: var(--niser-green);
-          border-radius: 1px;
         }
         /* Right actions */
         .niser-header__actions {
@@ -244,16 +211,6 @@ export default function Header() {
           text-decoration: none;
           font-weight: 500;
           position: relative;
-        }
-        .niser-nav-btn::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          border-radius: var(--radius-lg);
-          background: var(--niser-green);
-          opacity: 0;
-          transition: opacity var(--transition-smooth);
-          z-index: -1;
         }
         .niser-nav-btn:hover {
           color: var(--niser-green);
@@ -282,17 +239,6 @@ export default function Header() {
           border: 1.5px solid var(--gray-300);
           transition: all var(--transition-smooth);
           cursor: pointer;
-          position: relative;
-        }
-        .niser-hamburger::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          border-radius: var(--radius-lg);
-          background: var(--niser-green);
-          opacity: 0;
-          transition: opacity var(--transition-smooth);
-          z-index: -1;
         }
         .niser-hamburger:hover {
           color: var(--niser-green);

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Link from 'next/link';
@@ -79,40 +80,36 @@ export default async function HomePage() {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative bg-surface-container-lowest overflow-hidden h-[600px] flex items-center">
-          <div className="absolute inset-0 z-0">
-            <div
-              className="w-full h-full bg-cover bg-center opacity-40 animate-fade-in-slow"
-              style={{
-                backgroundImage:
-                  'linear-gradient(rgba(19, 51, 6, 0.3), rgba(19, 51, 6, 0.3)), url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 600%22%3E%3Crect fill=%22%23133306%22 width=%221200%22 height=%22600%22/%3E%3Cpath fill=%22%232D7012%22 opacity=%220.1%22 d=%22M0 300L100 250L200 300L300 250L400 300L500 250L600 300L700 250L800 300L900 250L1000 300L1100 250L1200 300V600H0Z%22/%3E%3C/svg%3E")',
-              }}
+        <section className="hero">
+          <div className="hero__background">
+            <Image
+              src="https://images.pexels.com/photos/3018855/pexels-photo-3018855.jpeg?auto=compress&cs=tinysrgb&w=1920"
+              alt=""
+              className="hero__image"
+              priority
+              fill
+              sizes="100vw"
             />
+            <div className="hero__overlay" />
+            <div className="hero__pattern" />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-surface-container-lowest/80 to-transparent" />
 
-          <div className="relative z-10 w-full px-margin-desktop max-w-max-width mx-auto">
-            <div className="max-w-2xl">
-              <span className="text-nigeria-green-vibrant font-label-md tracking-widest block mb-4 uppercase animate-slide-up-stagger-1">
+          <div className="hero__content">
+            <div className="hero__inner">
+              <span className="hero__badge animate-slide-up-stagger-1">
                 ESTABLISHED 1960
               </span>
-              <h1 className="font-display-lg text-display-lg text-nigeria-green-deep mb-6 animate-slide-up-stagger-2">
+              <h1 className="hero__title animate-slide-up-stagger-2">
                 Advancing National Development Through Excellence in Policy Research.
               </h1>
-              <p className="font-body-lg text-body-lg text-on-surface-variant mb-8 leading-relaxed animate-slide-up-stagger-3">
+              <p className="hero__description animate-slide-up-stagger-3">
                 NISER stands as Nigeria&apos;s premier think-tank, dedicated to providing high-quality socioeconomic intelligence and strategic policy frameworks that drive sustainable national growth.
               </p>
-              <div className="flex gap-4 flex-wrap animate-slide-up-stagger-4">
-                <Link
-                  href="/publications"
-                  className="bg-nigeria-green-deep text-on-primary px-8 py-3 rounded shadow-lg font-label-md hover:translate-y-[-2px] transition-all"
-                >
+              <div className="hero__actions animate-slide-up-stagger-4">
+                <Link href="/publications" className="btn btn--primary btn--lg">
                   Explore Publications
                 </Link>
-                <Link
-                  href="/about"
-                  className="border border-nigeria-green-deep text-nigeria-green-deep px-8 py-3 rounded font-label-md hover:bg-surface-container-low transition-all"
-                >
+                <Link href="/about" className="btn btn--outline btn--lg">
                   About the Institute
                 </Link>
               </div>
