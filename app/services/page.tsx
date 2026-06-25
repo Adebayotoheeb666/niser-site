@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -23,6 +24,7 @@ export default function ServicesPage() {
         'Strategic Planning Support',
       ],
       cta: 'Request Research Brief',
+      href: '/contact',
       highlighted: true,
     },
     {
@@ -37,6 +39,7 @@ export default function ServicesPage() {
         'Impact Evaluations',
       ],
       cta: 'Schedule Consultation',
+      href: '/contact',
     },
     {
       id: 3,
@@ -50,6 +53,7 @@ export default function ServicesPage() {
         'Leadership Programs',
       ],
       cta: 'Explore Programs',
+      href: '/training',
     },
     {
       id: 4,
@@ -63,6 +67,7 @@ export default function ServicesPage() {
         'Analytics Dashboard',
       ],
       cta: 'Browse Datasets',
+      href: '/data',
     },
     {
       id: 5,
@@ -76,6 +81,7 @@ export default function ServicesPage() {
         'Change Management',
       ],
       cta: 'Get Consulting Proposal',
+      href: '/contact',
     },
     {
       id: 6,
@@ -89,6 +95,7 @@ export default function ServicesPage() {
         'Media Commentary',
       ],
       cta: 'View Publications',
+      href: '/publications',
     },
   ];
 
@@ -160,7 +167,8 @@ export default function ServicesPage() {
                       ))}
                     </ul>
 
-                    <button
+                    <Link
+                      href={service.href}
                       className={`w-full py-3 px-4 rounded-lg font-label-md text-label-md transition-all flex items-center justify-center gap-2 ${
                         service.highlighted
                           ? 'bg-accent-mint text-nigeria-green-deep hover:bg-white'
@@ -169,7 +177,7 @@ export default function ServicesPage() {
                     >
                       {service.cta}
                       <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -268,12 +276,12 @@ export default function ServicesPage() {
               {`Let's discuss how NISER's research and advisory services can support your development objectives.`}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-accent-mint text-nigeria-green-deep px-8 py-4 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+              <Link href="/contact" className="bg-accent-mint text-nigeria-green-deep px-8 py-4 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined">mail</span> Get in Touch
-              </button>
-              <a href="/insights" className="border-2 border-accent-mint text-accent-mint px-8 py-4 rounded-lg font-label-md text-label-md hover:bg-accent-mint/10 transition-all flex items-center justify-center gap-2">
+              </Link>
+              <Link href="/insights" className="border-2 border-accent-mint text-accent-mint px-8 py-4 rounded-lg font-label-md text-label-md hover:bg-accent-mint/10 transition-all flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined">library_books</span> View Recent Work
-              </a>
+              </Link>
             </div>
           </div>
         </section>

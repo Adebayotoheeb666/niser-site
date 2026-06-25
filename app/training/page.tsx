@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -195,12 +196,12 @@ export default function TrainingPage() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <button className="bg-accent-mint text-research-blue px-8 py-3 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all">
+                    <Link href="/contact" className="bg-accent-mint text-research-blue px-8 py-3 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all">
                       Enroll Now
-                    </button>
-                    <button className="border-2 border-accent-mint text-accent-mint px-8 py-3 rounded-lg font-label-md text-label-md hover:bg-accent-mint/10 transition-all">
+                    </Link>
+                    <Link href="/contact" className="border-2 border-accent-mint text-accent-mint px-8 py-3 rounded-lg font-label-md text-label-md hover:bg-accent-mint/10 transition-all">
                       Learn More
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -264,9 +265,9 @@ export default function TrainingPage() {
                   </div>
 
                   <div className="px-8 pb-8">
-                    <button className="w-full border border-research-blue text-research-blue px-6 py-2 rounded-lg font-label-md text-label-md hover:bg-research-blue hover:text-white transition-all">
-                      Learn More →
-                    </button>
+                    <Link href="/contact" className="w-full border border-research-blue text-research-blue px-6 py-2 rounded-lg font-label-md text-label-md hover:bg-research-blue hover:text-white transition-all inline-block text-center">
+                      Learn More
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -301,9 +302,9 @@ export default function TrainingPage() {
                       <span className="font-label-md text-label-md">{program.location}</span>
                     </div>
                   </div>
-                  <button className="mt-6 w-full bg-nigeria-green-deep text-on-primary py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all">
+                  <Link href="/contact" className="mt-6 w-full bg-nigeria-green-deep text-on-primary py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all inline-block text-center">
                     Register
-                  </button>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -339,9 +340,9 @@ export default function TrainingPage() {
             <p className="font-body-lg text-body-lg text-on-primary-container max-w-2xl mx-auto mb-8">
               Enhance your skills and advance your career with NISER&apos;s comprehensive training programs.
             </p>
-            <button className="bg-accent-mint text-nigeria-green-deep px-8 py-4 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all inline-flex items-center gap-2">
+            <Link href="/contact" className="bg-accent-mint text-nigeria-green-deep px-8 py-4 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all inline-flex items-center gap-2">
               <span className="material-symbols-outlined">person_add</span> Enroll in a Program
-            </button>
+            </Link>
           </div>
         </section>
       </main>
