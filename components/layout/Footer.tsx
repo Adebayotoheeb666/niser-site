@@ -252,7 +252,7 @@ export default function Footer() {
               <ul className="footer-links-list">
                 <li>
                   <a
-                    href="https://www.population.gov.ng"
+                    href="https://nationalpopulation.gov.ng/"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -261,7 +261,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://fmbnplan.gov.ng"
+                    href="https://nationalplanning.gov.ng/"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -270,7 +270,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://nigerianstat.gov.ng"
+                    href="https://www.nigerianstat.gov.ng/"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -279,7 +279,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://www.cbn.gov.ng"
+                    href="http://www.cbn.gov.ng/"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
