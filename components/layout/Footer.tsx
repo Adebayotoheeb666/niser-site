@@ -243,6 +243,53 @@ export default function Footer() {
               id="footer-email"
             />
           </div>
+
+          {/* Column 5 — Strategic Links with Image */}
+          <div className="footer-col footer-strategic-links">
+            <h3 className="footer-col-title">STRATEGIC LINKS</h3>
+            <h4 className="strategic-links-subtitle">About NISER</h4>
+            <ul className="footer-links-list">
+              <li>
+                <a
+                  href="https://nationalpopulation.gov.ng/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  National Population Commission
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://nationalplanning.gov.ng/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Federal Ministry of Budget and Economic Planning
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.nigerianstat.gov.ng/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  National Bureau of Statistics
+                </a>
+              </li>
+              <li>
+                <a
+                  href="http://www.cbn.gov.ng/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Central Bank of Nigeria
+                </a>
+              </li>
+              <li>
+                <Link href="/contact">Contacts</Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
