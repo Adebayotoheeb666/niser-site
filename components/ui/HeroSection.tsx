@@ -10,12 +10,10 @@ export default function HeroSection({ title, description, subtitle }: HeroSectio
   return (
     <section className="hero-section-page">
       <div className="hero-section-page__bg" />
-      <div className="container">
-        <div className="hero-section-page__content">
-          <h1 className="hero-section-page__title">{title}</h1>
-          {description && <p className="hero-section-page__description">{description}</p>}
-          {subtitle && <p className="hero-section-page__subtitle">{subtitle}</p>}
-        </div>
+      <div className="hero-section-page__content">
+        <h1 className="hero-section-page__title">{title}</h1>
+        {description && <p className="hero-section-page__description">{description}</p>}
+        {subtitle && <p className="hero-section-page__subtitle">{subtitle}</p>}
       </div>
     </section>
   );

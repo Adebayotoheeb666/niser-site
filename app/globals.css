@@ -623,6 +623,16 @@ small {
   padding: 3rem 1.5rem;
   max-width: 900px;
   margin: 0 auto;
+  width: 100%;
+  padding-left: var(--margin-mobile);
+  padding-right: var(--margin-mobile);
+}
+
+@media (min-width: 640px) {
+  .hero-section-page__content {
+    padding-left: var(--margin-desktop);
+    padding-right: var(--margin-desktop);
+  }
 }
 
 @media (min-width: 768px) {
@@ -2241,7 +2251,7 @@ textarea.input {
   padding: 0.875rem;
 }
 
-/* ─── People Page Styles ─────────────────────────────────────────────── */
+/* ��── People Page Styles ─────────────────────────────────────────────── */
 .people-page-hero {
   background: linear-gradient(135deg, var(--niser-green-dark) 0%, var(--niser-green) 100%);
   padding: 3rem 0 2.5rem;
