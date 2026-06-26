@@ -216,10 +216,13 @@ export default async function HomePage() {
           <div className="container vision-mission-grid">
             {/* Vision */}
             <div className="vision-card">
-              <h2 className="vision-mission-title">VISION</h2>
-              <p className="vision-mission-text">
-                To be a world-class think tank in the area of social and economic policy research
-              </p>
+              <div className="vision-image-placeholder" />
+              <div className="vision-content">
+                <h2 className="vision-mission-title">VISION</h2>
+                <p className="vision-mission-text">
+                  To be a world-class think tank in the area of social and economic policy research
+                </p>
+              </div>
             </div>
 
             {/* DG's Welcome */}
@@ -235,10 +238,13 @@ export default async function HomePage() {
 
             {/* Mission */}
             <div className="mission-card">
-              <h2 className="vision-mission-title">MISSION</h2>
-              <p className="vision-mission-text">
-                To consistently generate credible knowledge through quality research, conduct specialized training and provide consultancy services while interacting with relevant segments of the Nigerian society in the task of national development.
-              </p>
+              <div className="mission-image-placeholder" />
+              <div className="mission-content">
+                <h2 className="vision-mission-title">MISSION</h2>
+                <p className="vision-mission-text">
+                  To consistently generate credible knowledge through quality research, conduct specialized training and provide consultancy services while interacting with relevant segments of the Nigerian society in the task of national development.
+                </p>
+              </div>
             </div>
           </div>
         </section>

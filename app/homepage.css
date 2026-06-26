@@ -208,8 +208,10 @@
   margin: 0;
 }
 
-/* DG Welcome specific */
-.dg-welcome-image-placeholder {
+/* Image placeholder styles */
+.vision-image-placeholder,
+.dg-welcome-image-placeholder,
+.mission-image-placeholder {
   width: 100%;
   height: 200px;
   background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
@@ -221,7 +223,21 @@
   color: #9ca3af;
   font-size: 3rem;
 }
+
+/* Vision specific */
+.vision-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* DG Welcome specific */
 .dg-welcome-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mission specific */
+.mission-content {
   display: flex;
   flex-direction: column;
 }
