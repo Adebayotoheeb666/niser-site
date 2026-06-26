@@ -8,6 +8,7 @@ import {
   getDivisions,
   getEvents,
   getInsights,
+  getNews,
   getPublications,
 } from "@/lib/cms/client";
 
@@ -95,11 +96,12 @@ function formatInsightCategory(ct: string): string {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const [publications, events, insights, divisions] = await Promise.all([
+  const [publications, events, insights, divisions, news] = await Promise.all([
     getPublications({ limit: 4 }),
     getEvents({ limit: 3 }),
     getInsights({ limit: 3 }),
     getDivisions(),
+    getNews({ limit: 3 }),
   ]);
 
   // Publication cards — show 2
@@ -166,6 +168,22 @@ export default async function HomePage() {
 
   const displayDivisions =
     divisionCards.length > 0 ? divisionCards : staticDivisions;
+
+  // News cards — show 3
+  const newsCards = news.slice(0, 3).map((n) => ({
+    id: n.id,
+    title: n.title,
+    slug: n.slug,
+    category: n.category,
+    date: new Date(n.publishedDate).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }),
+    summary: n.summary ?? "",
+    image: n.featuredImage ?? null,
+    externalUrl: n.externalUrl ?? null,
+  }));
 
   return (
     <>
@@ -476,6 +494,64 @@ export default async function HomePage() {
             ) : (
               <p className="empty-msg">
                 No insights yet. Add insights in the WordPress CMS.
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════
+            LATEST NEWS
+        ═══════════════════════════════════════════════════════ */}
+        <section className="section-news">
+          <div className="container">
+            <div className="news-header">
+              <div>
+                <h2 className="section-title">Latest News</h2>
+                <p className="section-subtitle">
+                  Stay informed with the latest updates from NISER.
+                </p>
+              </div>
+              <Link href="/news" className="view-all-link">
+                View All News
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "1rem" }}
+                >
+                  arrow_forward
+                </span>
+              </Link>
+            </div>
+
+            {newsCards.length > 0 ? (
+              <div className="news-grid">
+                {newsCards.map((n) => (
+                  <Link
+                    key={n.id}
+                    href={n.externalUrl || `/news/${n.slug}`}
+                    target={n.externalUrl ? "_blank" : undefined}
+                    rel={n.externalUrl ? "noopener noreferrer" : undefined}
+                    className="news-card"
+                  >
+                    {/* Image */}
+                    <div className="news-img-wrap">
+                      {n.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={n.image} alt="" className="news-img" />
+                      ) : (
+                        <div className="news-img-fallback" />
+                      )}
+                    </div>
+                    {/* Content */}
+                    <span className="news-category">{n.category}</span>
+                    <h3 className="news-title">{n.title}</h3>
+                    <p className="news-summary">{n.summary}</p>
+                    <span className="news-date">{n.date}</span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-msg">
+                No news yet. Add news in the WordPress CMS.
               </p>
             )}
           </div>
