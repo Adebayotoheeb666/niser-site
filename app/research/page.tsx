@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/ui/HeroSection';
 import SectionHeader from '@/components/ui/SectionHeader';
 
 export const metadata: Metadata = {
@@ -13,6 +14,11 @@ export default function ResearchPage() {
     <>
       <Header />
       <main id="main-content">
+        <HeroSection
+          title="Research Programs"
+          description="Explore NISER's research initiatives and projects"
+          subtitle="Driving evidence-based policy development across Nigeria's critical sectors"
+        />
         <div className="section">
           <div className="container">
             <SectionHeader

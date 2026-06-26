@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import HeroSection from "@/components/ui/HeroSection";
 import { getNews } from "@/lib/cms/client";
 import type { NewsItem } from "@/types/cms";
 
@@ -89,8 +90,13 @@ export default async function NewsPage() {
       <Header />
       <main
         id="main-content"
-        className="min-h-screen pt-32 pb-24 bg-background"
+        className="min-h-screen pb-24 bg-background"
       >
+        <HeroSection
+          title="News & Announcements"
+          description="Latest updates, press releases, and announcements from NISER"
+          subtitle="Stay informed about our institutional developments and media mentions"
+        />
         <div className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop">
           {/* Header Section */}
           <section className="mb-12 border-b border-surface-gray pb-8">

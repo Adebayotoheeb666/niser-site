@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import HeroSection from "@/components/ui/HeroSection";
 import { getDivisions } from "@/lib/cms/client";
 
 export const revalidate = 3600;

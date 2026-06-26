@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/ui/HeroSection';
 import EventCard from '@/components/ui/EventCard';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { getEvents } from '@/lib/cms/client';
@@ -28,6 +29,11 @@ export default async function EventsPage() {
     <>
       <Header />
       <main id="main-content">
+        <HeroSection
+          title="Events & Seminars"
+          description="Join our latest webinars, workshops, and research seminars"
+          subtitle="Engaging with policymakers, researchers, and development partners"
+        />
         <div className="events-hero animate-fade-in">
           <div className="container">
             <h1 className="events-hero__title animate-slide-up-stagger-1">Events & Seminars</h1>

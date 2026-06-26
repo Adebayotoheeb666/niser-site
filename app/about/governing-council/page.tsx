@@ -46,8 +46,17 @@ export default function GoverningCouncilPage() {
               <section className="border-t pt-12">
                 <h2 className="text-2xl font-bold mb-6">Current Council Members</h2>
                 
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4">Inauguration and Recent Developments</h3>
+                <div className="mb-8 flex flex-col md:flex-row gap-8">
+                  <div className="md:w-64 flex-shrink-0">
+                    <div className="w-64 h-80 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="text-center text-gray-500">
+                        <p className="text-sm">Chairman</p>
+                        <p className="text-xs mt-2">Image Placeholder</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold mb-4">Inauguration and Recent Developments</h3>
                   <p className="mb-4">
                     On the 14th of February, 2023, The Honorable Minister of State for Budget and National Planning, Prince Clem Agba inaugurated new members of the governing council for the institute.
                   </p>
@@ -73,6 +82,7 @@ export default function GoverningCouncilPage() {
                     <p className="mb-3">
                       In view of this development the newly inaugurated membership of the Council of NISER was dissolved and until such a time new boards are constituted, the Chief Executive Officers of the Parastatals, Agencies, Institutions, and Government-Owned Companies are directed to refer matters requiring the attention of their Boards to the President, through the Permanent Secretaries of their respective supervisory Ministries and Offices.
                     </p>
+                  </div>
                   </div>
                 </div>
 

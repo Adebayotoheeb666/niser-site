@@ -22,12 +22,23 @@ export default function DepartmentsPage() {
             <div className="prose max-w-4xl">
               <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-6">Research Departments</h2>
-                <p className="mb-6">
-                  NISER operates eight research departments, each focused on critical policy areas essential to Nigeria&apos;s development.
-                </p>
+                
+                <div className="mb-8 flex flex-col md:flex-row gap-8">
+                  <div className="md:w-64 flex-shrink-0">
+                    <div className="w-64 h-80 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="text-center text-gray-500">
+                        <p className="text-sm">Departments</p>
+                        <p className="text-xs mt-2">Image Placeholder</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="mb-6">
+                      NISER operates eight research departments, each focused on critical policy areas essential to Nigeria&apos;s development.
+                    </p>
 
-                <div className="space-y-6">
-                  <div className="border-l-4 border-green-600 pl-4">
+                    <div className="space-y-6">
+                      <div className="border-l-4 border-green-600 pl-4">
                     <h3 className="text-lg font-semibold mb-2">Agricultural and Food Policy Department</h3>
                     <p className="font-medium text-green-700 mb-2">Contribute to evidence-based Agricultural and Food Policy Development</p>
                     <p className="text-sm text-gray-700">Focal areas: Agriculture Production and Value Chain Development, Rural Development and Extension Services, Agricultural Technology and Innovation, Gender and Youth Empowerment in Agriculture, Agricultural Diversification and Trade, Climate-smart agriculture, Agricultural Finance and Agri-business.</p>
@@ -67,6 +78,8 @@ export default function DepartmentsPage() {
                     <h3 className="text-lg font-semibold mb-2">Political and Governance Policy Department</h3>
                     <p className="font-medium text-cyan-700 mb-2">Provide evidence towards the advancement of political and government policy development</p>
                     <p className="text-sm text-gray-700">Focal areas: Governance and rule of law, Political participation and gender inclusion, Accountability of government and allied institutions, Security, conflicts, and development, Public sector &amp; Intergovernmental Relations, and Foreign Relations.</p>
+                  </div>
+                    </div>
                   </div>
                 </div>
               </section>

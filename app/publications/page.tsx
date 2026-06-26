@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/ui/HeroSection';
 import PublicationCard from '@/components/ui/PublicationCard';
 import { getPublications } from '@/lib/cms/client';
 import type { PublicationType, ResearchDivision } from '@/types/cms';
@@ -55,19 +56,11 @@ export default async function PublicationsPage({ searchParams }: PublicationsPag
     <>
       <Header />
       <main id="main-content">
-        {/* Page header */}
-        <div className="page-hero animate-fade-in">
-          <div className="container">
-            <div className="page-hero__content">
-              <h1 className="page-hero__title animate-slide-up-stagger-1">Publications</h1>
-              <p className="page-hero__desc animate-slide-up-stagger-2">
-                Browse NISER&apos;s complete archive of research outputs — working papers,
-                policy briefs, journal articles, and institutional reports.
-              </p>
-            </div>
-          </div>
-        </div>
-
+        <HeroSection
+          title="Publications"
+          description="Browse NISER's complete archive of research outputs"
+          subtitle="Working papers, policy briefs, journal articles, and more"
+        />
         <div className="section">
           <div className="container">
             {/* Filter bar */}

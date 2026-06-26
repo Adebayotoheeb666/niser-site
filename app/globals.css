@@ -594,6 +594,97 @@ small {
   align-items: center;
 }
 
+/* ─── Hero Section - Page Hero ──────────────────────────────────────────── */
+.hero-section-page {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fafb 0%, #f0f3f8 100%);
+  margin-bottom: 3rem;
+}
+
+.hero-section-page__bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 107, 63, 0.08) 0%, rgba(15, 166, 155, 0.05) 100%);
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(0, 107, 63, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 184, 28, 0.03) 0%, transparent 50%);
+  z-index: 1;
+}
+
+.hero-section-page__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  padding-left: var(--margin-mobile);
+  padding-right: var(--margin-mobile);
+}
+
+@media (min-width: 640px) {
+  .hero-section-page__content {
+    padding-left: var(--margin-desktop);
+    padding-right: var(--margin-desktop);
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-section-page {
+    min-height: 320px;
+    margin-bottom: 4rem;
+  }
+
+  .hero-section-page__content {
+    padding: 4rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-section-page {
+    min-height: 340px;
+    margin-bottom: 5rem;
+  }
+
+  .hero-section-page__content {
+    padding: 5rem 2.5rem;
+  }
+}
+
+.hero-section-page__title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.875rem, 5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--gray-900);
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.hero-section-page__description {
+  font-size: 1.0625rem;
+  color: var(--gray-600);
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-section-page__subtitle {
+  font-size: 0.9375rem;
+  color: var(--gray-500);
+  line-height: 1.6;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .hero__background {
   position: absolute;
   inset: 0;
@@ -2160,7 +2251,7 @@ textarea.input {
   padding: 0.875rem;
 }
 
-/* ─── People Page Styles ─────────────────────────────────────────────── */
+/* ��── People Page Styles ─────────────────────────────────────────────── */
 .people-page-hero {
   background: linear-gradient(135deg, var(--niser-green-dark) 0%, var(--niser-green) 100%);
   padding: 3rem 0 2.5rem;

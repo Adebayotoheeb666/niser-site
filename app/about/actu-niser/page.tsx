@@ -22,9 +22,22 @@ export default function ACTUPage() {
             <div className="prose max-w-4xl">
               <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-6">What is ACTU?</h2>
-                <p className="mb-4">
-                  ACTU means <strong>Anti-Corruption and Transparency Monitoring Unit</strong>. This unit was set up by the Federal Government through the Independent Corrupt Practices and Other Related offences Commission (ICPC), which is the apex body saddled by law with the responsibility to fight corruption and other related offences in Nigeria. The Unit is an autonomous outfit of the Federal Government of Nigeria operational in Ministries, Departments and Agencies (MDAs) with functional linkage with the Office of the Chief Executive of the respective establishments.
-                </p>
+                
+                <div className="mb-8 flex flex-col md:flex-row gap-8">
+                  <div className="md:w-64 flex-shrink-0">
+                    <div className="w-64 h-80 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="text-center text-gray-500">
+                        <p className="text-sm">ACTU</p>
+                        <p className="text-xs mt-2">Image Placeholder</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="mb-4">
+                      ACTU means <strong>Anti-Corruption and Transparency Monitoring Unit</strong>. This unit was set up by the Federal Government through the Independent Corrupt Practices and Other Related offences Commission (ICPC), which is the apex body saddled by law with the responsibility to fight corruption and other related offences in Nigeria. The Unit is an autonomous outfit of the Federal Government of Nigeria operational in Ministries, Departments and Agencies (MDAs) with functional linkage with the Office of the Chief Executive of the respective establishments.
+                    </p>
+                  </div>
+                </div>
               </section>
 
               <section className="mb-12">
