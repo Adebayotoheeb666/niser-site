@@ -23,7 +23,7 @@ const navLinks: NavItem[] = [
       { href: "/about/history", label: "History" },
       { href: "/about/office-of-director-general", label: "Office of the Director General" },
       { href: "/about/governance-structure", label: "Governance Structure" },
-      { href: "/about/federal-ministry-budget", label: "Federal Ministry of Budget and Economic Planning" },
+      { href: "https://nationalplanning.gov.ng/", label: "Federal Ministry of Budget and Economic Planning" },
       { href: "/about/governing-council", label: "Governing Council" },
       { href: "/about/management-team", label: "Management Team" },
       { href: "/about/departments", label: "Departments" },
@@ -186,6 +186,23 @@ export default function Header() {
                       <div className="niser-dropdown" role="menu">
                         {link.children.map((child) => {
                           const childActive = pathname.startsWith(child.href);
+                          const isExternal = child.href.startsWith('http');
+                          
+                          if (isExternal) {
+                            return (
+                              <a
+                                key={child.href}
+                                href={child.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="niser-dropdown__item"
+                                role="menuitem"
+                              >
+                                {child.label}
+                              </a>
+                            );
+                          }
+                          
                           return (
                             <Link
                               key={child.href}
