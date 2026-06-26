@@ -22,6 +22,7 @@ const sections: NavSection[] = [
     label: "ABOUT",
     href: "/about",
     children: [
+      { href: "/about", label: "About NISER" },
       { href: "/about/history", label: "History" },
       { href: "/about/office-of-director-general", label: "Office of the Director General" },
       { href: "/about/governance-structure", label: "Governance Structure" },
@@ -32,6 +33,9 @@ const sections: NavSection[] = [
       { href: "/about/staff-directory", label: "Staff Directory" },
       { href: "/about/actu-niser", label: "ACTU in NISER" },
       { href: "/about/servicom", label: "Servicom" },
+      { href: "/people", label: "People" },
+      { href: "/careers", label: "Careers" },
+      { href: "/contact", label: "Contact" },
     ],
   },
   {
@@ -46,8 +50,9 @@ const sections: NavSection[] = [
     href: "/resources",
     children: [
       { href: "/publications", label: "Publications" },
-      { href: "/resources/calendar", label: "NISER Calendar of Activities for the Year" },
       { href: "/policy-briefs", label: "Briefs" },
+      { href: "/insights", label: "Insights" },
+      { href: "/resources/calendar", label: "NISER Calendar of Activities for the Year" },
     ],
   },
   {
@@ -79,6 +84,17 @@ const sections: NavSection[] = [
       { href: "/research/individual-projects", label: "Individual Research Projects" },
     ],
   },
+  { label: "Data", href: "/data" },
+  { label: "News", href: "/news" },
+  {
+    label: "Services",
+    href: "/services",
+    children: [
+      { href: "/services", label: "Our Services" },
+      { href: "/training", label: "Training" },
+    ],
+  },
+  { label: "Shop", href: "/shop" },
 ];
 
 const socialLinks = [

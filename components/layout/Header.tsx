@@ -20,6 +20,7 @@ const navLinks: NavItem[] = [
     href: "/about",
     label: "ABOUT",
     children: [
+      { href: "/about", label: "About NISER" },
       { href: "/about/history", label: "History" },
       { href: "/about/office-of-director-general", label: "Office of the Director General" },
       { href: "/about/governance-structure", label: "Governance Structure" },
@@ -30,6 +31,9 @@ const navLinks: NavItem[] = [
       { href: "/about/staff-directory", label: "Staff Directory" },
       { href: "/about/actu-niser", label: "ACTU in NISER" },
       { href: "/about/servicom", label: "Servicom" },
+      { href: "/people", label: "People" },
+      { href: "/careers", label: "Careers" },
+      { href: "/contact", label: "Contact" },
     ],
   },
   {
@@ -44,8 +48,9 @@ const navLinks: NavItem[] = [
     label: "RESOURCES",
     children: [
       { href: "/publications", label: "Publications" },
-      { href: "/resources/calendar", label: "NISER Calendar of Activities for the Year" },
       { href: "/policy-briefs", label: "Briefs" },
+      { href: "/insights", label: "Insights" },
+      { href: "/resources/calendar", label: "NISER Calendar of Activities for the Year" },
     ],
   },
   {
@@ -77,11 +82,23 @@ const navLinks: NavItem[] = [
       { href: "/research/individual-projects", label: "Individual Research Projects" },
     ],
   },
+  { href: "/data", label: "Data" },
+  { href: "/news", label: "News" },
+  {
+    href: "/services",
+    label: "Services",
+    children: [
+      { href: "/services", label: "Our Services" },
+      { href: "/training", label: "Training" },
+    ],
+  },
+  { href: "/shop", label: "Shop" },
 ];
 
 // Flat list kept for MobileNav (which expects the original flat shape)
 const flatNavLinks = [
   { href: "/", label: "Home" },
+  { href: "/about", label: "About NISER" },
   { href: "/about/history", label: "History" },
   { href: "/about/office-of-director-general", label: "Office of the Director General" },
   { href: "/about/governance-structure", label: "Governance Structure" },
@@ -92,10 +109,14 @@ const flatNavLinks = [
   { href: "/about/staff-directory", label: "Staff Directory" },
   { href: "/about/actu-niser", label: "ACTU in NISER" },
   { href: "/about/servicom", label: "Servicom" },
+  { href: "/people", label: "People" },
+  { href: "/careers", label: "Careers" },
+  { href: "/contact", label: "Contact" },
   { href: "/training/research-methodology", label: "Research Methodology Training" },
   { href: "/publications", label: "Publications" },
-  { href: "/resources/calendar", label: "NISER Calendar of Activities for the Year" },
   { href: "/policy-briefs", label: "Briefs" },
+  { href: "/insights", label: "Insights" },
+  { href: "/resources/calendar", label: "NISER Calendar of Activities for the Year" },
   { href: "/gallery/images", label: "Images" },
   { href: "/gallery/videos", label: "Videos" },
   { href: "/bckc-center/about-research-grant", label: "About Research Grant" },
@@ -107,6 +128,11 @@ const flatNavLinks = [
   { href: "/research/externally-funded-projects", label: "Externally Funded Projects" },
   { href: "/research/team-projects", label: "Team Research Projects" },
   { href: "/research/individual-projects", label: "Individual Research Projects" },
+  { href: "/data", label: "Data" },
+  { href: "/news", label: "News" },
+  { href: "/services", label: "Our Services" },
+  { href: "/training", label: "Training" },
+  { href: "/shop", label: "Shop" },
 ];
 
 export default function Header() {
