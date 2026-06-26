@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/ui/HeroSection';
 import InsightCard from '@/components/ui/InsightCard';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { getInsights } from '@/lib/cms/client';
@@ -35,16 +36,11 @@ export default async function InsightsPage({ searchParams }: InsightsPageProps) 
     <>
       <Header />
       <main id="main-content">
-        <div className="insights-hero">
-          <div className="container">
-            <h1 className="insights-hero__title">Policy Insights</h1>
-            <p className="insights-hero__desc">
-              Expert analysis and rapid-response commentary from NISER researchers on Nigeria&apos;s
-              most pressing economic and social challenges.
-            </p>
-          </div>
-        </div>
-
+        <HeroSection
+          title="Insights & Policy Briefs"
+          description="Expert analysis and actionable intelligence on Nigeria's economy and society"
+          subtitle="Commentary, policy briefs, and rapid-response analysis from NISER researchers"
+        />
         <div className="section">
           <div className="container">
             {/* Type filter tabs */}

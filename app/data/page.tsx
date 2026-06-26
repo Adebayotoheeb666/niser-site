@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/ui/HeroSection';
 import Link from 'next/link';
 
 interface DatasetResource {
