@@ -44,9 +44,13 @@ export default function DatasetDetailPage() {
   useEffect(() => {
     async function load() {
       try {
-        const { getDatasetById } = await import('@/lib/ckan');
-        const data = await getDatasetById(id);
-        setDataset(data);
+        const res = await fetch(`/api/data/${encodeURIComponent(id)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setDataset(data);
+        } else {
+          console.error('Error fetching dataset detail:', res.status);
+        }
       } catch (err) {
         console.error('Error fetching dataset detail:', err);
       } finally {
@@ -175,13 +179,15 @@ export default function DatasetDetailPage() {
                           </p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => alert(`Downloading mock resource: ${res.name}`)}
+                      <a
+                        href={res.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="btn btn--primary btn--sm"
                         style={{ padding: '0.5rem 1rem' }}
                       >
                         Download
-                      </button>
+                      </a>
                     </div>
                   ))}
                 </div>

@@ -1,23 +1,70 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import MobileNav from './MobileNav';
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import MobileNav from "./MobileNav";
+import CartButton from "@/components/cart/CartButton";
+import "./header.css";
 
-const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/publications', label: 'Research' },
-  { href: '/people', label: 'People' },
-  { href: '/insights', label: 'Insights' },
-  { href: '/services', label: 'Services' },
-  { href: '/training', label: 'Training' },
-  { href: '/data', label: 'Data' },
-  { href: '/news', label: 'News' },
-  { href: '/policy-briefs', label: 'Policy Briefs' },
-  { href: '/about', label: 'About' },
-  { href: '/careers', label: 'Careers' },
-  { href: '/contact', label: 'Contact' },
+// ── Nav structure — nested items become dropdowns ─────────────────────────────
+type NavChild = { href: string; label: string };
+type NavItem =
+  | { href: string; label: string; children?: undefined }
+  | { href: string; label: string; children: NavChild[] };
+
+const navLinks: NavItem[] = [
+  { href: "/", label: "Home" },
+  {
+    href: "/publications",
+    label: "Research",
+    children: [
+      { href: "/publications", label: "Publications" },
+      { href: "/policy-briefs", label: "Policy Briefs" },
+      { href: "/insights", label: "Insights" },
+      { href: "/people", label: "People" },
+    ],
+  },
+  { href: "/data", label: "Data" },
+  { href: "/news", label: "News" },
+  { href: "/shop", label: "Shop" },
+  {
+    href: "/services",
+    label: "Services",
+    children: [
+      { href: "/services", label: "Our Services" },
+      { href: "/training", label: "Training" },
+    ],
+  },
+  {
+    href: "/about",
+    label: "About",
+    children: [
+      { href: "/about", label: "About NISER" },
+      { href: "/governance", label: "Governance" },
+      { href: "/careers", label: "Careers" },
+      { href: "/contact", label: "Contact" },
+    ],
+  },
+];
+
+// Flat list kept for MobileNav (which expects the original flat shape)
+const flatNavLinks = [
+  { href: "/", label: "Home" },
+  { href: "/publications", label: "Research" },
+  { href: "/policy-briefs", label: "Policy Briefs" },
+  { href: "/insights", label: "Insights" },
+  { href: "/people", label: "People" },
+  { href: "/data", label: "Data" },
+  { href: "/news", label: "News" },
+  { href: "/shop", label: "Shop" },
+  { href: "/services", label: "Services" },
+  { href: "/training", label: "Training" },
+  { href: "/about", label: "About NISER" },
+  { href: "/governance", label: "Governance" },
+  { href: "/careers", label: "Careers" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Header() {
@@ -27,11 +74,10 @@ export default function Header() {
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  // Close mobile nav on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
@@ -39,66 +85,143 @@ export default function Header() {
   return (
     <>
       <header
-        className={`niser-header ${scrolled ? 'niser-header--scrolled' : ''}`}
+        className={`niser-header ${scrolled ? "niser-header--scrolled" : ""}`}
         role="banner"
       >
-        {/* Green top accent bar */}
-        <div className="niser-header__accent" aria-hidden="true" />
+        <div className="niser-header__topbar" aria-label="NISER contact information">
+          <a href="mailto:dg@niser.gov.ng">dg@niser.gov.ng</a>
+          <span aria-hidden="true">•</span>
+          <a href="tel:+2347033545404">+234 703 354 5404</a>
+          <span aria-hidden="true">•</span>
+          <a href="tel:+23422912230">+234 229 12230</a>
+        </div>
 
-        <div className="container niser-header__inner">
+        <div className="niser-header__inner">
           {/* Logo */}
-          <Link href="/" className="niser-logo" aria-label="NISER — Go to homepage">
-            <svg className="niser-logo__mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <defs>
-                <linearGradient id="nigerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{stopColor:'#006B3F', stopOpacity:'1'}} />
-                  <stop offset="100%" style={{stopColor:'#004d2d', stopOpacity:'1'}} />
-                </linearGradient>
-              </defs>
-              <circle cx="50" cy="50" r="45" fill="none" stroke="url(#nigerGrad)" strokeWidth="8" opacity="0.8"/>
-              <circle cx="50" cy="50" r="30" fill="none" stroke="#FFB81C" strokeWidth="5" opacity="0.9"/>
-              <circle cx="50" cy="30" r="3.5" fill="#FFB81C"/>
-              <circle cx="65" cy="50" r="3.5" fill="#FFB81C"/>
-              <circle cx="50" cy="70" r="3.5" fill="#FFB81C"/>
-              <circle cx="35" cy="50" r="3.5" fill="#FFB81C"/>
-              <circle cx="50" cy="50" r="2" fill="#006B3F"/>
-            </svg>
+          <Link
+            href="/"
+            className="niser-logo"
+            aria-label="NISER — Go to homepage"
+          >
+            <Image
+              src="/niser-logo.png"
+              alt="Nigerian Institute of Social and Economic Research"
+              width={160}
+              height={48}
+              priority
+              className="niser-logo__img"
+            />
           </Link>
 
           {/* Desktop navigation */}
           <nav className="niser-nav" aria-label="Primary navigation">
             <ul className="niser-nav__list" role="list">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className={`btn btn--nav ${
-                      (link.href === '/' ? pathname === '/' : pathname.startsWith(link.href))
-                        ? 'is-active'
-                        : ''
-                    }`}
-                    aria-current={pathname === link.href ? 'page' : undefined}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {navLinks.map((link) => {
+                // Is this top-level item active?
+                const isActive = link.children
+                  ? link.children.some((c) => pathname.startsWith(c.href))
+                  : link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href);
+
+                if (link.children) {
+                  // ── Dropdown item ──────────────────────────────────────────
+                  return (
+                    <li key={link.href} className="niser-nav__item">
+                      {/* Trigger — acts as a link to the section root */}
+                      <Link
+                        href={link.href}
+                        className={`niser-nav__trigger${isActive ? " niser-nav__trigger--active" : ""}`}
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                      >
+                        {link.label}
+                        {/* Chevron */}
+                        <svg
+                          className="niser-nav__chevron"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="m6 9 6 6 6-6" />
+                        </svg>
+                      </Link>
+
+                      {/* Dropdown panel */}
+                      <div className="niser-dropdown" role="menu">
+                        {link.children.map((child) => {
+                          const childActive = pathname.startsWith(child.href);
+                          return (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              className={`niser-dropdown__item${childActive ? " niser-dropdown__item--active" : ""}`}
+                              role="menuitem"
+                            >
+                              {child.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </li>
+                  );
+                }
+
+                // ── Plain link ─────────────────────────────────────────────
+                return (
+                  <li key={link.href} className="niser-nav__item">
+                    <Link
+                      href={link.href}
+                      className={`niser-nav__link${isActive ? " niser-nav__link--active" : ""}`}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
-          {/* Right actions */}
+          {/* Search + hamburger */}
           <div className="niser-header__actions">
-            <Link href="/search" className="niser-nav-btn niser-nav-btn--search" aria-label="Search">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                aria-hidden="true">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-              </svg>
-              <span className="sr-only">Search</span>
-            </Link>
+            <CartButton />
+            <form action="/search" className="niser-search-form" role="search">
+              <div className="niser-search-wrap">
+                <svg
+                  className="niser-search-icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input
+                  type="search"
+                  name="q"
+                  placeholder="Search publications..."
+                  className="niser-search-input"
+                  aria-label="Search publications"
+                />
+              </div>
+              <button type="submit" className="niser-search-btn">
+                Search
+              </button>
+            </form>
 
-            {/* Mobile hamburger */}
             <button
               className="niser-hamburger"
               onClick={() => setMobileOpen(true)}
@@ -106,9 +229,18 @@ export default function Header() {
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
                 <line x1="4" x2="20" y1="6" y2="6" />
                 <line x1="4" x2="20" y1="12" y2="12" />
                 <line x1="4" x2="20" y1="18" y2="18" />
@@ -122,151 +254,9 @@ export default function Header() {
         id="mobile-nav"
         isOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}
-        links={navLinks}
+        links={flatNavLinks}
         pathname={pathname}
       />
-
-      <style jsx>{`
-        .niser-header {
-          position: sticky;
-          top: 0;
-          z-index: 100;
-          background: #fff;
-          border-bottom: 1px solid transparent;
-          transition: border-color 200ms ease, box-shadow 200ms ease;
-        }
-        .niser-header--scrolled {
-          border-color: var(--color-border);
-          box-shadow: var(--shadow-sm);
-        }
-        .niser-header__accent {
-          height: 4px;
-          background: linear-gradient(90deg, var(--niser-green) 0%, var(--niser-gold) 100%);
-        }
-        .niser-header__inner {
-          display: flex;
-          align-items: center;
-          gap: 1.5rem;
-          height: 68px;
-        }
-        /* Logo */
-        .niser-logo {
-          display: flex;
-          align-items: center;
-          gap: 0;
-          text-decoration: none;
-          flex-shrink: 0;
-          transition: transform var(--transition-base);
-        }
-        .niser-logo:hover {
-          transform: scale(1.05);
-        }
-        .niser-logo__mark {
-          width: 48px;
-          height: 48px;
-          flex-shrink: 0;
-          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
-          transition: filter var(--transition-base);
-        }
-        .niser-logo:hover .niser-logo__mark {
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
-        }
-        /* Desktop nav */
-        .niser-nav {
-          flex: 1;
-          display: none;
-        }
-        @media (min-width: 1024px) {
-          .niser-nav { display: block; }
-        }
-        .niser-nav__list {
-          display: flex;
-          align-items: center;
-          gap: 0.125rem;
-          list-style: none;
-          margin: 0;
-          padding: 0;
-        }
-        /* Right actions */
-        .niser-header__actions {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          margin-left: auto;
-        }
-        /* Navigation buttons */
-        .niser-nav-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 44px;
-          height: 44px;
-          padding: 0.625rem;
-          border-radius: var(--radius-lg);
-          color: var(--gray-600);
-          background: transparent;
-          border: 1.5px solid var(--gray-300);
-          transition: all var(--transition-smooth);
-          cursor: pointer;
-          text-decoration: none;
-          font-weight: 500;
-          position: relative;
-        }
-        .niser-nav-btn:hover {
-          color: var(--niser-green);
-          border-color: var(--niser-green);
-          background: var(--niser-green-pale);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 107, 63, 0.15);
-        }
-        .niser-nav-btn:active {
-          transform: translateY(0);
-          box-shadow: 0 2px 6px rgba(0, 107, 63, 0.1);
-        }
-        .niser-nav-btn--search {
-          gap: 0.4rem;
-        }
-        .niser-hamburger {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 44px;
-          height: 44px;
-          padding: 0.625rem;
-          border-radius: var(--radius-lg);
-          color: var(--gray-700);
-          background: transparent;
-          border: 1.5px solid var(--gray-300);
-          transition: all var(--transition-smooth);
-          cursor: pointer;
-        }
-        .niser-hamburger:hover {
-          color: var(--niser-green);
-          border-color: var(--niser-green);
-          background: var(--niser-green-pale);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 107, 63, 0.15);
-        }
-        .niser-hamburger:active {
-          transform: translateY(0);
-          box-shadow: 0 2px 6px rgba(0, 107, 63, 0.1);
-        }
-        @media (min-width: 1024px) {
-          .niser-hamburger { display: none; }
-        }
-        /* Utilities */
-        .sr-only {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border-width: 0;
-        }
-      `}</style>
     </>
   );
 }

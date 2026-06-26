@@ -1,115 +1,207 @@
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import Link from 'next/link';
+import type { Metadata } from "next";
+import "./homepage.css";
+import Image from "next/image";
+import Link from "next/link";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import {
+  getDivisions,
+  getEvents,
+  getInsights,
+  getPublications,
+} from "@/lib/cms/client";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'NISER | Nigerian Institute of Social and Economic Research',
-  description: 'Advancing National Development Through Excellence in Policy Research. Explore publications, insights, data, and more from Nigeria\'s premier think-tank.',
+  title: "NISER | Nigerian Institute of Social and Economic Research",
+  description:
+    "Advancing National Development Through Excellence in Policy Research. Nigeria's premier think-tank for socioeconomic intelligence and strategic policy frameworks.",
 };
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const coverGradients: Record<string, string> = {
+  working_paper: "linear-gradient(135deg, #1a3a1a 0%, #006B3F 100%)",
+  policy_brief: "linear-gradient(135deg, #1a2e4a 0%, #1e5fa0 100%)",
+  journal_article: "linear-gradient(135deg, #1a1a3a 0%, #2563eb 100%)",
+  book_chapter: "linear-gradient(135deg, #2d1a3a 0%, #7c3aed 100%)",
+  annual_report: "linear-gradient(135deg, #1a2e1a 0%, #166534 100%)",
+  conference_paper: "linear-gradient(135deg, #1a2e3a 0%, #0e7490 100%)",
+};
+
+const insightGradients: Record<string, string> = {
+  policy_brief: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)",
+  commentary: "linear-gradient(135deg, #1a2e1a 0%, #16a34a 100%)",
+  analysis: "linear-gradient(135deg, #1a1a3a 0%, #4f46e5 100%)",
+  opinion: "linear-gradient(135deg, #3a1a1a 0%, #dc2626 100%)",
+  rapid_response: "linear-gradient(135deg, #1a2e3a 0%, #0891b2 100%)",
+};
+
+const divisionIcons = [
+  "trending_up",
+  "groups",
+  "eco",
+  "account_balance",
+  "factory",
+];
+
+const staticDivisions = [
+  {
+    icon: "trending_up",
+    title: "Macroeconomics",
+    description:
+      "Strategic analysis of fiscal policies and monetary frameworks.",
+  },
+  {
+    icon: "groups",
+    title: "Poverty",
+    description: "Social protection strategies and welfare impact assessments.",
+  },
+  {
+    icon: "eco",
+    title: "Agriculture",
+    description: "Food security, value chains, and rural development policies.",
+  },
+  {
+    icon: "account_balance",
+    title: "Governance",
+    description:
+      "Institutional reform, political economy, and public sector efficiency.",
+  },
+  {
+    icon: "factory",
+    title: "Industry",
+    description:
+      "Industrialization pathways and trade competitiveness studies.",
+  },
+];
+
+function formatType(type: string) {
+  return type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function formatInsightCategory(ct: string): string {
+  const map: Record<string, string> = {
+    policy_brief: "POLICY BRIEF",
+    commentary: "COMMENTARY",
+    analysis: "ANALYSIS",
+    opinion: "OPINION",
+    rapid_response: "RAPID RESPONSE",
+  };
+  return map[ct] ?? "INSIGHT";
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+
 export default async function HomePage() {
-  // Mock data - replace with CMS calls as needed
-  const publications = [
-    {
-      id: 1,
-      title: 'Monetary Policy Transmission in Nigeria: An Empirical Review',
-      category: 'Working Paper',
-      date: 'Oct 2024',
-      image: '📊',
-    },
-    {
-      id: 2,
-      title: 'Leveraging Digital Economy for Youth Employment in Oyo State',
-      category: 'Policy Brief',
-      date: 'Sept 2024',
-      image: '💻',
-    },
-    {
-      id: 3,
-      title: 'Climate Change Impacts on Smallholder Farming Systems',
-      category: 'Working Paper',
-      date: 'Aug 2024',
-      image: '🌱',
-    },
-  ];
+  const [publications, events, insights, divisions] = await Promise.all([
+    getPublications({ limit: 4 }),
+    getEvents({ limit: 3 }),
+    getInsights({ limit: 3 }),
+    getDivisions(),
+  ]);
 
-  const events = [
-    { month: 'NOV', day: '14', title: 'Annual Policy Dialogue on Industrial Growth', location: 'NISER Conference Hall, Ibadan | 09:00 AM' },
-    { month: 'NOV', day: '28', title: 'Seminar: Data Science in Public Policy Analysis', location: 'Virtual Event via Zoom | 11:00 AM' },
-    { month: 'DEC', day: '05', title: 'Research Methodology Workshop for Ph.D Fellows', location: 'Division Training Room | 10:00 AM' },
-  ];
+  // Publication cards — show 2
+  const publicationCards = publications.slice(0, 2).map((pub) => ({
+    id: pub.id,
+    title: pub.title,
+    slug: pub.slug,
+    category: formatType(pub.publicationType),
+    date: pub.publishedYear ? String(pub.publishedYear) : "",
+    abstract: (pub.abstract ?? "").slice(0, 130),
+    pdfFile: pub.pdfFile ?? null,
+    coverGradient:
+      coverGradients[pub.publicationType] ?? coverGradients.working_paper,
+  }));
 
-  const insights = [
-    {
-      id: 1,
-      title: 'Addressing the Revenue-to-Debt Ratio Challenge in Nigeria',
-      category: 'FISCAL POLICY',
-      author: 'Dr. Omolola Adeyemi',
-      image: '📈',
-    },
-    {
-      id: 2,
-      title: 'The Economic Imperative of Off-Grid Solar for Rural SMEs',
-      category: 'SUSTAINABLE ENERGY',
-      author: 'Prof. Ibrahim Salami',
-      image: '☀️',
-    },
-    {
-      id: 3,
-      title: 'E-Governance and Public Service Delivery in Nigerian States',
-      category: 'GOVERNANCE',
-      author: 'Dr. Chinedu Okafor',
-      image: '💼',
-    },
-  ];
+  // Event cards — show 3
+  const eventCards = events.slice(0, 3).map((ev) => {
+    const d = new Date(ev.startDate);
+    const valid = !isNaN(d.getTime());
+    return {
+      month: valid
+        ? d.toLocaleString("en-US", { month: "short" }).toUpperCase()
+        : "",
+      day: valid ? String(d.getDate()).padStart(2, "0") : "--",
+      title: ev.title,
+      location: ev.location ?? (ev.isOnline ? "Virtual Event via Zoom" : "TBC"),
+      time: valid
+        ? d.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }) + " WAT"
+        : "",
+    };
+  });
 
-  const divisions = [
-    { title: 'Macroeconomics', description: 'Strategic analysis of fiscal policies and monetary frameworks.', icon: '📊' },
-    { title: 'Poverty', description: 'Social protection strategies and welfare impact assessments.', icon: '👥' },
-    { title: 'Agriculture', description: 'Food security, value chains, and rural development policies.', icon: '🌾' },
-    { title: 'Governance', description: 'Institutional reform, political economy, and public sector efficiency.', icon: '🏛️' },
-    { title: 'Industry', description: 'Industrialization pathways and trade competitiveness studies.', icon: '🏭' },
-  ];
+  // Insight cards — show 3
+  const insightCards = insights.slice(0, 3).map((ins) => ({
+    id: ins.id,
+    title: ins.title,
+    slug: ins.slug,
+    category: formatInsightCategory(ins.contentType),
+    author: ins.author
+      ? `${ins.author.titlePrefix ? ins.author.titlePrefix + ". " : ""}${ins.author.fullName}`
+      : "NISER Research",
+    image: ins.featuredImage ?? null,
+    description:
+      ins.socialSummary ??
+      ins.bodyPlaintext?.slice(0, 160) ??
+      "Evidence-based policy analysis for Nigerian stakeholders and policymakers.",
+    fallbackGradient:
+      insightGradients[ins.contentType] ?? insightGradients.analysis,
+  }));
+
+  // Division cards — show 5
+  const divisionCards = divisions.slice(0, 5).map((div, idx) => ({
+    title: div.name,
+    description:
+      div.description ??
+      "Focused research supporting Nigerian socioeconomic policy.",
+    icon: divisionIcons[idx] ?? "analytics",
+    slug: div.slug,
+  }));
+
+  const displayDivisions =
+    divisionCards.length > 0 ? divisionCards : staticDivisions;
 
   return (
     <>
       <Header />
-      <main className="pt-20">
-        {/* Hero Section */}
-        <section className="hero">
-          <div className="hero__background">
-            <Image
-              src="https://images.pexels.com/photos/3018855/pexels-photo-3018855.jpeg?auto=compress&cs=tinysrgb&w=1920"
-              alt=""
-              className="hero__image"
-              priority
-              fill
-              sizes="100vw"
-            />
-            <div className="hero__overlay" />
-            <div className="hero__pattern" />
+      <main>
+        {/* ═══════════════════════════════════════════════════════
+            HERO — split layout: text left, building image right
+        ═══════════════════════════════════════════════════════ */}
+        <section className="hero-section">
+          <div className="hero-bg-slider" aria-hidden="true">
+            {Array.from({ length: 10 }, (_, index) => (
+              <div
+                key={index}
+                className={`hero-bg-slide hero-bg-slide-${index + 1}`}
+              />
+            ))}
           </div>
 
-          <div className="hero__content">
-            <div className="hero__inner">
-              <span className="hero__badge animate-slide-up-stagger-1">
-                ESTABLISHED 1960
-              </span>
-              <h1 className="hero__title animate-slide-up-stagger-2">
-                Advancing National Development Through Excellence in Policy Research.
+          {/* Left text panel */}
+          <div className="hero-text-panel">
+            <div className="hero-text-inner">
+              <span className="hero-badge">ESTABLISHED 1960</span>
+              <h1 className="hero-title">
+                Advancing National Development Through Excellence in Policy
+                Research.
               </h1>
-              <p className="hero__description animate-slide-up-stagger-3">
-                NISER stands as Nigeria&apos;s premier think-tank, dedicated to providing high-quality socioeconomic intelligence and strategic policy frameworks that drive sustainable national growth.
+              <p className="hero-desc">
+                NISER stands as Nigeria&apos;s premier think-tank, dedicated to
+                providing high-quality socioeconomic intelligence and strategic
+                policy frameworks that drive sustainable national growth.
               </p>
-              <div className="hero__actions animate-slide-up-stagger-4">
-                <Link href="/publications" className="btn btn--primary btn--lg">
+              <div className="hero-actions">
+                <Link href="/publications" className="btn-primary">
                   Explore Publications
                 </Link>
-                <Link href="/about" className="btn btn--outline btn--lg">
+                <Link href="/about" className="btn-outline">
                   About the Institute
                 </Link>
               </div>
@@ -117,126 +209,209 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Research Divisions */}
-        <section className="py-20 bg-surface">
-          <div className="px-margin-desktop max-w-max-width mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-              <div>
-                <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-2">Research Divisions</h2>
-                <p className="text-on-surface-variant max-w-xl">
-                  Our multidisciplinary approach covers the critical pillars of Nigeria&apos;s socioeconomic landscape.
-                </p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              {divisions.map((div, idx) => (
-                <div
-                  key={div.title}
-                  className={`bg-surface-container-lowest border border-surface-gray p-6 hover:border-nigeria-green-vibrant transition-all group cursor-pointer hover:shadow-md hover:translate-y-[-4px] animate-slide-up`}
-                  style={{ animationDelay: `${idx * 100}ms` }}
+        {/* ═══════════════════════════════════════════════════════
+            RESEARCH DIVISIONS
+        ═══════════════════════════════════════════════════════ */}
+        <section className="section-divisions">
+          <div className="container">
+            <h2 className="section-title">Research Divisions</h2>
+            <p className="section-subtitle">
+              Our multidisciplinary approach covers the critical pillars of
+              Nigeria&apos;s socioeconomic landscape.
+            </p>
+            <div className="divisions-grid">
+              {displayDivisions.map((div) => (
+                <Link
+                  key={String("slug" in div ? div.slug : div.title)}
+                  href="/research-centers"
+                  className="division-card"
                 >
-                  <span className="material-symbols-outlined text-research-blue mb-4 text-3xl block group-hover:scale-110 transition-transform">{div.icon}</span>
-                  <h3 className="font-headline-md text-headline-md text-nigeria-green-deep mb-2">{div.title}</h3>
-                  <p className="text-label-md text-on-surface-variant">{div.description}</p>
-                </div>
+                  <span
+                    className="material-symbols-outlined division-icon"
+                    aria-hidden="true"
+                  >
+                    {div.icon}
+                  </span>
+                  <h3 className="division-title">{div.title}</h3>
+                  <p className="division-desc">
+                    {div.description.length > 85
+                      ? div.description.slice(0, 85) + "..."
+                      : div.description}
+                  </p>
+                </Link>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Latest Publications & Events */}
-        <section className="py-20 border-y border-surface-gray">
-          <div className="px-margin-desktop max-w-max-width mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-            {/* Latest Publications */}
-            <div className="lg:col-span-8">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep">Latest Publications</h2>
-                <Link href="/publications" className="text-nigeria-green-vibrant font-label-md flex items-center hover:underline">
+        {/* ═══════════════════════════════════════════════════════
+            LATEST PUBLICATIONS  +  EVENTS & SEMINARS
+        ═══════════════════════════════════════════════════════ */}
+        <section className="section-pub-events">
+          <div className="container pub-events-grid">
+            {/* ─ Publications ─ */}
+            <div className="pub-col">
+              <div className="pub-header">
+                <h2 className="section-title" style={{ margin: 0 }}>
+                  Latest Publications
+                </h2>
+                <Link href="/publications" className="view-all-link">
                   View All Publications
-                  <span className="material-symbols-outlined ml-1">arrow_forward</span>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: "1rem" }}
+                  >
+                    arrow_forward
+                  </span>
                 </Link>
               </div>
-              <div className="flex overflow-x-auto gap-6 pb-6 no-scrollbar snap-x snap-mandatory">
-                {publications.map((pub, idx) => (
-                  <div key={pub.id} className="min-w-[300px] md:min-w-[350px] snap-start animate-slide-up" style={{ animationDelay: `${idx * 150}ms` }}>
-                    <div className="bg-surface-container-lowest border border-surface-gray p-0 rounded overflow-hidden hover:shadow-lg transition-all hover:translate-y-[-4px] group">
-                      <div className="h-40 bg-surface-container-low flex items-center justify-center p-8 overflow-hidden">
-                        <span className="text-5xl group-hover:scale-110 transition-transform">{pub.image}</span>
+
+              {publicationCards.length > 0 ? (
+                <div className="pub-grid">
+                  {publicationCards.map((pub) => (
+                    <Link
+                      key={pub.id}
+                      href={`/publications/${pub.slug}`}
+                      className="pub-card"
+                    >
+                      {/* Cover */}
+                      <div
+                        className="pub-cover"
+                        style={{ background: pub.coverGradient }}
+                      >
+                        <div className="pub-cover-pattern" />
+                        <span
+                          className="material-symbols-outlined"
+                          style={{
+                            color: "rgba(255,255,255,0.5)",
+                            fontSize: "2.75rem",
+                          }}
+                          aria-hidden="true"
+                        >
+                          menu_book
+                        </span>
                       </div>
-                      <div className="p-6">
-                        <span className="text-research-blue font-label-sm uppercase tracking-wider mb-2 block">{pub.category}</span>
-                        <h4 className="font-headline-md text-headline-md text-nigeria-green-deep mb-3 line-clamp-2 group-hover:text-research-blue transition-colors">{pub.title}</h4>
-                        <div className="flex justify-between items-center text-label-sm text-outline">
-                          <span>{pub.date}</span>
-                          <button className="text-nigeria-green-vibrant flex items-center font-bold hover:text-research-blue transition-colors group-hover:translate-x-[2px]">
-                            PDF <span className="material-symbols-outlined text-sm ml-1">download</span>
-                          </button>
+                      {/* Body */}
+                      <div className="pub-body">
+                        <span className="pub-type">{pub.category}</span>
+                        <h4 className="pub-title">{pub.title}</h4>
+                        {pub.abstract && (
+                          <p className="pub-abstract">{pub.abstract}</p>
+                        )}
+                        <div className="pub-footer">
+                          <span className="pub-date">{pub.date}</span>
+                          <span className="pub-pdf">
+                            PDF{" "}
+                            <span
+                              className="material-symbols-outlined"
+                              style={{
+                                fontSize: "0.875rem",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              download
+                            </span>
+                          </span>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="empty-msg">
+                  No publications yet. Add publications in the WordPress CMS.
+                </p>
+              )}
             </div>
 
-            {/* Upcoming Events */}
-            <div className="lg:col-span-4 border-l border-surface-gray lg:pl-8">
-              <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-8">Events &amp; Seminars</h2>
-              <div className="space-y-6">
-                {events.map((event, idx) => (
-                  <div key={idx} className="flex gap-4 group cursor-pointer animate-slide-up" style={{ animationDelay: `${idx * 100}ms` }}>
-                    <div className="flex flex-col items-center justify-center min-w-[60px] h-[60px] bg-nigeria-green-deep text-on-primary rounded group-hover:scale-110 transition-transform group-hover:shadow-md">
-                      <span className="font-label-sm">{event.month}</span>
-                      <span className="font-headline-md text-headline-md">{event.day}</span>
-                    </div>
-                    <div>
-                      <h5 className="font-label-md text-nigeria-green-deep group-hover:text-nigeria-green-vibrant transition-colors">
-                        {event.title}
-                      </h5>
-                      <p className="text-label-sm text-on-surface-variant">{event.location}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Link
-                href="/events"
-                className="block mt-8 py-3 border border-outline text-on-surface-variant font-label-md rounded hover:bg-surface-container-low transition-all text-center"
-              >
+            {/* ─ Events ─ */}
+            <div className="events-col">
+              <h2 className="section-title" style={{ marginBottom: "1.5rem" }}>
+                Events &amp; Seminars
+              </h2>
+
+              {eventCards.length > 0 ? (
+                <div className="events-list">
+                  {eventCards.map((ev, idx) => (
+                    <Link key={idx} href="/events" className="event-item">
+                      <div className="event-badge">
+                        <span className="event-month">{ev.month}</span>
+                        <span className="event-day">{ev.day}</span>
+                      </div>
+                      <div className="event-info">
+                        <p className="event-title">{ev.title}</p>
+                        <p className="event-meta">
+                          {ev.location}
+                          {ev.time ? ` | ${ev.time}` : ""}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="empty-msg">
+                  No upcoming events. Add events in the WordPress CMS.
+                </p>
+              )}
+
+              <Link href="/events" className="view-events-btn">
                 View All Events
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Recent Insights */}
-        <section className="py-20 bg-surface-container-lowest">
-          <div className="px-margin-desktop max-w-max-width mx-auto">
-            <div className="mb-12">
-              <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-2">Recent Insights</h2>
-              <p className="text-on-surface-variant">Brief, actionable intelligence for policymakers and stakeholders.</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {insights.map((insight, idx) => (
-                <article key={insight.id} className="flex flex-col h-full border-b border-surface-gray pb-8 animate-slide-up group" style={{ animationDelay: `${idx * 150}ms` }}>
-                  <div className="h-48 w-full mb-6 overflow-hidden rounded bg-gradient-to-br from-nigeria-green-deep to-research-blue flex items-center justify-center">
-                    <span className="text-6xl group-hover:scale-110 transition-transform">{insight.image}</span>
-                  </div>
-                  <span className="text-nigeria-green-vibrant font-label-sm mb-2">{insight.category}</span>
-                  <h3 className="font-headline-md text-headline-md text-nigeria-green-deep mb-4 hover:text-research-blue cursor-pointer transition-colors">
-                    {insight.title}
-                  </h3>
-                  <p className="text-body-md text-on-surface-variant mb-6 flex-grow">
-                    Evidence-based insights into how policy decisions impact economic growth and social welfare across Nigeria&apos;s regions.
-                  </p>
-                  <div className="flex items-center gap-3 group-hover:translate-x-[2px] transition-transform">
-                    <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-nigeria-green-pale transition-colors">
-                      <span className="material-symbols-outlined text-sm">person</span>
+        {/* ═══════════════════════════════════════════════════════
+            RECENT INSIGHTS
+        ═══════════════════════════════════════════════════════ */}
+        <section className="section-insights">
+          <div className="container">
+            <h2 className="section-title">Recent Insights</h2>
+            <p className="section-subtitle">
+              Brief, actionable intelligence for policymakers and stakeholders.
+            </p>
+
+            {insightCards.length > 0 ? (
+              <div className="insights-grid">
+                {insightCards.map((ins) => (
+                  <Link
+                    key={ins.id}
+                    href={`/insights/${ins.slug}`}
+                    className="insight-card"
+                  >
+                    {/* Image */}
+                    <div className="insight-img-wrap">
+                      {ins.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={ins.image} alt="" className="insight-img" />
+                      ) : (
+                        <div
+                          className="insight-img-fallback"
+                          style={{ background: ins.fallbackGradient }}
+                        />
+                      )}
                     </div>
-                    <span className="text-label-sm font-bold">{insight.author}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
+                    {/* Content */}
+                    <span className="insight-category">{ins.category}</span>
+                    <h3 className="insight-title">{ins.title}</h3>
+                    <p className="insight-desc">{ins.description}</p>
+                    {/* Author */}
+                    <div className="insight-author">
+                      <div className="insight-avatar" aria-hidden="true">
+                        {ins.author
+                          .replace(/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s*/i, "")
+                          .charAt(0)}
+                      </div>
+                      <span className="insight-author-name">{ins.author}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-msg">
+                No insights yet. Add insights in the WordPress CMS.
+              </p>
+            )}
           </div>
         </section>
       </main>

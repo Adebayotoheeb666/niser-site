@@ -45,10 +45,7 @@ export default function DataPage() {
           const data = await res.json();
           setDatasets(data);
         } else {
-          // Fallback to local import if api route isn't created yet
-          const { getDatasets } = await import('@/lib/ckan');
-          const data = await getDatasets();
-          setDatasets(data);
+          console.error('Unexpected response loading datasets', res.status);
         }
       } catch (err) {
         console.error('Error fetching datasets:', err);
