@@ -23,7 +23,17 @@ export default function OfficeOfDirectorGeneralPage() {
               <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-6">Prof. Antonia Taiye Simbine - Director-General</h2>
                 
-                <div className="bg-gray-50 p-6 rounded-lg mb-6">
+                <div className="mb-8 flex flex-col md:flex-row gap-8">
+                  <div className="md:w-64 flex-shrink-0">
+                    <div className="w-64 h-80 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="text-center text-gray-500">
+                        <p className="text-sm">Director General</p>
+                        <p className="text-xs mt-2">Image Placeholder</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="bg-gray-50 p-6 rounded-lg h-full">
                   <h3 className="text-lg font-semibold mb-3">Short Biographical Profile</h3>
                   <p className="mb-4">
                     Prof A.T Simbine (nee Okoosi) (PhD, Ibadan) is a Professor of Political Science & International Relations. 
@@ -35,6 +45,8 @@ export default function OfficeOfDirectorGeneralPage() {
                     and Head, Knowledge Management Department (KMD), NISER. She started her career at NISER as a Youth Corps member in 1984 
                     and rose to the rank of Research Professor in 2010.
                   </p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mb-8">

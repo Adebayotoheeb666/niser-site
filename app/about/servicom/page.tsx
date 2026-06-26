@@ -23,18 +23,30 @@ export default function ServicecomPage() {
               <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-6">About SERVICOM NISER</h2>
                 
-                <p className="mb-4">
-                  Following the new reforms initiative by the Institute, the operational departments have been restructured and reorganized from five (5) to Eleven (11), comprising of Eight (8) research and Three (3) Non-research departments. This was done to meet the needs of the emerging socio-economic realities facing the nation.
-                </p>
+                <div className="mb-8 flex flex-col md:flex-row gap-8">
+                  <div className="md:w-64 flex-shrink-0">
+                    <div className="w-64 h-80 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="text-center text-gray-500">
+                        <p className="text-sm">SERVICOM</p>
+                        <p className="text-xs mt-2">Image Placeholder</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="mb-4">
+                      Following the new reforms initiative by the Institute, the operational departments have been restructured and reorganized from five (5) to Eleven (11), comprising of Eight (8) research and Three (3) Non-research departments. This was done to meet the needs of the emerging socio-economic realities facing the nation.
+                    </p>
 
-                <p className="mb-6">
-                  Therefore, updating the integrated service charter became necessary to give our clients accurate information about our services and capabilities. This charter represents the daily operationalization of service compact with all Nigerian citizens (SERVICOM) upon which the people shall expect and demand prompt quality service delivery without let and hindrance.
-                </p>
+                    <p className="mb-6">
+                      Therefore, updating the integrated service charter became necessary to give our clients accurate information about our services and capabilities. This charter represents the daily operationalization of service compact with all Nigerian citizens (SERVICOM) upon which the people shall expect and demand prompt quality service delivery without let and hindrance.
+                    </p>
 
-                <div className="bg-blue-50 p-6 rounded-lg">
-                  <p className="font-semibold">
-                    The Integrated service charter is the social contract between the institute and its esteemed clients throughout Nigeria and beyond.
-                  </p>
+                    <div className="bg-blue-50 p-6 rounded-lg">
+                      <p className="font-semibold">
+                        The Integrated service charter is the social contract between the institute and its esteemed clients throughout Nigeria and beyond.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </section>
 
