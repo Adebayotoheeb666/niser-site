@@ -253,22 +253,25 @@ export default async function HomePage() {
             ABOUT US
         ═══════════════════════════════════════════════════════ */}
         <section className="section-about">
-          <div className="container">
-            <h2 className="section-title">About Us</h2>
-            <div className="about-content">
-              <p>
-                Prior to the establishment of NISER, colonial authorities established the West African Institute of Social and Economic Research. The center was founded in 1950 and headquartered in Ibadan with a mission to provide information on economic and social ideas that will be pivotal to the development of British West African countries. The institute was affiliated with University of Ibadan and was publicly funded.
-              </p>
-              <p>
-                In 1957, Ghana obtained political independence and opted out of the institute. After Nigeria gained independence in 1960, the name of the institute was changed to Nigerian Institute of Social and Economic Research.
-              </p>
-              <p>
-                In 1977, the military government made NISER an autonomous body. Thereafter, NISER's responsibilities include coordinating social and economic research in federal universities. The institute also carries out independent research on social and economic issues, and provide consultative service to the government based on research findings.
-              </p>
-              <p>
-                The institute's facilities are used as a venue for seminars and conferences.
-              </p>
+          <div className="container about-grid">
+            <div className="about-text">
+              <h2 className="section-title">About Us</h2>
+              <div className="about-content">
+                <p>
+                  Prior to the establishment of NISER, colonial authorities established the West African Institute of Social and Economic Research. The center was founded in 1950 and headquartered in Ibadan with a mission to provide information on economic and social ideas that will be pivotal to the development of British West African countries. The institute was affiliated with University of Ibadan and was publicly funded.
+                </p>
+                <p>
+                  In 1957, Ghana obtained political independence and opted out of the institute. After Nigeria gained independence in 1960, the name of the institute was changed to Nigerian Institute of Social and Economic Research.
+                </p>
+                <p>
+                  In 1977, the military government made NISER an autonomous body. Thereafter, NISER's responsibilities include coordinating social and economic research in federal universities. The institute also carries out independent research on social and economic issues, and provide consultative service to the government based on research findings.
+                </p>
+                <p>
+                  The institute's facilities are used as a venue for seminars and conferences.
+                </p>
+              </div>
             </div>
+            <div className="about-image-placeholder" />
           </div>
         </section>
 
