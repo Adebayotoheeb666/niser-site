@@ -19,34 +19,64 @@ interface NavSection {
 const sections: NavSection[] = [
   { label: "Home", href: "/" },
   {
-    label: "Research",
-    href: "/publications",
-    children: [
-      { href: "/publications", label: "Publications" },
-      { href: "/policy-briefs", label: "Policy Briefs" },
-      { href: "/insights", label: "Insights" },
-      { href: "/people", label: "People" },
-    ],
-  },
-  { label: "Data", href: "/data" },
-  { label: "News", href: "/news" },
-  { label: "Shop", href: "/shop" },
-  {
-    label: "Services",
-    href: "/services",
-    children: [
-      { href: "/services", label: "Our Services" },
-      { href: "/training", label: "Training" },
-    ],
-  },
-  {
-    label: "About",
+    label: "ABOUT",
     href: "/about",
     children: [
-      { href: "/about", label: "About NISER" },
-      { href: "/governance", label: "Governance" },
-      { href: "/careers", label: "Careers" },
-      { href: "/contact", label: "Contact" },
+      { href: "/about/history", label: "History" },
+      { href: "/about/office-of-director-general", label: "Office of the Director General" },
+      { href: "/about/governance-structure", label: "Governance Structure" },
+      { href: "/about/federal-ministry-budget", label: "Federal Ministry of Budget and Economic Planning" },
+      { href: "/about/governing-council", label: "Governing Council" },
+      { href: "/about/management-team", label: "Management Team" },
+      { href: "/about/departments", label: "Departments" },
+      { href: "/about/staff-directory", label: "Staff Directory" },
+      { href: "/about/actu-niser", label: "ACTU in NISER" },
+      { href: "/about/servicom", label: "Servicom" },
+    ],
+  },
+  {
+    label: "TRAINING",
+    href: "/training",
+    children: [
+      { href: "/training/research-methodology", label: "Research Methodology Training" },
+    ],
+  },
+  {
+    label: "RESOURCES",
+    href: "/resources",
+    children: [
+      { href: "/publications", label: "Publications" },
+      { href: "/resources/calendar", label: "NISER Calendar of Activities for the Year" },
+      { href: "/policy-briefs", label: "Briefs" },
+    ],
+  },
+  {
+    label: "GALLERY",
+    href: "/gallery",
+    children: [
+      { href: "/gallery/images", label: "Images" },
+      { href: "/gallery/videos", label: "Videos" },
+    ],
+  },
+  {
+    label: "BCKC CENTER",
+    href: "/bckc-center",
+    children: [
+      { href: "/bckc-center/about-research-grant", label: "About Research Grant" },
+      { href: "/bckc-center/niser-abc-series", label: "NISER ABC Series" },
+      { href: "/bckc-center", label: "Behavioural Change Knowledge Center" },
+    ],
+  },
+  {
+    label: "RESEARCH",
+    href: "/research",
+    children: [
+      { href: "/research/mastercard-project", label: "Mastercard Project" },
+      { href: "/research/seminar-series", label: "NISER Research Seminar Series" },
+      { href: "/research/fg-funded-projects", label: "FG Funded Projects" },
+      { href: "/research/externally-funded-projects", label: "Externally Funded Projects" },
+      { href: "/research/team-projects", label: "Team Research Projects" },
+      { href: "/research/individual-projects", label: "Individual Research Projects" },
     ],
   },
 ];
