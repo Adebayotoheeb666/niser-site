@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -14,6 +15,7 @@ const staffByDepartment = [
     color: 'border-blue-600',
     staff: [
       {
+        id: 'prof-antonia-taiye-simbine',
         name: 'Prof. Antonia Taiye Simbine',
         position: 'Director-General',
         email: 'dg@niser.gov.ng',
@@ -26,6 +28,7 @@ const staffByDepartment = [
     color: 'border-green-600',
     staff: [
       {
+        id: 'staff-001',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -38,6 +41,7 @@ const staffByDepartment = [
     color: 'border-indigo-600',
     staff: [
       {
+        id: 'staff-002',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -50,6 +54,7 @@ const staffByDepartment = [
     color: 'border-purple-600',
     staff: [
       {
+        id: 'staff-003',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -62,6 +67,7 @@ const staffByDepartment = [
     color: 'border-orange-600',
     staff: [
       {
+        id: 'staff-004',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -74,6 +80,7 @@ const staffByDepartment = [
     color: 'border-red-600',
     staff: [
       {
+        id: 'staff-005',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -86,6 +93,7 @@ const staffByDepartment = [
     color: 'border-pink-600',
     staff: [
       {
+        id: 'staff-006',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -98,6 +106,7 @@ const staffByDepartment = [
     color: 'border-cyan-600',
     staff: [
       {
+        id: 'staff-007',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -110,6 +119,7 @@ const staffByDepartment = [
     color: 'border-teal-600',
     staff: [
       {
+        id: 'staff-008',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -122,6 +132,7 @@ const staffByDepartment = [
     color: 'border-emerald-600',
     staff: [
       {
+        id: 'staff-009',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -134,6 +145,7 @@ const staffByDepartment = [
     color: 'border-amber-600',
     staff: [
       {
+        id: 'staff-010',
         name: 'To be updated',
         position: 'Head of Department',
         email: 'contact@niser.gov.ng',
@@ -202,30 +214,44 @@ export default function StaffDirectoryPage() {
                     <h3 className="text-xl font-semibold mb-4">{dept.department}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {dept.staff.map((member) => (
-                        <div key={member.name} className="bg-gray-50 p-4 rounded-lg">
-                          <p className="font-semibold text-gray-900">{member.name}</p>
-                          <p className="text-sm text-gray-600 mb-3">{member.position}</p>
-                          <div className="space-y-2 text-sm">
-                            <div>
-                              <p className="text-gray-500">Email:</p>
-                              <a
-                                href={`mailto:${member.email}`}
-                                className="text-blue-600 hover:underline"
-                              >
-                                {member.email}
-                              </a>
+                        <Link key={member.id} href={`/about/staff/${member.id}`}>
+                          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-400 transition-all cursor-pointer h-full">
+                            <div className="aspect-square bg-gray-300 flex items-center justify-center overflow-hidden">
+                              <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                                <div className="text-center text-gray-500">
+                                  <p className="text-sm">Staff Photo</p>
+                                  <p className="text-xs mt-1">Image Placeholder</p>
+                                </div>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-gray-500">Phone:</p>
-                              <a
-                                href={`tel:${member.phone}`}
-                                className="text-blue-600 hover:underline"
-                              >
-                                {member.phone}
-                              </a>
+                            <div className="p-4">
+                              <p className="font-semibold text-gray-900 line-clamp-2">{member.name}</p>
+                              <p className="text-sm text-gray-600 mb-3 line-clamp-1">{member.position}</p>
+                              <div className="space-y-2 text-sm">
+                                <div className="truncate">
+                                  <p className="text-gray-500 text-xs">Email:</p>
+                                  <a
+                                    href={`mailto:${member.email}`}
+                                    className="text-blue-600 hover:underline text-xs truncate block"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {member.email}
+                                  </a>
+                                </div>
+                                <div className="truncate">
+                                  <p className="text-gray-500 text-xs">Phone:</p>
+                                  <a
+                                    href={`tel:${member.phone}`}
+                                    className="text-blue-600 hover:underline text-xs truncate block"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {member.phone}
+                                  </a>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        </Link>
                       ))}
                     </div>
                   </div>
