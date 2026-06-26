@@ -193,7 +193,26 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3 — Quick Links */}
+          {/* Column 3 — Explore */}
+          <div className="footer-col">
+            <h3 className="footer-col-title">EXPLORE</h3>
+            <ul className="footer-links-list">
+              <li>
+                <Link href="/data">Data Portal</Link>
+              </li>
+              <li>
+                <Link href="/news">News &amp; Events</Link>
+              </li>
+              <li>
+                <Link href="/shop">Shop</Link>
+              </li>
+              <li>
+                <Link href="/webinars">Webinars</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3b — Quick Links */}
           <div className="footer-col">
             <h3 className="footer-col-title">QUICK LINKS</h3>
             <ul className="footer-links-list">
@@ -207,7 +226,7 @@ export default function Footer() {
                 <Link href="/privacy-policy">Privacy Policy</Link>
               </li>
               <li>
-                <Link href="/about">Terms of Service</Link>
+                <Link href="/about/accessibility">Accessibility</Link>
               </li>
             </ul>
           </div>

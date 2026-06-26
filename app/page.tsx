@@ -210,6 +210,46 @@ export default async function HomePage() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════
+            VISION — DG'S WELCOME — MISSION
+        ═══════════════════════════════════════════════════════ */}
+        <section className="section-vision-mission">
+          <div className="container vision-mission-grid">
+            {/* Vision */}
+            <div className="vision-card">
+              <div className="vision-image-placeholder" />
+              <div className="vision-content">
+                <h2 className="vision-mission-title">VISION</h2>
+                <p className="vision-mission-text">
+                  To be a world-class think tank in the area of social and economic policy research
+                </p>
+              </div>
+            </div>
+
+            {/* DG's Welcome */}
+            <div className="dg-welcome-card">
+              <div className="dg-welcome-image-placeholder" />
+              <div className="dg-welcome-content">
+                <h2 className="vision-mission-title">THE DG'S WELCOME</h2>
+                <p className="vision-mission-text">
+                  On behalf of NISER, I would like to welcome you to the institute's website, which presents the institute's profile, activities and output. NISER is an agency of the Federal Ministry of Budget &amp; Economic Planning.
+                </p>
+              </div>
+            </div>
+
+            {/* Mission */}
+            <div className="mission-card">
+              <div className="mission-image-placeholder" />
+              <div className="mission-content">
+                <h2 className="vision-mission-title">MISSION</h2>
+                <p className="vision-mission-text">
+                  To consistently generate credible knowledge through quality research, conduct specialized training and provide consultancy services while interacting with relevant segments of the Nigerian society in the task of national development.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════
             RESEARCH DIVISIONS
         ═══════════════════════════════════════════════════════ */}
         <section className="section-divisions">
