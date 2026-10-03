@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-=======
 import type { Metadata } from "next";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getCaseStudies } from "@/lib/cms/client";
->>>>>>> c16e378 (home page upgrade)
 
 export const revalidate = 3600;
 
@@ -34,12 +28,8 @@ export default async function ServicesPage() {
         "Institutional Reform Assessments",
         "Strategic Planning Support",
       ],
-<<<<<<< HEAD
-      cta: 'Request Research Brief',
-      href: '/contact',
-=======
       cta: "Request Research Brief",
->>>>>>> c16e378 (home page upgrade)
+      href: "/contact",
       highlighted: true,
     },
     {
@@ -54,12 +44,8 @@ export default async function ServicesPage() {
         "Rapid Assessments",
         "Impact Evaluations",
       ],
-<<<<<<< HEAD
-      cta: 'Schedule Consultation',
-      href: '/contact',
-=======
       cta: "Schedule Consultation",
->>>>>>> c16e378 (home page upgrade)
+      href: "/contact",
     },
     {
       id: 3,
@@ -73,12 +59,8 @@ export default async function ServicesPage() {
         "Policy Writing Seminars",
         "Leadership Programs",
       ],
-<<<<<<< HEAD
-      cta: 'Explore Programs',
-      href: '/training',
-=======
       cta: "Explore Programs",
->>>>>>> c16e378 (home page upgrade)
+      href: "/training",
     },
     {
       id: 4,
@@ -92,12 +74,8 @@ export default async function ServicesPage() {
         "Data Visualization",
         "Analytics Dashboard",
       ],
-<<<<<<< HEAD
-      cta: 'Browse Datasets',
-      href: '/data',
-=======
       cta: "Browse Datasets",
->>>>>>> c16e378 (home page upgrade)
+      href: "/data",
     },
     {
       id: 5,
@@ -111,12 +89,8 @@ export default async function ServicesPage() {
         "Institutional Design",
         "Change Management",
       ],
-<<<<<<< HEAD
-      cta: 'Get Consulting Proposal',
-      href: '/contact',
-=======
       cta: "Get Consulting Proposal",
->>>>>>> c16e378 (home page upgrade)
+      href: "/contact",
     },
     {
       id: 6,
@@ -130,135 +104,80 @@ export default async function ServicesPage() {
         "Books & Reports",
         "Media Commentary",
       ],
-<<<<<<< HEAD
-      cta: 'View Publications',
-      href: '/publications',
-=======
       cta: "View Publications",
->>>>>>> c16e378 (home page upgrade)
+      href: "/publications",
     },
   ];
 
   return (
     <>
       <Header />
-      <main id="main-content" className="min-h-screen">
-        {/* Hero Section */}
-        <section className="relative bg-nigeria-green-deep py-20 text-on-primary overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-accent-mint -mr-48 -mt-48"></div>
-            <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-research-blue -ml-40 -mb-40"></div>
-          </div>
-          <div className="relative max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop">
-            <span className="text-accent-mint font-label-md text-label-md uppercase tracking-widest block mb-4">
-              Our Offerings
-            </span>
-            <h1 className="font-display-lg text-display-lg mb-6 leading-tight">
-              Research & Advisory Services
-            </h1>
-            <p className="font-body-lg text-body-lg text-on-primary-container max-w-2xl leading-relaxed">
-              NISER provides comprehensive research, policy advisory, capacity
-              building, and data services to support evidence-based development
-              across Nigeria and the African continent.
-            </p>
+      <main id="main-content" className="w-full bg-[#f5f7f3] text-slate-900">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0f3d2f] via-[#184f42] to-[#1d7d69] text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(117,204,129,0.15),transparent_35%)]" />
+          <div className="container relative py-16 md:py-20">
+            <div className="max-w-3xl">
+              <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100">
+                Our offerings
+              </span>
+              <h1 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">Research & advisory services</h1>
+              <p className="mt-5 max-w-2xl text-base text-emerald-50 md:text-lg">NISER provides data-driven research, policy advisory, training, and analytic services that support evidence-based development across Nigeria and beyond.</p>
+            </div>
+
+            <div className="mt-12 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">6</p>
+                <p className="mt-1 text-sm text-emerald-100">Core service lines</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Policy</p>
+                <p className="mt-1 text-sm text-emerald-100">Evidence & advisory</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Impact</p>
+                <p className="mt-1 text-sm text-emerald-100">Development outcomes</p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Services Grid */}
-        <section className="py-24 px-margin-mobile md:px-margin-desktop">
-          <div className="max-w-max-width mx-auto">
-            {/* Section Header */}
-            <div className="text-center mb-16 max-w-2xl mx-auto">
-              <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-4">
-                Our Core Services
-              </h2>
-              <p className="font-body-lg text-body-lg text-on-surface-variant">
-                Tailored solutions designed to meet the diverse needs of
-                government, civil society, development partners, and the private
-                sector.
-              </p>
+        <section className="py-16 md:py-20">
+          <div className="container">
+            <div className="mb-10 max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Our core services</p>
+              <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">Tailored solutions for policy, research, and capacity needs</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {services.map((service) => (
                 <div
                   key={service.id}
-                  className={`relative group p-8 rounded-xl transition-all duration-300 ${
-                    service.highlighted
-                      ? "bg-nigeria-green-deep text-on-primary shadow-xl shadow-nigeria-green-deep/20 md:col-span-2 lg:col-span-1 lg:row-span-2"
-                      : "bg-white border border-surface-gray text-on-surface hover:shadow-lg"
+                  className={`relative group rounded-3xl p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,118,110,0.12)] ${
+                    service.highlighted ? "bg-gradient-to-br from-[#0f3d2f] via-[#184f42] to-[#1d7d69] text-white md:col-span-2 xl:col-span-1" : "border border-slate-200 bg-white text-slate-900"
                   }`}
                 >
-                  {/* Decorative element */}
-                  {service.highlighted && (
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-accent-mint/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-300"></div>
-                  )}
-
                   <div className="relative z-10">
                     <span className="text-4xl block mb-4">{service.icon}</span>
-                    <h3
-                      className={`font-headline-md text-headline-md mb-3 ${
-                        service.highlighted
-                          ? "text-primary-fixed"
-                          : "text-on-surface"
-                      }`}
-                    >
-                      {service.title}
-                    </h3>
-                    <p
-                      className={`font-body-md text-body-md mb-6 leading-relaxed ${
-                        service.highlighted
-                          ? "text-on-primary-container"
-                          : "text-on-surface-variant"
-                      }`}
-                    >
-                      {service.description}
-                    </p>
+                    <h3 className={`text-xl font-bold ${service.highlighted ? 'text-white' : 'text-slate-900'}`}>{service.title}</h3>
+                    <p className={`mt-3 text-sm leading-6 ${service.highlighted ? 'text-emerald-50' : 'text-slate-600'}`}>{service.description}</p>
 
-                    {/* Features List */}
-                    <ul className="space-y-2 mb-8">
+                    <ul className="mt-6 space-y-2">
                       {service.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-3">
-                          <span
-                            className={`text-lg mt-0.5 ${
-                              service.highlighted
-                                ? "text-accent-mint"
-                                : "text-research-blue"
-                            }`}
-                          >
-                            ✓
-                          </span>
-                          <span
-                            className={`font-label-md text-label-md ${
-                              service.highlighted
-                                ? "text-on-primary"
-                                : "text-on-surface"
-                            }`}
-                          >
-                            {feature}
-                          </span>
+                        <li key={idx} className="flex items-start gap-3 text-sm">
+                          <span className={`${service.highlighted ? 'text-emerald-200' : 'text-emerald-700'}`}>✓</span>
+                          <span className={service.highlighted ? 'text-emerald-50' : 'text-slate-700'}>{feature}</span>
                         </li>
                       ))}
                     </ul>
 
                     <Link
                       href={service.href}
-                      className={`w-full py-3 px-4 rounded-lg font-label-md text-label-md transition-all flex items-center justify-center gap-2 ${
-                        service.highlighted
-                          ? "bg-accent-mint text-nigeria-green-deep hover:bg-white"
-                          : "border border-research-blue text-research-blue hover:bg-research-blue hover:text-white"
+                      className={`mt-6 inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition ${
+                        service.highlighted ? 'bg-white text-[#0f3d2f] hover:bg-emerald-50' : 'border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
                       }`}
                     >
                       {service.cta}
-<<<<<<< HEAD
-                      <span className="material-symbols-outlined text-sm">arrow_forward</span>
                     </Link>
-=======
-                      <span className="material-symbols-outlined text-sm">
-                        arrow_forward
-                      </span>
-                    </button>
->>>>>>> c16e378 (home page upgrade)
                   </div>
                 </div>
               ))}
@@ -266,149 +185,65 @@ export default async function ServicesPage() {
           </div>
         </section>
 
-        {/* Case Studies / Success Stories */}
-        <section className="py-24 bg-surface-container-high px-margin-mobile md:px-margin-desktop">
-          <div className="max-w-max-width mx-auto">
-            <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-4">
-              Service Success Stories
-            </h2>
-            <p className="font-body-lg text-body-lg text-on-surface-variant mb-12 max-w-2xl">
-              {`Real-world examples of how NISER's services have influenced policy and driven development outcomes.`}
-            </p>
+        <section className="bg-[#edf5f0] py-16 md:py-20">
+          <div className="container">
+            <div className="mb-10 max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Service highlights</p>
+              <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">Success stories and recent engagements</h2>
+            </div>
 
             {caseStudies.length === 0 ? (
-              <p className="text-body-md text-on-surface-variant py-8">
-                Case studies coming soon.
-              </p>
+              <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
+                <p className="text-lg font-semibold text-slate-900">Case studies coming soon.</p>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                {caseStudies.map((cs) => (
-                  <div
-                    key={cs.id}
-                    className="bg-white p-8 rounded-lg border border-outline-variant hover:shadow-lg transition-all"
-                  >
-                    <span className="inline-block bg-research-blue/10 text-research-blue px-3 py-1 rounded-full font-label-sm text-label-sm mb-4">
-                      Case Study
-                    </span>
-                    <h3 className="font-headline-md text-headline-md text-on-surface mb-2">
-                      {cs.title}
-                    </h3>
-                    {cs.client && (
-                      <p className="font-label-md text-label-md text-on-surface-variant mb-4">
-                        {cs.client}
-                      </p>
-                    )}
-                    {cs.description && (
-                      <p className="font-body-md text-body-md text-on-surface-variant mb-6">
-                        {cs.description.slice(0, 200)}
-                      </p>
-                    )}
-                    {cs.outcomeMetric && (
-                      <div className="pt-4 border-t border-outline-variant">
-                        <p className="font-headline-md text-headline-md text-nigeria-green-vibrant">
-                          {cs.outcomeMetric}
-                        </p>
-                      </div>
-                    )}
-                    {cs.year && (
-                      <p className="font-label-sm text-label-sm text-on-surface-variant mt-2">
-                        {cs.year}
-                      </p>
-                    )}
-                  </div>
+              <div className="grid gap-6 md:grid-cols-2">
+                {caseStudies.map((cs: { id: string; title: string; client?: string; description?: string; outcomeMetric?: string; year?: number; }) => (
+                  <article key={cs.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-[0_18px_40px_rgba(15,118,110,0.12)]">
+                    <span className="inline-block rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Case study</span>
+                    <h3 className="mt-4 text-xl font-bold text-slate-900">{cs.title}</h3>
+                    {cs.client && <p className="mt-2 text-sm font-medium text-slate-500">{cs.client}</p>}
+                    {cs.description && <p className="mt-3 text-sm leading-6 text-slate-600">{cs.description.slice(0, 220)}</p>}
+                    {cs.outcomeMetric && <div className="mt-5 border-t border-slate-200 pt-4 text-lg font-bold text-emerald-700">{cs.outcomeMetric}</div>}
+                    {cs.year && <p className="mt-2 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">{cs.year}</p>}
+                  </article>
                 ))}
               </div>
             )}
           </div>
         </section>
 
-        {/* Engagement Process */}
-        <section className="py-24 px-margin-mobile md:px-margin-desktop">
-          <div className="max-w-max-width mx-auto">
-            <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-4 text-center">
-              How We Work Together
-            </h2>
-            <p className="font-body-lg text-body-lg text-on-surface-variant mb-12 max-w-2xl mx-auto text-center">
-              Our collaborative engagement model ensures alignment with your
-              strategic objectives.
-            </p>
+        <section className="py-16 md:py-20">
+          <div className="container">
+            <div className="mb-10 max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">How we work</p>
+              <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">A collaborative model for delivery</h2>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
               {[
-                {
-                  num: "01",
-                  title: "Discovery",
-                  desc: "Understanding your research needs and objectives",
-                },
-                {
-                  num: "02",
-                  title: "Design",
-                  desc: "Developing customized research methodology",
-                },
-                {
-                  num: "03",
-                  title: "Execution",
-                  desc: "Conducting rigorous research and analysis",
-                },
-                {
-                  num: "04",
-                  title: "Delivery",
-                  desc: "Presenting findings and recommendations",
-                },
+                { num: '01', title: 'Discovery', desc: 'Understanding your research needs and objectives.' },
+                { num: '02', title: 'Design', desc: 'Developing a tailored methodology and work plan.' },
+                { num: '03', title: 'Execution', desc: 'Conducting rigorous research and analysis.' },
+                { num: '04', title: 'Delivery', desc: 'Presenting findings and recommendations clearly.' },
               ].map((step, idx) => (
-                <div key={idx} className="relative">
-                  {idx < 3 && (
-                    <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-8 h-8 bg-research-blue text-white rounded-full flex items-center justify-center font-label-md">
-                      →
-                    </div>
-                  )}
-                  <div className="bg-surface-container-lowest p-8 rounded-lg border border-outline-variant">
-                    <div className="font-display-lg text-display-lg text-nigeria-green-vibrant mb-4">
-                      {step.num}
-                    </div>
-                    <h3 className="font-headline-md text-headline-md text-on-surface mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      {step.desc}
-                    </p>
-                  </div>
+                <div key={idx} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+                  <div className="text-3xl font-bold text-emerald-700">{step.num}</div>
+                  <h3 className="mt-4 text-xl font-bold text-slate-900">{step.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">{step.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-24 bg-nigeria-green-deep text-on-primary px-margin-mobile md:px-margin-desktop">
-          <div className="max-w-max-width mx-auto text-center">
-            <h2 className="font-headline-lg text-headline-lg text-primary-fixed mb-6">
-              Ready to Partner with NISER?
-            </h2>
-            <p className="font-body-lg text-body-lg text-on-primary-container max-w-2xl mx-auto mb-8">
-              {`Let's discuss how NISER's research and advisory services can support your development objectives.`}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-<<<<<<< HEAD
-              <Link href="/contact" className="bg-accent-mint text-nigeria-green-deep px-8 py-4 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined">mail</span> Get in Touch
-              </Link>
-              <Link href="/insights" className="border-2 border-accent-mint text-accent-mint px-8 py-4 rounded-lg font-label-md text-label-md hover:bg-accent-mint/10 transition-all flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined">library_books</span> View Recent Work
-              </Link>
-=======
-              <button className="bg-accent-mint text-nigeria-green-deep px-8 py-4 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined">mail</span> Get in
-                Touch
-              </button>
-              <a
-                href="/insights"
-                className="border-2 border-accent-mint text-accent-mint px-8 py-4 rounded-lg font-label-md text-label-md hover:bg-accent-mint/10 transition-all flex items-center justify-center gap-2"
-              >
-                <span className="material-symbols-outlined">library_books</span>{" "}
-                View Recent Work
-              </a>
->>>>>>> c16e378 (home page upgrade)
+        <section className="bg-gradient-to-br from-[#0f3d2f] via-[#184f42] to-[#1d7d69] py-16 text-white md:py-20">
+          <div className="container text-center">
+            <h2 className="text-3xl font-bold md:text-4xl">Ready to partner with NISER?</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base text-emerald-50">Let&apos;s discuss how NISER&apos;s research and advisory services can support your institutional, policy, and development objectives.</p>
+            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+              <Link href="/contact" className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0f3d2f] transition hover:bg-emerald-50">Contact us</Link>
+              <Link href="/training" className="inline-flex items-center justify-center rounded-full border border-white/30 bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">Explore programs</Link>
             </div>
           </div>
         </section>

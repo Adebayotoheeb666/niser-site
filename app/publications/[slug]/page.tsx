@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/ui/HeroSection';
+import RelatedContent from '@/components/ai/RelatedContent';
+import CitationCopy from '@/components/ui/CitationCopy';
 import { getPublicationBySlug, getPublications } from '@/lib/cms/client';
 
 export const revalidate = 0;
@@ -21,12 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!pub) return { title: 'Publication Not Found' };
   return {
     title: pub.title,
-    description: pub.abstract?.slice(0, 160),
-    openGraph: {
-      title: pub.title,
-      description: pub.abstract?.slice(0, 160),
-      type: 'article',
-    },
+    description: pub.abstract?.slice(0, 160) ?? undefined,
   };
 }
 
@@ -64,9 +62,42 @@ export default async function PublicationDetailPage({ params }: PageProps) {
   const typeColor = typeColors[pub.publicationType] ?? 'badge--gray';
   const divisionLabel = divisionLabels[pub.researchDivision] ?? pub.researchDivision;
 
+  // JSON-LD structured data (ScholarlyArticle / Report)
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': pub.publicationType === 'journal_article' ? 'ScholarlyArticle' : 'Report',
+    headline: pub.title,
+    abstract: pub.abstract ?? undefined,
+    author: (pub.authors ?? []).map((a) => ({
+      '@type': 'Person',
+      name: a.fullName,
+      url: a.slug ? `https://niser.gov.ng/people/${a.slug}` : undefined,
+    })),
+    datePublished: pub.publishedYear ? String(pub.publishedYear) : undefined,
+    publisher: {
+      '@type': 'Organization',
+      name: 'National Institute of Social and Economic Research (NISER)',
+      url: 'https://niser.gov.ng',
+    },
+    identifier: pub.doi ? { '@type': 'PropertyValue', propertyID: 'DOI', value: pub.doi } : undefined,
+    url: `https://niser.gov.ng/publications/${pub.slug}`,
+    isAccessibleForFree: pub.isOpenAccess ?? false,
+    keywords: (pub.keywords ?? []).join(', '),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
+      <HeroSection
+        title={pub.title}
+        description={pub.abstract?.slice(0, 160) ?? 'Read the full publication to explore its findings and research context.'}
+        subtitle="Research publication"
+      />
+
       <main id="main-content">
         {/* Breadcrumb */}
         <nav className="pub-detail-breadcrumb" aria-label="Breadcrumb">
@@ -161,6 +192,19 @@ export default async function PublicationDetailPage({ params }: PageProps) {
                   </div>
                 </section>
               )}
+
+              <RelatedContent
+                id={`publication:${pub.id}`}
+                title={pub.title}
+                type="publication"
+                slug={pub.slug}
+                excerpt={pub.abstract ?? ''}
+                pageContext={`${pub.title} ${pub.abstract ?? ''} ${(pub.keywords ?? []).join(' ')}`}
+                keywords={pub.keywords ?? []}
+                division={pub.researchDivision}
+                publishedYear={pub.publishedYear}
+                contentType={pub.publicationType}
+              />
             </div>
 
             {/* Sidebar */}
@@ -208,13 +252,13 @@ export default async function PublicationDetailPage({ params }: PageProps) {
                   {/* Cite */}
                   <hr className="divider" style={{ margin: '1.25rem 0' }} />
                   <h3 className="pub-detail-sidebar__heading">Cite</h3>
-                  <div className="pub-detail-cite-block">
-                    <p style={{ fontSize: '0.8125rem', color: 'var(--gray-600)', lineHeight: '1.5' }}>
-                      {pub.authors?.map((a) => a.fullName).join(', ')} ({pub.publishedYear}).{' '}
-                      <em>{pub.title}</em>. NISER.
-                      {pub.doi && ` https://doi.org/${pub.doi}`}
-                    </p>
-                  </div>
+                  <CitationCopy
+                    authors={pub.authors ?? []}
+                    title={pub.title}
+                    year={pub.publishedYear}
+                    doi={pub.doi}
+                    slug={pub.slug}
+                  />
                 </div>
               </div>
             </aside>

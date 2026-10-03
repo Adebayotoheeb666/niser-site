@@ -1,15 +1,84 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { Publication } from "@/types/cms";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { trackMatomoEvent } from "@/lib/matomo";
+import "./brief.css";
+
+interface PolicyBriefSection {
+  heading: string;
+  content: string;
+  citations: string[];
+}
+
+interface PolicyBriefSource {
+  title: string;
+  url: string;
+  year?: number;
+}
+
+interface PolicyBriefDraft {
+  id: string;
+  title: string;
+  selectedIds: string[];
+  audience: string;
+  focusAngle: string;
+  sections: PolicyBriefSection[];
+  coverageWarning?: string;
+  sources: PolicyBriefSource[];
+  createdAt: string;
+}
+
+const DRAFT_STORAGE_KEY = 'niser-policy-brief-drafts';
+
+const AUDIENCE_OPTIONS = [
+  { value: "federal-ministry", label: "Federal Ministry" },
+  { value: "media-press", label: "Media & Press" },
+  { value: "private-sector", label: "Private Sector" },
+  { value: "development-partners", label: "Development Partners" },
+];
+
+const STEP_LABELS = ["Source Material", "Audience & Angle", "Draft & Review", "Finalize"];
+
+const Icon = ({ path, size = 18 }: { path: string; size?: number }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    {path}
+  </svg>
+);
+
+const icons = {
+  search: '<circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />',
+  check: '<path d="M20 6 9 17l-5-5" />',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />',
+  arrowBack: '<path d="M19 12H5M12 19l-7-7 7-7" />',
+  arrowForward: '<path d="M5 12h14M12 5l7 7-7 7" />',
+  spark: '<path d="M12 3v4m0 10v4m9-9h-4M7 12H3m15.5-6.5-3 3m-7 7-3 3m13 0-3-3m-7-7-3-3" />',
+  save: '<path d="M12 3v12m0 0 4-4m-4 4-4-4" /><path d="M5 21h14" />',
+  download: '<path d="M12 3v12m0 0 4-4m-4 4-4-4" /><path d="M5 21h14" />',
+  print: '<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" />',
+  document: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="M16 13H8M16 17H8" />',
+  layers: '<path d="m12 2 10 6-10 6L2 8z" /><path d="m2 13 10 6 10-6" />',
+  fileRestore: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="M9 15.5 6 12.5l3-3" /><path d="M6 12.5H12a3 3 0 0 1 3 3" />',
+};
 
 function formatPublicationType(type: string) {
   return type.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-export default function SovereignIntelligencePage() {
+export default function PolicyBriefStudioPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedPapers, setSelectedPapers] = useState<string[]>([]);
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -17,6 +86,12 @@ export default function SovereignIntelligencePage() {
   const [audience, setAudience] = useState("federal-ministry");
   const [focusAngle, setFocusAngle] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [briefSections, setBriefSections] = useState<PolicyBriefSection[]>([]);
+  const [coverageWarning, setCoverageWarning] = useState<string | null>(null);
+  const [sourcesMeta, setSourcesMeta] = useState<PolicyBriefSource[]>([]);
+  const [drafts, setDrafts] = useState<PolicyBriefDraft[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function loadPublications() {
@@ -24,9 +99,7 @@ export default function SovereignIntelligencePage() {
         const cmsBase =
           process.env.NEXT_PUBLIC_CMS_URL ??
           "http://localhost:10003/wp-json/niser/v1";
-        const res = await fetch(
-          `${cmsBase}/publications?limit=12&type=policy_brief`,
-        );
+        const res = await fetch(`${cmsBase}/publications?limit=12&type=policy_brief`);
         if (res.ok) {
           setPublications(await res.json());
         } else {
@@ -40,15 +113,28 @@ export default function SovereignIntelligencePage() {
     }
 
     loadPublications();
+    if (typeof window !== "undefined") {
+      loadDrafts();
+    }
   }, []);
 
-  const researchPapers = publications.map((publication) => ({
-    id: publication.id,
-    title: publication.title,
-    category: formatPublicationType(publication.publicationType),
-    date: String(publication.publishedYear),
-    selected: selectedPapers.includes(publication.id),
-  }));
+  const researchPapers = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    return publications
+      .map((publication) => ({
+        id: publication.id,
+        title: publication.title,
+        category: formatPublicationType(publication.publicationType),
+        date: String(publication.publishedYear),
+        selected: selectedPapers.includes(publication.id),
+      }))
+      .filter(
+        (paper) =>
+          !query ||
+          paper.title.toLowerCase().includes(query) ||
+          paper.category.toLowerCase().includes(query),
+      );
+  }, [publications, searchTerm, selectedPapers]);
 
   const togglePaperSelection = (id: string) => {
     if (selectedPapers.includes(id)) {
@@ -58,434 +144,569 @@ export default function SovereignIntelligencePage() {
     }
   };
 
+  const canGoTo = (step: number) =>
+    step === 1 ||
+    (step === 2 && selectedPapers.length > 0) ||
+    (step === 3 && focusAngle.trim()) ||
+    (step === 4 && briefSections.length > 0);
+
   const goToStep = (step: number) => {
-    if (
-      step === 1 ||
-      (step === 2 && selectedPapers.length > 0) ||
-      (step === 3 && focusAngle.trim())
-    ) {
+    if (canGoTo(step)) {
       setCurrentStep(step);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const handleGenerate = () => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      setCurrentStep(4); // Show success state
-    }, 2000);
+  const loadDrafts = () => {
+    try {
+      const raw = window.localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (!raw) return;
+      const stored = JSON.parse(raw) as PolicyBriefDraft[];
+      setDrafts(Array.isArray(stored) ? stored : []);
+    } catch {
+      setDrafts([]);
+    }
   };
 
-  const stepLabels = [
-    { step: 1, label: "Source Material" },
-    { step: 2, label: "Audience & Angle" },
-    { step: 3, label: "Preview & Publish" },
-  ];
+  const saveDraft = () => {
+    if (briefSections.length === 0) return;
+    const draft: PolicyBriefDraft = {
+      id: `${Date.now()}`,
+      title: `Policy brief draft ${new Date().toLocaleDateString()}`,
+      selectedIds: selectedPapers,
+      audience,
+      focusAngle,
+      sections: briefSections,
+      coverageWarning: coverageWarning ?? undefined,
+      sources: sourcesMeta,
+      createdAt: new Date().toISOString(),
+    };
+    const nextDrafts = [draft, ...drafts].slice(0, 5);
+    window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(nextDrafts));
+    setDrafts(nextDrafts);
+    setErrorMessage("Draft saved locally.");
+  };
+
+  const restoreDraft = (draft: PolicyBriefDraft) => {
+    setSelectedPapers(draft.selectedIds);
+    setAudience(draft.audience);
+    setFocusAngle(draft.focusAngle);
+    setBriefSections(draft.sections);
+    setCoverageWarning(draft.coverageWarning ?? null);
+    setSourcesMeta(draft.sources);
+    setCurrentStep(3);
+    setErrorMessage(null);
+  };
+
+  const downloadWord = () => {
+    const header = `<html><head><meta charset="utf-8"><title>Policy Brief</title></head><body>`;
+    const bodyContent = briefSections
+      .map(
+        (section) =>
+          `<h2>${section.heading}</h2><p>${section.content.replace(/\n/g, "<br/>")}</p><p><strong>Citations:</strong> ${section.citations.join(", ")}</p>`,
+      )
+      .join("<hr/>");
+    const doc = `${header}${bodyContent}</body></html>`;
+    const blob = new Blob([doc], { type: "application/msword" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "niser-policy-brief.doc";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportPdf = () => {
+    window.print();
+  };
+
+  const handleGenerateDraft = async () => {
+    setIsGenerating(true);
+    setErrorMessage(null);
+    void trackMatomoEvent("policy_brief", "generated", audience, 1);
+
+    try {
+      const response = await fetch("/api/policy-brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ selectedIds: selectedPapers, audience, focusAngle }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate policy brief");
+      }
+
+      const sections = Array.isArray(data.sections)
+        ? data.sections
+        : [
+            {
+              heading: "Executive Summary",
+              content: data.briefText || "",
+              citations: [],
+            },
+          ];
+
+      setBriefSections(sections);
+      setCoverageWarning(data.coverageWarning || null);
+      setSourcesMeta(Array.isArray(data.sources) ? data.sources : []);
+      setCurrentStep(3);
+    } catch (error) {
+      setErrorMessage((error as Error).message || "Unable to generate policy brief.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handlePublish = () => {
+    setCurrentStep(4);
+    void trackMatomoEvent("policy_brief", "published", audience, 1);
+  };
+
+  const resetAll = () => {
+    setCurrentStep(1);
+    setSelectedPapers([]);
+    setAudience("federal-ministry");
+    setFocusAngle("");
+    setBriefSections([]);
+    setCoverageWarning(null);
+    setSourcesMeta([]);
+    setErrorMessage(null);
+    setSearchTerm("");
+  };
 
   return (
     <>
       <Header />
-      <main className="mt-20 flex-grow bg-background">
-        {/* Stepper Navigation */}
-        <div className="sticky top-20 bg-surface-container-lowest border-b border-surface-gray z-40">
-          <div className="max-w-5xl mx-auto px-4 md:px-16 py-8">
-            <div className="grid grid-cols-3 gap-4 md:gap-8">
-              {stepLabels.map((item) => (
-                <button
-                  key={item.step}
-                  onClick={() => goToStep(item.step)}
-                  className={`p-4 rounded-lg border-b-4 transition-all ${
-                    currentStep === item.step
-                      ? "border-nigeria-green-vibrant bg-surface-container-low"
-                      : currentStep > item.step
-                        ? "border-nigeria-green-vibrant opacity-60"
-                        : "border-outline-variant opacity-50 cursor-not-allowed"
-                  }`}
-                >
-                  <div className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">
-                    Step {String(item.step).padStart(2, "0")}
-                  </div>
-                  <div className="font-headline-md text-headline-md text-nigeria-green-deep">
-                    {item.label}
-                  </div>
+      <main id="main-content">
+        {/* ── Hero ─────────────────────────────────────────────────────────── */}
+        <section className="brief-hero">
+          <div className="container brief-hero__inner">
+            <span className="brief-hero__eyebrow">NISER Policy Brief Studio</span>
+            <h1 className="brief-hero__title">
+              From research to policy — a concise, citable draft.
+            </h1>
+            <p className="brief-hero__lead">
+              Select up to three NISER sources, choose the audience and analytical
+              angle, and generate a structured policy brief with citations you can
+              edit before export.
+            </p>
+            <div className="brief-hero__actions">
+              <button className="btn btn--primary" onClick={() => goToStep(1)}>
+                Start a new brief
+              </button>
+              {drafts.length > 0 && (
+                <button className="btn btn--outline" onClick={() => restoreDraft(drafts[0])}>
+                  Resume last draft
                 </button>
-              ))}
+              )}
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="max-w-5xl mx-auto px-4 md:px-16 py-12">
-          {/* Step 1: Source Material Selection */}
-          {currentStep === 1 && (
-            <div className="animate-fadeIn">
-              <div className="mb-8">
-                <h2 className="font-display-lg text-display-lg text-nigeria-green-deep mb-4">
-                  Select Source Materials
-                </h2>
-                <p className="font-body-lg text-on-surface-variant max-w-2xl">
-                  Choose up to 3 research papers from NISER&apos;s database to
-                  synthesize into your policy brief.
-                </p>
-              </div>
-
-              <div className="mb-8 flex flex-col md:flex-row md:items-center gap-4">
-                <div className="relative flex-grow">
-                  <input
-                    type="text"
-                    placeholder="Search publications..."
-                    className="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-research-blue focus:outline-none"
-                  />
-                  <span className="material-symbols-outlined absolute left-4 top-3 text-on-surface-variant">
-                    search
-                  </span>
-                </div>
-                <div className="text-label-md text-on-surface-variant whitespace-nowrap">
-                  {selectedPapers.length} / 3 Selected
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                {loadingPublications ? (
-                  <p className="col-span-3 text-body-md text-on-surface-variant py-8 text-center">
-                    Loading publications…
-                  </p>
-                ) : researchPapers.length === 0 ? (
-                  <p className="col-span-3 text-body-md text-on-surface-variant py-8 text-center">
-                    No publications available. Add policy briefs in the CMS to
-                    use this tool.
-                  </p>
-                ) : (
-                  researchPapers.map((paper) => (
-                    <button
-                      key={paper.id}
-                      onClick={() => togglePaperSelection(paper.id)}
-                      className={`p-6 rounded-lg border-2 transition-all text-left relative ${
-                        paper.selected
-                          ? "border-nigeria-green-vibrant bg-secondary-container/10"
-                          : "border-surface-gray hover:border-nigeria-green-vibrant"
-                      }`}
-                    >
-                      {paper.selected && (
-                        <div className="absolute top-4 right-4 bg-nigeria-green-vibrant text-white rounded-full p-1">
-                          <span className="material-symbols-outlined text-[18px]">
-                            check
-                          </span>
-                        </div>
-                      )}
-                      <span className="inline-block px-2 py-1 bg-surface-container rounded text-label-sm text-research-blue mb-3">
-                        {paper.category}
-                      </span>
-                      <h4 className="font-headline-md text-headline-md text-nigeria-green-deep mb-3">
-                        {paper.title}
-                      </h4>
-                      <div className="flex items-center gap-2 text-label-sm text-on-surface-variant">
-                        <span className="material-symbols-outlined text-[16px]">
-                          calendar_month
-                        </span>
-                        <span>{paper.date}</span>
-                      </div>
-                    </button>
-                  ))
-                )}
-              </div>
-
-              <div className="flex justify-end gap-4">
+        <div className="brief-shell container">
+          {/* ── Stepper ───────────────────────────────────────────────────── */}
+          <nav className="brief-progress" aria-label="Policy brief steps">
+            {STEP_LABELS.map((label, index) => {
+              const step = index + 1;
+              const active = currentStep === step;
+              const done = currentStep > step;
+              const locked = !canGoTo(step);
+              return (
                 <button
-                  onClick={() => goToStep(2)}
-                  disabled={selectedPapers.length === 0}
-                  className="bg-nigeria-green-deep text-on-primary px-8 py-3 rounded-lg font-bold flex items-center gap-3 hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  key={step}
+                  type="button"
+                  onClick={() => goToStep(step)}
+                  disabled={locked}
+                  className={`brief-step${active ? " is-active" : ""}${done ? " is-done" : ""}${locked ? " is-locked" : ""}`}
+                  aria-current={active ? "step" : undefined}
                 >
-                  Continue to Configuration
-                  <span className="material-symbols-outlined">
-                    arrow_forward
+                  <span className="brief-step__num">
+                    {done ? <Icon path={icons.check} size={14} /> : String(step).padStart(2, "0")}
                   </span>
+                  <span className="brief-step__label">{label}</span>
                 </button>
-              </div>
+              );
+            })}
+          </nav>
+
+          {errorMessage && (
+            <div className="brief-alert brief-alert--error" role="status">
+              {errorMessage}
             </div>
           )}
 
-          {/* Step 2: Audience & Angle Configuration */}
-          {currentStep === 2 && (
-            <div className="animate-fadeIn max-w-2xl mx-auto">
-              <div className="mb-8">
-                <h2 className="font-display-lg text-display-lg text-nigeria-green-deep mb-4">
-                  Configure Brief
-                </h2>
-                <p className="font-body-lg text-on-surface-variant">
-                  Define the target audience and analytical lens for your brief.
-                </p>
+          {/* ── Step 1: Source material ───────────────────────────────────── */}
+          {currentStep === 1 && (
+            <section className="brief-panel">
+              <header className="brief-panel__head">
+                <div>
+                  <span className="home-eyebrow">Step 1 of 4</span>
+                  <h2 className="brief-panel__title">Select source materials</h2>
+                </div>
+                <span className="brief-count" aria-live="polite">
+                  {selectedPapers.length} / 3 selected
+                </span>
+              </header>
+
+              <p className="brief-panel__desc">
+                Choose up to three policy-focused NISER publications to synthesise
+                into your brief.
+              </p>
+
+              <div className="brief-search">
+                <span className="brief-search__icon">
+                  <Icon path={icons.search} />
+                </span>
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search publications…"
+                  aria-label="Search publications"
+                  className="brief-search__input"
+                />
               </div>
 
-              <div className="space-y-8">
-                {/* Audience Selection */}
+              {loadingPublications ? (
+                <div className="brief-grid" aria-label="Loading publications">
+                  {[0, 1, 2, 3, 4, 5].map((n) => (
+                    <div key={n} className="brief-paper brief-paper--skeleton">
+                      <span className="skeleton" />
+                      <span className="skeleton" />
+                      <span className="skeleton" />
+                    </div>
+                  ))}
+                </div>
+              ) : researchPapers.length === 0 ? (
+                <div className="brief-empty">
+                  {searchTerm.trim()
+                    ? "No publications match your search."
+                    : "No publications available. Add policy briefs in the CMS to use this tool."}
+                </div>
+              ) : (
+                <ul className="brief-grid" role="list">
+                  {researchPapers.map((paper) => (
+                    <li key={paper.id}>
+                      <button
+                        type="button"
+                        onClick={() => togglePaperSelection(paper.id)}
+                        aria-pressed={paper.selected}
+                        className={`brief-paper${paper.selected ? " is-selected" : ""}`}
+                      >
+                        <span className="brief-paper__check">
+                          {paper.selected && <Icon path={icons.check} />}
+                        </span>
+                        <span className="brief-paper__category">{paper.category}</span>
+                        <h3 className="brief-paper__title">{paper.title}</h3>
+                        <span className="brief-paper__meta">
+                          <Icon path={icons.calendar} size={14} />
+                          {paper.date}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <footer className="brief-panel__foot">
+                <button
+                  type="button"
+                  onClick={() => goToStep(2)}
+                  disabled={selectedPapers.length === 0}
+                  className="btn btn--primary"
+                >
+                  Continue to configuration
+                  <Icon path={icons.arrowForward} />
+                </button>
+              </footer>
+            </section>
+          )}
+
+          {/* ── Step 2: Audience & angle ──────────────────────────────────── */}
+          {currentStep === 2 && (
+            <section className="brief-panel brief-panel--narrow">
+              <header className="brief-panel__head">
                 <div>
-                  <label className="font-headline-md text-headline-md text-nigeria-green-deep block mb-4">
-                    Who is this brief for?
-                  </label>
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { value: "federal-ministry", label: "Federal Ministry" },
-                      { value: "media-press", label: "Media & Press" },
-                      { value: "private-sector", label: "Private Sector" },
-                      {
-                        value: "development-partners",
-                        label: "Development Partners",
-                      },
-                    ].map((option) => (
+                  <span className="home-eyebrow">Step 2 of 4</span>
+                  <h2 className="brief-panel__title">Audience &amp; angle</h2>
+                </div>
+              </header>
+
+              <p className="brief-panel__desc">
+                Define who the brief is for and the lens the AI should use to read
+                the sources.
+              </p>
+
+              <fieldset className="brief-fieldset">
+                <legend className="brief-fieldset__legend">Who is this brief for?</legend>
+                <div className="brief-audience">
+                  {AUDIENCE_OPTIONS.map((option) => {
+                    const active = audience === option.value;
+                    return (
                       <label
                         key={option.value}
-                        className={`p-4 rounded-lg border-2 flex items-center gap-4 cursor-pointer transition-all ${
-                          audience === option.value
-                            ? "border-nigeria-green-vibrant bg-secondary-container/10"
-                            : "border-outline-variant hover:border-nigeria-green-vibrant"
-                        }`}
+                        className={`brief-audience__option${active ? " is-active" : ""}`}
                       >
                         <input
                           type="radio"
                           name="audience"
                           value={option.value}
-                          checked={audience === option.value}
+                          checked={active}
                           onChange={(e) => setAudience(e.target.value)}
-                          className="w-5 h-5"
                         />
-                        <span className="font-label-md">{option.label}</span>
+                        <span>{option.label}</span>
                       </label>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
+              </fieldset>
 
-                {/* Focus Angle */}
-                <div>
-                  <label className="font-headline-md text-headline-md text-nigeria-green-deep block mb-2">
-                    Focus Angle
-                  </label>
-                  <p className="font-body-md text-on-surface-variant mb-4">
-                    Define the lens through which the AI should interpret the
-                    source data.
-                  </p>
-                  <textarea
-                    value={focusAngle}
-                    onChange={(e) => setFocusAngle(e.target.value)}
-                    placeholder="e.g., Focus on the budgetary requirements for implementing gender-sensitive digital training programs..."
-                    className="w-full p-4 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-research-blue focus:outline-none"
-                    rows={4}
-                  />
-                </div>
-
-                {/* Navigation */}
-                <div className="flex items-center justify-between pt-6 border-t border-surface-gray">
-                  <button
-                    onClick={() => goToStep(1)}
-                    className="text-on-surface-variant hover:text-nigeria-green-deep font-bold flex items-center gap-2 transition-all"
-                  >
-                    <span className="material-symbols-outlined">
-                      arrow_back
-                    </span>
-                    Back
-                  </button>
-                  <button
-                    onClick={() => goToStep(3)}
-                    disabled={!focusAngle.trim()}
-                    className="bg-nigeria-green-deep text-on-primary px-10 py-3 rounded-lg font-bold flex items-center gap-3 hover:opacity-90 transition-all disabled:opacity-50"
-                  >
-                    Generate Draft
-                    <span className="material-symbols-outlined">
-                      auto_awesome
-                    </span>
-                  </button>
-                </div>
+              <div className="brief-field">
+                <label className="brief-field__label" htmlFor="focus-angle">
+                  Focus angle
+                </label>
+                <p className="brief-field__hint">
+                  The lens through which the AI should interpret the source data.
+                </p>
+                <textarea
+                  id="focus-angle"
+                  value={focusAngle}
+                  onChange={(e) => setFocusAngle(e.target.value)}
+                  placeholder="e.g., Focus on the budgetary requirements for implementing gender-sensitive digital training programs…"
+                  rows={5}
+                  className="brief-field__area"
+                />
+                <p className="brief-field__count">{focusAngle.length} characters</p>
               </div>
-            </div>
+
+              <footer className="brief-panel__foot brief-panel__foot--split">
+                <button type="button" onClick={() => goToStep(1)} className="btn btn--ghost">
+                  <Icon path={icons.arrowBack} />
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGenerateDraft}
+                  disabled={!focusAngle.trim() || isGenerating}
+                  className="btn btn--primary"
+                >
+                  {isGenerating ? (
+                    <>
+                      <span className="brief-spinner" aria-hidden="true" />
+                      Generating…
+                    </>
+                  ) : (
+                    <>
+                      <Icon path={icons.spark} />
+                      Generate draft
+                    </>
+                  )}
+                </button>
+              </footer>
+            </section>
           )}
 
-          {/* Step 3: Review & Publish */}
+          {/* ── Step 3: Draft & review ────────────────────────────────────── */}
           {currentStep === 3 && (
-            <div className="animate-fadeIn max-w-3xl mx-auto">
-              <div className="bg-surface-container-lowest p-10 rounded-xl border border-surface-gray relative">
-                {/* AI Badge */}
-                <div className="absolute -top-4 right-10 bg-research-blue text-white px-4 py-1 rounded-full flex items-center gap-2 shadow-lg">
-                  <span className="material-symbols-outlined text-[16px]">
-                    auto_awesome
-                  </span>
-                  <span className="font-label-sm uppercase tracking-widest">
-                    AI Generated Draft
-                  </span>
+            <section className="brief-panel">
+              <header className="brief-panel__head">
+                <div>
+                  <span className="home-eyebrow">Step 3 of 4</span>
+                  <h2 className="brief-panel__title">Draft &amp; review</h2>
                 </div>
+                <span className="brief-chip">
+                  {audience.replace("-", " ")}
+                </span>
+              </header>
 
-                <header className="mb-10 border-b border-surface-gray pb-8">
-                  <span className="font-label-md text-nigeria-green-vibrant uppercase tracking-widest block mb-2">
-                    Policy Brief SI-2024-082
-                  </span>
-                  <h2 className="font-display-lg text-display-lg text-nigeria-green-deep leading-tight mb-6">
-                    Digital Transition as a Catalyst for SME Inclusivity
-                  </h2>
-                  <div className="text-right">
-                    <span className="font-label-sm text-on-surface-variant block">
-                      TARGET AUDIENCE
-                    </span>
-                    <span className="font-label-md font-bold capitalize">
-                      {audience.replace("-", " ")}
-                    </span>
-                  </div>
-                </header>
+              <p className="brief-panel__desc">
+                Review each generated section, adjust wording, and export when ready.
+              </p>
 
-                <div className="space-y-10 mb-12">
-                  {/* Key Findings */}
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-headline-md text-nigeria-green-deep flex items-center gap-2">
-                        <span className="material-symbols-outlined">
-                          analytics
+              {coverageWarning && (
+                <div className="brief-alert brief-alert--warning">
+                  <strong>Coverage warning:</strong> {coverageWarning}
+                </div>
+              )}
+
+              {sourcesMeta.length > 0 && (
+                <div className="brief-sources">
+                  <h3 className="brief-sources__title">Selected sources</h3>
+                  <ol className="brief-sources__list">
+                    {sourcesMeta.map((source, index) => (
+                      <li key={`${source.url}-${index}`}>
+                        <span className="brief-sources__num">{index + 1}</span>
+                        <span>
+                          {source.title} {source.year ? `(${source.year})` : ""}
                         </span>
-                        Key Findings
-                      </h3>
-                      <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-nigeria-green-deep">
-                        edit_note
-                      </span>
-                    </div>
-                    <div className="p-4 bg-surface-container-lowest border border-dashed border-outline-variant rounded font-body-md text-on-surface-variant leading-relaxed space-y-3">
-                      <p>
-                        • SME growth in Nigeria is throttled by a 15% digital
-                        infrastructure gap in North-Central region.
-                      </p>
-                      <p>
-                        • Female-led SMEs show 22% higher mobile payment
-                        adoption than male-led counterparts.
-                      </p>
-                      <p>
-                        • Digital literacy correlates with 1.8x increase in SME
-                        survival rates during inflation.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Recommendations */}
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-headline-md text-nigeria-green-deep flex items-center gap-2">
-                        <span className="material-symbols-outlined">gavel</span>
-                        Policy Recommendations
-                      </h3>
-                      <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-nigeria-green-deep">
-                        edit_note
-                      </span>
-                    </div>
-                    <div className="p-4 bg-surface-container-lowest border border-dashed border-outline-variant rounded font-body-md text-on-surface-variant leading-relaxed space-y-3">
-                      <p>
-                        1. <strong>Incentivized Infrastructure:</strong> Tax
-                        rebates for telecom providers expanding 4G coverage.
-                      </p>
-                      <p>
-                        2. <strong>Gender-Targeted Grants:</strong> Sovereign
-                        fund for female-led tech training programs.
-                      </p>
-                      <p>
-                        3. <strong>Regulatory Sandbox:</strong> Policy Lab
-                        monitoring AI-driven credit scoring integration.
-                      </p>
-                    </div>
-                  </div>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
+              )}
 
-                {/* Workflow Actions */}
-                <div className="mt-16 pt-10 border-t border-surface-gray flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <button className="border border-outline-variant px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-surface-gray transition-all">
-                      <span className="material-symbols-outlined">
-                        download
-                      </span>
-                      PDF
-                    </button>
-                    <button className="border border-outline-variant px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-surface-gray transition-all">
-                      <span className="material-symbols-outlined">share</span>
-                      Collab
-                    </button>
-                  </div>
+              {briefSections.length === 0 ? (
+                <div className="brief-empty">
+                  No draft is available yet. Go back and generate a draft to get started.
+                </div>
+              ) : (
+                <div className="brief-draft">
+                  {briefSections.map((section, index) => (
+                    <div key={`${section.heading}-${index}`} className="brief-section">
+                      <div className="brief-section__head">
+                        <h3 className="brief-section__title">{section.heading}</h3>
+                        <span className="brief-section__tag">Section {index + 1}</span>
+                      </div>
+                      <p className="brief-section__citations">
+                        Citations: {section.citations.join(", ") || "None"}
+                      </p>
+                      <label className="sr-only" htmlFor={`section-${index}`}>
+                        Edit {section.heading}
+                      </label>
+                      <textarea
+                        id={`section-${index}`}
+                        value={section.content}
+                        onChange={(e) => {
+                          const nextSections = [...briefSections];
+                          nextSections[index] = { ...section, content: e.target.value };
+                          setBriefSections(nextSections);
+                        }}
+                        rows={8}
+                        className="brief-section__editor"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="brief-actions">
+                <div className="brief-actions__primary">
                   <button
-                    onClick={handleGenerate}
-                    disabled={isGenerating}
-                    className="w-full md:w-auto bg-nigeria-green-vibrant text-on-primary px-12 py-4 rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-nigeria-green-deep transition-all shadow-lg disabled:opacity-70"
+                    type="button"
+                    onClick={saveDraft}
+                    disabled={briefSections.length === 0}
+                    className="btn btn--secondary"
                   >
-                    {isGenerating ? (
-                      <>
-                        <span className="material-symbols-outlined animate-spin">
-                          progress_activity
-                        </span>
-                        Publishing...
-                      </>
-                    ) : (
-                      <>
-                        <span className="material-symbols-outlined">
-                          publish
-                        </span>
-                        Approve & Publish to Insights
-                      </>
-                    )}
+                    <Icon path={icons.save} />
+                    Save draft
                   </button>
+                  <button
+                    type="button"
+                    onClick={downloadWord}
+                    disabled={briefSections.length === 0}
+                    className="btn btn--secondary"
+                  >
+                    <Icon path={icons.download} />
+                    Download Word
+                  </button>
+                  <button
+                    type="button"
+                    onClick={exportPdf}
+                    disabled={briefSections.length === 0}
+                    className="btn btn--secondary"
+                  >
+                    <Icon path={icons.print} />
+                    Print / PDF
+                  </button>
+                </div>
+
+                <div className="brief-drafts">
+                  <h3 className="brief-drafts__title">Saved drafts</h3>
+                  {drafts.length === 0 ? (
+                    <p className="brief-drafts__empty">No saved drafts yet.</p>
+                  ) : (
+                    <ul className="brief-drafts__list" role="list">
+                      {drafts.map((draft) => (
+                        <li key={draft.id}>
+                          <button
+                            type="button"
+                            onClick={() => restoreDraft(draft)}
+                            className="brief-drafts__item"
+                          >
+                            <Icon path={icons.fileRestore} size={16} />
+                            <span>
+                              <span className="brief-drafts__name">{draft.title}</span>
+                              <span className="brief-drafts__date">
+                                Saved {new Date(draft.createdAt).toLocaleString()}
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
 
-              {/* Navigation */}
-              <div className="flex items-center justify-between mt-12">
+              <footer className="brief-panel__foot brief-panel__foot--split">
+                <button type="button" onClick={() => goToStep(2)} className="btn btn--ghost">
+                  <Icon path={icons.arrowBack} />
+                  Back to configuration
+                </button>
                 <button
-                  onClick={() => goToStep(2)}
-                  className="text-on-surface-variant hover:text-nigeria-green-deep font-bold flex items-center gap-2"
+                  type="button"
+                  onClick={handlePublish}
+                  disabled={briefSections.length === 0}
+                  className="btn btn--accent"
                 >
-                  <span className="material-symbols-outlined">arrow_back</span>
-                  Back to Configuration
+                  <Icon path={icons.document} />
+                  Approve &amp; publish
+                </button>
+              </footer>
+            </section>
+          )}
+
+          {/* ── Step 4: Success ───────────────────────────────────────────── */}
+          {currentStep === 4 && (
+            <section className="brief-success">
+              <div className="brief-success__icon">
+                <Icon path={icons.check} size={40} />
+              </div>
+              <span className="home-eyebrow">Step 4 of 4 — Complete</span>
+              <h2 className="brief-success__title">Policy brief ready</h2>
+              <p className="brief-success__desc">
+                Your AI policy brief draft is ready. Review the final content below
+                and copy it into your internal workflows.
+              </p>
+
+              {briefSections.length > 0 ? (
+                <div className="brief-success__doc">
+                  {briefSections.map((section) => (
+                    <section key={section.heading}>
+                      <h3>{section.heading}</h3>
+                      <p>{section.content}</p>
+                      {section.citations.length > 0 && (
+                        <p className="brief-success__cite">
+                          Citations: {section.citations.join(", ")}
+                        </p>
+                      )}
+                    </section>
+                  ))}
+                </div>
+              ) : (
+                <div className="brief-empty">No brief content was generated.</div>
+              )}
+
+              <div className="brief-success__actions">
+                <button type="button" onClick={downloadWord} className="btn btn--secondary">
+                  <Icon path={icons.download} />
+                  Download Word
+                </button>
+                <button type="button" onClick={exportPdf} className="btn btn--secondary">
+                  <Icon path={icons.print} />
+                  Print / PDF
+                </button>
+                <button type="button" onClick={resetAll} className="btn btn--primary">
+                  <Icon path={icons.layers} />
+                  Generate another
                 </button>
               </div>
-            </div>
-          )}
-
-          {/* Step 4: Success */}
-          {currentStep === 4 && (
-            <div className="animate-fadeIn max-w-lg mx-auto text-center py-12">
-              <div className="w-20 h-20 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="material-symbols-outlined text-[48px]">
-                  check_circle
-                </span>
-              </div>
-              <h2 className="font-headline-lg text-headline-lg mb-4">
-                Successfully Published
-              </h2>
-              <p className="font-body-md text-on-surface-variant mb-8">
-                The AI Policy Brief has been validated and published to the
-                NISER Insights repository. Stakeholders have been notified.
-              </p>
-              <button
-                onClick={() => {
-                  setCurrentStep(1);
-                  setSelectedPapers([]);
-                  setAudience("federal-ministry");
-                  setFocusAngle("");
-                }}
-                className="bg-nigeria-green-deep text-on-primary px-8 py-3 rounded-lg font-bold w-full"
-              >
-                Generate Another
-              </button>
-            </div>
+            </section>
           )}
         </div>
       </main>
       <Footer />
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-in-out;
-        }
-      `}</style>
     </>
   );
 }

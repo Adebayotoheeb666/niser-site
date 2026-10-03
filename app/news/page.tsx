@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import HeroSection from "@/components/ui/HeroSection";
 import { getNews } from "@/lib/cms/client";
 import type { NewsItem } from "@/types/cms";
 
@@ -11,6 +11,21 @@ export const metadata: Metadata = {
   title: "News & Announcements | NISER",
   description:
     "Latest institutional updates, press releases, and media mentions from the Nigerian Institute of Social and Economic Research.",
+};
+
+const categoryStyles: Record<string, { badge: string; accent: string }> = {
+  institutional: {
+    badge: "bg-[#E9F7EE] text-[#0A5F3D]",
+    accent: "from-[#0A5F3D] to-[#0F7A52]",
+  },
+  media: {
+    badge: "bg-[#EAF2FF] text-[#1E3A8A]",
+    accent: "from-[#1D4ED8] to-[#2563EB]",
+  },
+  external: {
+    badge: "bg-[#EAFBF3] text-[#0D7A4A]",
+    accent: "from-[#0D7A4A] to-[#0F9F6E]",
+  },
 };
 
 function formatCategory(category: string) {
@@ -23,19 +38,6 @@ function formatCategory(category: string) {
       return "External Publication";
     default:
       return "Institutional News";
-  }
-}
-
-function formatType(category: string) {
-  switch (category) {
-    case "institutional":
-      return "Institutional News";
-    case "media":
-      return "External Publication";
-    case "external":
-      return "External Publication";
-    default:
-      return "Institutional Update";
   }
 }
 
@@ -52,241 +54,203 @@ function getCategoryIcon(category: string) {
   }
 }
 
-function formatPublishedDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-GB", {
-    month: "long",
+function formatPublishedDate(dateStr?: string) {
+  if (!dateStr) return "Recently published";
+
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return "Recently published";
+
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
     year: "numeric",
   });
 }
 
-const categoryColors: Record<
-  string,
-  { bg: string; text: string; border: string }
-> = {
-  institutional: {
-    bg: "bg-accent-mint",
-    text: "text-nigeria-green-deep",
-    border: "border-l-accent-mint",
-  },
-  media: {
-    bg: "bg-research-blue/10",
-    text: "text-research-blue",
-    border: "border-l-research-blue",
-  },
-  external: {
-    bg: "bg-nigeria-green-vibrant/10",
-    text: "text-nigeria-green-vibrant",
-    border: "border-l-nigeria-green-vibrant",
-  },
-};
+function buildNewsUrl(item: NewsItem) {
+  if (item.externalUrl?.trim()) return item.externalUrl;
+  return item.slug ? `/news/${item.slug}` : `/news/${item.id}`;
+}
 
 export default async function NewsPage() {
-  const newsItems = await getNews({ limit: 20 });
-  const featuredItem: NewsItem | null = newsItems[0] ?? null;
-  const otherItems = newsItems.slice(1);
+  const newsItems = await getNews({ limit: 9 });
+  const [featuredItem, ...otherItems] = newsItems;
+  const trendingItems = otherItems.slice(0, 3);
+  const archiveItems = otherItems.slice(3);
 
   return (
     <>
       <Header />
-      <main
-        id="main-content"
-        className="min-h-screen pb-24 bg-background"
-      >
-        <HeroSection
-          title="News & Announcements"
-          description="Latest updates, press releases, and announcements from NISER"
-          subtitle="Stay informed about our institutional developments and media mentions"
-        />
-        <div className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop">
-          {/* Header Section */}
-          <section className="mb-12 border-b border-surface-gray pb-8">
-            <span className="text-nigeria-green-vibrant font-label-sm text-label-sm tracking-widest uppercase mb-2 block">
-              Institutional Media Hub
-            </span>
-            <h1 className="font-display-lg text-display-lg text-nigeria-green-deep mb-4">
-              News &amp; Announcements
-            </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-              The latest institutional updates, press releases, and media
-              mentions from the Nigerian Institute of Social and Economic
-              Research.
-            </p>
-          </section>
+      <main id="main-content" className="min-h-screen bg-slate-50 text-slate-900">
+        <section className="relative overflow-hidden border-b border-slate-200 bg-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,107,63,0.12),_transparent_35%)]" />
+          <div className="container relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <span className="inline-flex items-center rounded-full border border-[#DCEFE4] bg-[#F2FBF6] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A5F3D]">
+                    NISER Newsroom
+                  </span>
+                  <h1 className="mt-4 max-w-3xl font-['Playfair_Display',_Georgia,_serif] text-4xl font-bold tracking-tight text-[#0b1b13] sm:text-5xl lg:text-6xl">
+                    News &amp; announcements from the heart of policy research.
+                  </h1>
+                </div>
 
-          {/* Featured News Item */}
-          {featuredItem && (
-            <div className="mb-20 relative grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
-              <div className="md:col-span-7 rounded-xl overflow-hidden shadow-xl shadow-primary/5 group">
-                <div className="relative h-96 w-full overflow-hidden bg-gradient-to-br from-nigeria-green-deep to-research-blue flex items-center justify-center">
-                  <span className="text-8xl">
-                    {getCategoryIcon(featuredItem.category)}
-                  </span>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-nigeria-green-deep/80 to-transparent flex flex-col justify-end p-8">
-                  <span className="bg-accent-mint text-nigeria-green-deep font-label-sm text-label-sm px-3 py-1 rounded-full w-fit mb-4">
-                    {formatCategory(featuredItem.category)}
-                  </span>
-                  <h2 className="font-headline-lg text-headline-lg text-white mb-2">
-                    {featuredItem.title}
-                  </h2>
-                  <p className="text-white/80 font-body-md text-body-md line-clamp-2">
-                    {featuredItem.summary}
-                  </p>
-                </div>
-              </div>
-              <div className="md:col-span-5">
-                <div className="bg-surface-container-lowest p-8 border border-surface-gray rounded-xl">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-nigeria-green-deep">
-                      <span className="material-symbols-outlined">
-                        campaign
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-label-sm text-label-sm text-on-surface-variant">
-                        {formatPublishedDate(featuredItem.publishedDate)}
-                      </p>
-                      <p className="font-label-md text-label-md text-nigeria-green-vibrant">
-                        {formatType(featuredItem.category)}
-                      </p>
-                    </div>
-                  </div>
-                  <h3 className="font-headline-md text-headline-md text-on-surface mb-4">
-                    {featuredItem.title}
-                  </h3>
-                  <p className="text-on-surface-variant font-body-md text-body-md mb-6">
-                    {featuredItem.summary}
-                  </p>
-                  <a
-                    className="text-research-blue font-label-md flex items-center gap-2 hover:gap-4 transition-all cursor-pointer"
-                    href={
-                      featuredItem.externalUrl ?? `/news/${featuredItem.slug}`
-                    }
-                  >
-                    Read Full Press Release{" "}
-                    <span className="material-symbols-outlined text-sm">
-                      arrow_forward
+                <div className="flex flex-wrap gap-2 text-sm font-medium text-slate-600">
+                  {[
+                    "Research updates",
+                    "Media coverage",
+                    "Institutional stories",
+                    "Announcements",
+                  ].map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-slate-200 bg-white px-3 py-1.5"
+                    >
+                      {tag}
                     </span>
-                  </a>
+                  ))}
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Timeline Feed */}
-          <div className="relative space-y-16">
-            {/* Timeline decorative element */}
-            <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-[1px] bg-surface-gray -translate-x-1/2 hidden md:block" />
-
-            {/* Month Marker */}
-            <div className="flex justify-center relative z-10">
-              <span className="bg-surface-gray text-on-surface-variant font-label-sm text-label-sm px-6 py-2 rounded-full border border-outline-variant">
-                Recent Updates
-              </span>
-            </div>
-
-            {/* Timeline Items */}
-            {otherItems.map((item, index) => {
-              const colors =
-                categoryColors[item.category] ||
-                categoryColors["institutional"];
-              const isEven = index % 2 === 0;
-
-              return (
-                <div
-                  key={item.id}
-                  className="relative grid grid-cols-1 md:grid-cols-2 gap-gutter items-start group"
-                >
-                  {/* Timeline connector */}
-                  <div className="absolute left-1/2 top-12 w-4 h-4 rounded-full bg-white border-4 border-nigeria-green-vibrant -translate-x-1/2 z-20 hidden md:block" />
-
-                  {isEven ? (
-                    <>
-                      {/* Left side */}
-                      <div className="md:pr-12 md:text-right">
-                        <p className="font-label-sm text-label-sm text-on-surface-variant mb-1">
-                          {formatPublishedDate(item.publishedDate)}
+              {featuredItem ? (
+                <div className="grid gap-6 lg:grid-cols-[1.6fr_0.8fr]">
+                  <Link
+                    href={buildNewsUrl(featuredItem)}
+                    target={featuredItem.externalUrl?.trim() ? "_blank" : undefined}
+                    rel={featuredItem.externalUrl?.trim() ? "noreferrer" : undefined}
+                    className="group relative overflow-hidden rounded-[28px] bg-slate-900 shadow-[0_28px_70px_rgba(15,23,42,0.12)]"
+                  >
+                    <div className={`relative h-[360px] w-full bg-gradient-to-br ${categoryStyles[featuredItem.category]?.accent ?? "from-[#0A5F3D] to-[#1D4ED8]"}`}>
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.22),transparent_24%)]" />
+                      <div className="absolute inset-0 flex items-center justify-center text-[7rem] opacity-40">
+                        {getCategoryIcon(featuredItem.category)}
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
+                        <div className="mb-3 flex items-center justify-between gap-4">
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] ${categoryStyles[featuredItem.category]?.badge ?? "bg-white/15 text-white"}`}
+                          >
+                            {formatCategory(featuredItem.category)}
+                          </span>
+                          <span className="text-sm text-white/75">
+                            {formatPublishedDate(featuredItem.publishedDate)}
+                          </span>
+                        </div>
+                        <h2 className="max-w-xl font-['Playfair_Display',_Georgia,_serif] text-3xl font-bold leading-tight sm:text-4xl">
+                          {featuredItem.title}
+                        </h2>
+                        <p className="mt-3 max-w-lg text-sm text-slate-200 sm:text-base">
+                          {featuredItem.summary}
                         </p>
-                        <h3 className="font-headline-md text-headline-md text-on-surface group-hover:text-research-blue transition-colors">
+                      </div>
+                    </div>
+                  </Link>
+
+                  <div className="flex flex-col gap-4">
+                    {trendingItems.map((item) => (
+                      <Link
+                        key={item.id}
+                        href={buildNewsUrl(item)}
+                        target={item.externalUrl?.trim() ? "_blank" : undefined}
+                        rel={item.externalUrl?.trim() ? "noreferrer" : undefined}
+                        className="group rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[#BFE6CF] hover:shadow-lg"
+                      >
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                          <span
+                            className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${categoryStyles[item.category]?.badge ?? "bg-slate-100 text-slate-700"}`}
+                          >
+                            {formatCategory(item.category)}
+                          </span>
+                          <span className="text-xs text-slate-500">
+                            {formatPublishedDate(item.publishedDate)}
+                          </span>
+                        </div>
+                        <h3 className="font-['Playfair_Display',_Georgia,_serif] text-xl font-bold text-slate-900 transition group-hover:text-[#0A5F3D]">
                           {item.title}
                         </h3>
-                      </div>
-                      {/* Right side */}
-                      <div className="md:pl-12">
-                        <div
-                          className={`p-6 rounded-xl hover:shadow-lg transition-all border-l-4 ${colors.border} bg-surface-container-lowest border border-surface-gray`}
-                        >
-                          <p className="text-on-surface-variant font-body-md text-body-md mb-4">
-                            {item.summary}
-                          </p>
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded bg-surface-container-low flex items-center justify-center text-2xl">
-                              {getCategoryIcon(item.category)}
-                            </div>
-                            <div>
-                              <p className="font-label-md text-label-md text-on-surface">
-                                {formatCategory(item.category)}
-                              </p>
-                              <p className="text-label-sm font-label-sm text-on-surface-variant">
-                                {formatType(item.category)}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {/* Left side (hidden on this alternate layout) */}
-                      <div className="md:order-2 md:pl-12">
-                        <p className="font-label-sm text-label-sm text-on-surface-variant mb-1">
-                          {formatPublishedDate(item.publishedDate)}
+                        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+                          {item.summary}
                         </p>
-                        <h3 className="font-headline-md text-headline-md text-on-surface group-hover:text-research-blue transition-colors">
-                          {item.title}
-                        </h3>
-                      </div>
-                      {/* Right side */}
-                      <div className="md:order-1 md:text-right md:pr-12">
-                        <div
-                          className={`p-6 rounded-xl hover:shadow-lg transition-all border-r-4 ${colors.border} bg-surface-container-lowest border border-surface-gray`}
-                        >
-                          <p className="text-on-surface-variant font-body-md text-body-md mb-4">
-                            {item.summary}
-                          </p>
-                          <div className="flex items-center gap-4 justify-end">
-                            <div className="text-right">
-                              <p className="font-label-md text-label-md text-on-surface">
-                                {formatCategory(item.category)}
-                              </p>
-                              <p className="text-label-sm font-label-sm text-on-surface-variant">
-                                {formatType(item.category)}
-                              </p>
-                            </div>
-                            <div className="w-10 h-10 rounded-full bg-research-blue/10 flex items-center justify-center text-xl">
-                              {getCategoryIcon(item.category)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                        <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#0A5F3D]">
+                          Read story
+                          <span aria-hidden="true">→</span>
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              );
-            })}
+              ) : (
+                <div className="rounded-[24px] border border-dashed border-slate-300 bg-slate-100 p-12 text-center text-slate-600">
+                  No news updates are available right now.
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <section className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0A5F3D]">
+                Latest coverage
+              </p>
+              <h2 className="mt-2 font-['Playfair_Display',_Georgia,_serif] text-3xl font-bold text-slate-900 sm:text-4xl">
+                Recent updates and analysis
+              </h2>
+            </div>
+
+            <Link
+              href="/news?page=2"
+              className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-[#0A5F3D] hover:text-[#0A5F3D]"
+            >
+              Explore archive
+            </Link>
           </div>
 
-          {/* Load More */}
-          <div className="mt-16 text-center">
-            <a
-              href="/news?page=2"
-              className="bg-nigeria-green-deep text-on-primary px-10 py-3 rounded-lg font-label-md hover:opacity-90 transition-all inline-flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined">expand_more</span>
-              Load More News
-            </a>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {archiveItems.length > 0 ? (
+              archiveItems.map((item) => (
+                <article
+                  key={item.id}
+                  className="group overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#CDECD9] hover:shadow-xl"
+                >
+                  <div className={`flex items-center justify-between border-b border-slate-200 bg-gradient-to-r ${categoryStyles[item.category]?.accent ?? "from-[#0A5F3D] to-[#1D4ED8]"} px-4 py-3 text-white`}>
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em]">
+                      {getCategoryIcon(item.category)} {formatCategory(item.category)}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-[0.14em] text-white/80">
+                      {formatPublishedDate(item.publishedDate)}
+                    </span>
+                  </div>
+
+                  <div className="space-y-4 p-5">
+                    <h3 className="font-['Playfair_Display',_Georgia,_serif] text-2xl font-bold leading-tight text-slate-900">
+                      {item.title}
+                    </h3>
+                    <p className="line-clamp-4 text-sm leading-6 text-slate-600">
+                      {item.summary}
+                    </p>
+
+                    <Link
+                      href={buildNewsUrl(item)}
+                      target={item.externalUrl?.trim() ? "_blank" : undefined}
+                      rel={item.externalUrl?.trim() ? "noreferrer" : undefined}
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-[#0A5F3D] transition group-hover:gap-3"
+                    >
+                      Read full story
+                      <span aria-hidden="true">→</span>
+                    </Link>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="rounded-[24px] border border-slate-200 bg-white p-8 text-slate-600 md:col-span-2 xl:col-span-3">
+                There are no additional articles to show right now.
+              </div>
+            )}
           </div>
-        </div>
+        </section>
       </main>
       <Footer />
     </>

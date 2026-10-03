@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -48,12 +49,13 @@ export default function GoverningCouncilPage() {
                 
                 <div className="mb-8 flex flex-col md:flex-row gap-8">
                   <div className="md:w-64 flex-shrink-0">
-                    <div className="w-64 h-80 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <div className="text-center text-gray-500">
-                        <p className="text-sm">Chairman</p>
-                        <p className="text-xs mt-2">Image Placeholder</p>
-                      </div>
-                    </div>
+                    <Image
+                      src="/dr-emmanuel.png"
+                      alt="Dr Emmanuel O. Imafidon, Chairman of the Governing Council"
+                      width={256}
+                      height={320}
+                      className="h-80 w-64 rounded-lg object-cover"
+                    />
                   </div>
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold mb-4">Inauguration and Recent Developments</h3>

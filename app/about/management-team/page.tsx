@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -19,14 +20,22 @@ export default function ManagementTeamPage() {
               title="Management Team"
               description="Senior leadership and executive staff"
             />
-            <div className="prose max-w-3xl">
+            <div className="prose max-w-4xl">
               <p>
-                NISER's management team works collaboratively to advance the institution's research mission
+                NISER&apos;s management team works collaboratively to advance the institution&apos;s research mission
                 and strategic objectives.
               </p>
-              <p>
-                Details about management team members and their roles will be added here.
-              </p>
+              
+
+              <div className="mt-8 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+                <Image
+                  src="/mgt-team.webp"
+                  alt="NISER management team image"
+                  width={1200}
+                  height={800}
+                  className="h-auto w-full rounded-md object-contain"
+                />
+              </div>
             </div>
           </div>
         </div>

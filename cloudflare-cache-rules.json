@@ -1,0 +1,344 @@
+{
+  "description": "Cloudflare Cache Rules Configuration for NISER Digital Platform",
+  "documentation": "https://developers.cloudflare.com/cache/how-to/cache-rules/",
+  "domain": "niser.gov.ng",
+  "last_updated": "2026-06-30",
+
+  "notes": [
+    "Rules are evaluated in ORDER — first match wins. Place bypass rules BEFORE cache-everything rules.",
+    "Cloudflare Cache Rules run at REQUEST phase; do NOT use http.response.status in expressions here.",
+    "Edge TTL (s-maxage) is how long Cloudflare's edge holds the response.",
+    "Browser TTL (max-age) is how long the user's browser caches the response.",
+    "Cache-Tag purging requires Cloudflare Enterprise or Cache Reserve. Tags are set in middleware.ts.",
+    "All API write endpoints (POST/PUT/DELETE) are force-bypassed via the no-cache rule."
+  ],
+
+  "rules": [
+    {
+      "id": "rule-1-bypass-auth-apis",
+      "priority": 1,
+      "description": "BYPASS: Never cache write endpoints, AI generation, webhooks, or auth-gated APIs",
+      "criteria": {
+        "expression": "(http.request.method ne \"GET\") or (starts_with(http.request.uri.path, \"/api/admin/\")) or (starts_with(http.request.uri.path, \"/api/chatbot\")) or (starts_with(http.request.uri.path, \"/api/subscribe\")) or (starts_with(http.request.uri.path, \"/api/embed\")) or (starts_with(http.request.uri.path, \"/api/fcm\")) or (starts_with(http.request.uri.path, \"/api/revalidate\")) or (starts_with(http.request.uri.path, \"/api/policy-brief\")) or (starts_with(http.request.uri.path, \"/api/policy-monitor\")) or (starts_with(http.request.uri.path, \"/api/literature-assistant\")) or (starts_with(http.request.uri.path, \"/api/translate\")) or (has_header(\"Authorization\")) or (has_header(\"x-internal-ai-secret\"))"
+      },
+      "action": {
+        "cache_level": "bypass"
+      }
+    },
+    {
+      "id": "rule-2-static-assets",
+      "priority": 2,
+      "description": "Cache immutable static assets for 1 year (Next.js _next/static, fonts, images in /public)",
+      "criteria": {
+        "expression": "(starts_with(http.request.uri.path, \"/_next/static/\")) or (starts_with(http.request.uri.path, \"/_next/image\")) or (ends_with(http.request.uri.path, \".woff2\") or ends_with(http.request.uri.path, \".woff\") or ends_with(http.request.uri.path, \".ttf\") or ends_with(http.request.uri.path, \".eot\") or ends_with(http.request.uri.path, \".ico\") or ends_with(http.request.uri.path, \".webmanifest\"))"
+      },
+      "action": {
+        "cache_level": "cache_everything",
+        "edge_ttl": 31536000,
+        "browser_ttl": 31536000,
+        "cache_key": {
+          "ignore_query_strings": false
+        }
+      }
+    },
+    {
+      "id": "rule-3-public-images",
+      "priority": 3,
+      "description": "Cache public images (WebP, PNG, JPG, SVG, GIF) for 30 days",
+      "criteria": {
+        "expression": "(ends_with(http.request.uri.path, \".webp\") or ends_with(http.request.uri.path, \".png\") or ends_with(http.request.uri.path, \".jpg\") or ends_with(http.request.uri.path, \".jpeg\") or ends_with(http.request.uri.path, \".gif\") or ends_with(http.request.uri.path, \".svg\") or ends_with(http.request.uri.path, \".avif\")) and (not starts_with(http.request.uri.path, \"/api/\"))"
+      },
+      "action": {
+        "cache_level": "cache_everything",
+        "edge_ttl": 2592000,
+        "browser_ttl": 2592000
+      }
+    },
+    {
+      "id": "rule-4-api-search",
+      "priority": 4,
+      "description": "Cache public GET /api/search for 2 minutes (short TTL for freshness)",
+      "criteria": {
+        "expression": "(http.request.method eq \"GET\") and (starts_with(http.request.uri.path, \"/api/search\")) and (not has_header(\"Authorization\"))"
+      },
+      "action": {
+        "cache_level": "cache_everything",
+        "edge_ttl": 120,
+        "browser_ttl": 0,
+        "cache_key": {
+          "ignore_query_strings": false,
+          "custom_key": "search-{http.request.uri.query}"
+        }
+      }
+    },
+    {
+      "id": "rule-5-api-data",
+      "priority": 5,
+      "description": "Cache public GET /api/data (Open Data Catalogue) for 10 minutes",
+      "criteria": {
+        "expression": "(http.request.method eq \"GET\") and (starts_with(http.request.uri.path, \"/api/data\")) and (not has_header(\"Authorization\"))"
+      },
+      "action": {
+        "cache_level": "cache_everything",
+        "edge_ttl": 600,
+        "browser_ttl": 0
+      }
+    },
+    {
+      "id": "rule-6-api-recommendations",
+      "priority": 6,
+      "description": "Cache GET /api/recommendations for 5 minutes (NOTE: route currently POST-only — update route to support GET for caching)",
+      "criteria": {
+        "expression": "(http.request.method eq \"GET\") and (starts_with(http.request.uri.path, \"/api/recommendations\")) and (not has_header(\"Authorization\"))"
+      },
+      "action": {
+        "cache_level": "cache_everything",
+        "edge_ttl": 300,
+        "browser_ttl": 0
+      }
+    },
+    {
+      "id": "rule-7-api-ai-status",
+      "priority": 7,
+      "description": "Cache GET /api/ai/status for 30 seconds (health check, short TTL)",
+      "criteria": {
+        "expression": "(http.request.method eq \"GET\") and (starts_with(http.request.uri.path, \"/api/ai/status\"))"
+      },
+      "action": {
+        "cache_level": "cache_everything",
+        "edge_ttl": 30,
+        "browser_ttl": 0
+      }
+    },
+    {
+      "id": "rule-8-dynamic-content-pages",
+      "priority": 8,
+      "description": "Cache dynamic content pages (publications, insights, events, people, news, policy-briefs) for 6 hours at edge",
+      "criteria": {
+        "expression": "(http.request.method eq \"GET\") and (starts_with(http.request.uri.path, \"/publications\") or starts_with(http.request.uri.path, \"/insights\") or starts_with(http.request.uri.path, \"/events\") or starts_with(http.request.uri.path, \"/people\") or starts_with(http.request.uri.path, \"/news\") or starts_with(http.request.uri.path, \"/policy-briefs\") or starts_with(http.request.uri.path, \"/research\") or starts_with(http.request.uri.path, \"/research-centers\") or starts_with(http.request.uri.path, \"/working-groups\"))"
+      },
+      "action": {
+        "cache_level": "cache_everything",
+        "edge_ttl": 21600,
+        "browser_ttl": 3600
+      }
+    },
+    {
+      "id": "rule-9-static-pages",
+      "priority": 9,
+      "description": "Cache semi-static pages (about, contact, governance, careers, etc.) for 24 hours at edge",
+      "criteria": {
+        "expression": "(http.request.method eq \"GET\") and (http.request.uri.path eq \"/\" or starts_with(http.request.uri.path, \"/about\") or starts_with(http.request.uri.path, \"/contact\") or starts_with(http.request.uri.path, \"/governance\") or starts_with(http.request.uri.path, \"/careers\") or starts_with(http.request.uri.path, \"/internships\") or starts_with(http.request.uri.path, \"/partnerships\") or starts_with(http.request.uri.path, \"/services\") or starts_with(http.request.uri.path, \"/training\") or starts_with(http.request.uri.path, \"/funding-opportunities\") or starts_with(http.request.uri.path, \"/bckc-center\") or starts_with(http.request.uri.path, \"/resources\") or starts_with(http.request.uri.path, \"/webinars\") or starts_with(http.request.uri.path, \"/gallery\") or starts_with(http.request.uri.path, \"/privacy-policy\"))"
+      },
+      "action": {
+        "cache_level": "cache_everything",
+        "edge_ttl": 86400,
+        "browser_ttl": 3600
+      }
+    },
+    {
+      "id": "rule-10-archive-pages",
+      "priority": 10,
+      "description": "Cache archive/report pages for 7 days — these change rarely",
+      "criteria": {
+        "expression": "(http.request.method eq \"GET\") and (starts_with(http.request.uri.path, \"/publications-archive\") or starts_with(http.request.uri.path, \"/annual-reports\"))"
+      },
+      "action": {
+        "cache_level": "cache_everything",
+        "edge_ttl": 604800,
+        "browser_ttl": 86400
+      }
+    },
+    {
+      "id": "rule-11-bypass-admin-ui",
+      "priority": 11,
+      "description": "BYPASS: Never cache the admin dashboard UI",
+      "criteria": {
+        "expression": "starts_with(http.request.uri.path, \"/admin\")"
+      },
+      "action": {
+        "cache_level": "bypass"
+      }
+    },
+    {
+      "id": "rule-12-bypass-interactive",
+      "priority": 12,
+      "description": "BYPASS: Never cache AI chatbot, search UI, cart, shop (personalised/interactive pages)",
+      "criteria": {
+        "expression": "starts_with(http.request.uri.path, \"/chatbot\") or starts_with(http.request.uri.path, \"/search\") or starts_with(http.request.uri.path, \"/cart\") or starts_with(http.request.uri.path, \"/shop\") or starts_with(http.request.uri.path, \"/subscribe\") or starts_with(http.request.uri.path, \"/translate\") or starts_with(http.request.uri.path, \"/literature-assistant\") or starts_with(http.request.uri.path, \"/ai-policy-brief\")"
+      },
+      "action": {
+        "cache_level": "bypass"
+      }
+    }
+  ],
+
+  "rate_limiting": [
+    {
+      "id": "rate-limit-1-general-api",
+      "description": "Limit general API requests to 120 per minute per IP (generous for public research site)",
+      "expression": "(starts_with(http.request.uri.path, \"/api/\"))",
+      "action": "block",
+      "characteristics": ["ip.src"],
+      "counting_expression": "(starts_with(http.request.uri.path, \"/api/\"))",
+      "mitigation_timeout": 60,
+      "threshold": 120,
+      "period": 60
+    },
+    {
+      "id": "rate-limit-2-search",
+      "description": "Limit search API to 60 per minute per IP",
+      "expression": "(starts_with(http.request.uri.path, \"/api/search\"))",
+      "action": "block",
+      "characteristics": ["ip.src"],
+      "counting_expression": "(starts_with(http.request.uri.path, \"/api/search\"))",
+      "mitigation_timeout": 60,
+      "threshold": 60,
+      "period": 60
+    },
+    {
+      "id": "rate-limit-3-chatbot",
+      "description": "Limit AI chatbot to 10 per minute per IP (expensive generative endpoint)",
+      "expression": "(starts_with(http.request.uri.path, \"/api/chatbot\"))",
+      "action": "block",
+      "characteristics": ["ip.src"],
+      "counting_expression": "(starts_with(http.request.uri.path, \"/api/chatbot\"))",
+      "mitigation_timeout": 300,
+      "threshold": 10,
+      "period": 60
+    },
+    {
+      "id": "rate-limit-4-ai-gen",
+      "description": "Limit AI generation endpoints (policy-brief, literature-assistant, translate) to 5 per minute per IP",
+      "expression": "(starts_with(http.request.uri.path, \"/api/policy-brief\") or starts_with(http.request.uri.path, \"/api/literature-assistant\") or starts_with(http.request.uri.path, \"/api/translate\"))",
+      "action": "block",
+      "characteristics": ["ip.src"],
+      "counting_expression": "(starts_with(http.request.uri.path, \"/api/policy-brief\") or starts_with(http.request.uri.path, \"/api/literature-assistant\") or starts_with(http.request.uri.path, \"/api/translate\"))",
+      "mitigation_timeout": 300,
+      "threshold": 5,
+      "period": 60
+    },
+    {
+      "id": "rate-limit-5-subscribe",
+      "description": "Limit newsletter subscribe to 3 per minute per IP (anti-spam)",
+      "expression": "(starts_with(http.request.uri.path, \"/api/subscribe\") or starts_with(http.request.uri.path, \"/subscribe\"))",
+      "action": "block",
+      "characteristics": ["ip.src"],
+      "counting_expression": "(starts_with(http.request.uri.path, \"/api/subscribe\") or starts_with(http.request.uri.path, \"/subscribe\"))",
+      "mitigation_timeout": 600,
+      "threshold": 3,
+      "period": 60
+    }
+  ],
+
+  "waf_rules": [
+    {
+      "id": "waf-1-bot-challenge",
+      "description": "Challenge high-threat-score bots and unverified scrapers on API write endpoints",
+      "expression": "(cf.threat_score gt 30) and (starts_with(http.request.uri.path, \"/api/\"))",
+      "action": "managed_challenge"
+    },
+    {
+      "id": "waf-2-sql-injection",
+      "description": "Block basic SQL injection patterns in query strings",
+      "expression": "(http.request.uri.query contains \"union select\") or (http.request.uri.query contains \"drop table\") or (http.request.uri.query contains \"insert into\") or (http.request.uri.query contains \"' or '1'='1\")",
+      "action": "block"
+    },
+    {
+      "id": "waf-3-admin-geo-lock",
+      "description": "Challenge access to /admin from outside Nigeria (adjust countries as needed)",
+      "expression": "(starts_with(http.request.uri.path, \"/admin\")) and (not ip.geoip.country in {\"NG\"})",
+      "action": "managed_challenge",
+      "note": "Remove or adjust this rule if administrators work internationally"
+    },
+    {
+      "id": "waf-4-revalidate-secret-required",
+      "description": "Block /api/revalidate calls missing the token query param entirely (extra hardening)",
+      "expression": "(starts_with(http.request.uri.path, \"/api/revalidate\")) and (not http.request.uri.query contains \"token=\")",
+      "action": "block"
+    },
+    {
+      "id": "waf-5-fcm-internal-only",
+      "description": "Block /api/fcm from external non-verified sources (should only be triggered server-side)",
+      "expression": "(starts_with(http.request.uri.path, \"/api/fcm\")) and (cf.threat_score gt 10)",
+      "action": "block"
+    }
+  ],
+
+  "cache_tags": {
+    "description": "Cache tags are set in middleware.ts as 'Cache-Tag' response headers. Use Cloudflare API to purge by tag when ISR revalidation runs.",
+    "tag_scheme": {
+      "homepage": "homepage",
+      "publications_index": "publications-index",
+      "publication_detail": "publication-{slug}",
+      "insights_index": "insights-index",
+      "insight_detail": "insight-{slug}",
+      "people_index": "researchers-directory",
+      "person_detail": "researcher-{slug}",
+      "events_index": "events-index",
+      "news_index": "news-index",
+      "search": "search-index",
+      "data_catalogue": "data-catalogue"
+    },
+    "purge_api_example": "curl -X POST 'https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/purge_cache' -H 'Authorization: Bearer {CF_API_TOKEN}' -H 'Content-Type: application/json' --data '{\"tags\":[\"publication-my-slug\",\"publications-index\",\"search-index\"]}'"
+  },
+
+  "cache_control_headers": {
+    "description": "These Cache-Control values are set by middleware.ts (see file). Cloudflare respects s-maxage for edge TTL.",
+    "mapping": {
+      "static_assets_next":   "public, max-age=31536000, immutable",
+      "archive_pages":        "public, max-age=86400, s-maxage=604800",
+      "static_pages":         "public, max-age=3600,  s-maxage=86400",
+      "dynamic_content":      "public, max-age=3600,  s-maxage=21600",
+      "api_search":           "public, max-age=0,     s-maxage=120",
+      "api_data":             "public, max-age=0,     s-maxage=600",
+      "api_ai_status":        "public, max-age=0,     s-maxage=30",
+      "api_private_write":    "private, no-store, no-cache",
+      "interactive_pages":    "private, no-store, no-cache"
+    }
+  },
+
+  "cloudflare_settings": {
+    "ssl_tls_mode": "Full (strict)",
+    "always_use_https": true,
+    "http2": true,
+    "http3_quic": true,
+    "brotli_compression": true,
+    "auto_minify": { "css": true, "js": true, "html": false },
+    "polish": "Lossless",
+    "webp_conversion": true,
+    "early_hints": true,
+    "rocket_loader": false,
+    "note_rocket_loader": "Disabled — Next.js bundles its own script loading. Rocket Loader can break RSC hydration."
+  },
+
+  "setup_steps": [
+    "1. Log in to the Cloudflare dashboard → select niser.gov.ng",
+    "2. Caching → Cache Rules → Create rules 1-12 in order (priority 1 = first evaluated)",
+    "3. Security → Rate Limiting → Create the 5 rate limiting rules above",
+    "4. Security → WAF → Custom Rules → Create WAF rules 1-5 above",
+    "5. Speed → Optimization → enable Brotli, Polish (Lossless), WebP, Early Hints",
+    "6. SSL/TLS → set mode to Full (strict) and enable Always Use HTTPS",
+    "7. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID to .env.production and Dockerfile/CI secrets",
+    "8. Add ISR_REVALIDATE_TOKEN to .env.production (used by /api/revalidate webhook)",
+    "9. In WordPress CMS webhook settings, point to: POST https://niser.gov.ng/api/revalidate?token=<ISR_REVALIDATE_TOKEN>&type=publication&id={id}",
+    "10. Monitor: Analytics → Cache → target Cache Hit Ratio > 80%"
+  ],
+
+  "env_vars_required": {
+    "CLOUDFLARE_API_TOKEN": "Cloudflare API token with Zone:Cache Purge permission — add to .env.production",
+    "CLOUDFLARE_ZONE_ID":   "Zone ID from Cloudflare dashboard (Overview page, right sidebar) — add to .env.production",
+    "ISR_REVALIDATE_TOKEN": "Random secret for the /api/revalidate webhook — generate with: openssl rand -hex 32"
+  },
+
+  "monitoring": {
+    "target_cache_hit_ratio": ">80%",
+    "key_metrics": [
+      "Cache Hit Ratio (Cloudflare Analytics → Caching)",
+      "Bandwidth Saved vs Origin traffic",
+      "Rate-limited requests per rule",
+      "WAF events (blocked/challenged)",
+      "Origin response time (should drop significantly after cache warm-up)"
+    ]
+  }
+}

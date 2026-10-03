@@ -1,0 +1,89 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: niser-app
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    networks:
+      - niser-net
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: niser-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+    networks:
+      - niser-net
+
+  qdrant:
+    image: qdrant/qdrant:v1.2.1
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    networks:
+      - niser-net
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: niser-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      - niser-net
+
+  matomo-db:
+    image: mysql:8.0
+    container_name: matomo-db
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: matomo
+      MYSQL_USER: matomo
+      MYSQL_PASSWORD: matomo
+    volumes:
+      - matomo-db-data:/var/lib/mysql
+    networks:
+      - niser-net
+
+  matomo:
+    image: matomo:latest
+    container_name: matomo
+    environment:
+      - MATOMO_DATABASE_HOST=matomo-db
+      - MATOMO_DATABASE_USERNAME=matomo
+      - MATOMO_DATABASE_PASSWORD=matomo
+      - MATOMO_DATABASE_DBNAME=matomo
+    depends_on:
+      - matomo-db
+    ports:
+      - "8081:80"
+    networks:
+      - niser-net
+
+networks:
+  niser-net:
+    driver: bridge
+
+volumes:
+  qdrant-data:
+  matomo-db-data:

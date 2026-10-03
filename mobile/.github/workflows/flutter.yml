@@ -1,0 +1,198 @@
+name: flutter
+
+on:
+  push:
+    paths:
+      - "mobile/**"
+  pull_request:
+    paths:
+      - "mobile/**"
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: "3.47.0"
+  APP_ID: "ng.gov.niser.app"
+
+defaults:
+  run:
+    working-directory: mobile
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze --fatal-infos
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: flutter test --coverage
+      - name: Report line coverage (target ≥75% per plan §305)
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+          lcov = pathlib.Path('coverage/lcov.info')
+          if not lcov.exists():
+              print('coverage/lcov.info not found — skipping gate')
+              sys.exit(0)
+          lf = lh = 0
+          for line in lcov.read_text().splitlines():
+              if line.startswith('LF:'): lf += int(line[3:])
+              if line.startswith('LH:'): lh += int(line[3:])
+          pct = (lh / lf * 100) if lf else 0
+          print(f'Coverage: {lh}/{lf} ({pct:.1f}%)')
+          if pct < 75:
+              print(f'::warning::Line coverage {pct:.1f}% < 75% target — add tests (plan §305)')
+          else:
+              print('Coverage target met ✅')
+          PY
+      - run: dart run build_runner build --delete-conflicting-outputs --dry-run || echo "build_runner dry-run: check generated files"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: mobile/coverage
+
+  integration:
+    runs-on: ubuntu-latest
+    needs: [analyze, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          disable-animations: true
+          script: flutter test integration_test -d emulator-5554 --dart-define=API_BASE_URL=https://staging.niser.gov.ng
+
+  build-aab:
+    runs-on: ubuntu-latest
+    needs: [analyze, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - name: Restore signing keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+          cat > android/key.properties <<'EOF'
+          storeFile=android/app/upload-keystore.jks
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          EOF
+      - run: flutter build appbundle --release --obfuscate --split-debug-info=build/symbols
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-release.aab
+          path: mobile/build/app/outputs/bundle/release/app-release.aab
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dart-symbols
+          path: mobile/build/symbols
+
+  build-ipa:
+    runs-on: macos-latest
+    needs: [analyze, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: |
+          echo "${{ secrets.APPLE_API_KEY_BASE64 }}" | base64 -d > /tmp/api-key.p8
+          echo "${{ secrets.MATCH_REPO }}" > /tmp/match-repo
+      - name: Fetch signing (Match)
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        run: |
+          bundle install
+          bundle exec fastlane match appstore --readonly
+        working-directory: mobile
+      - run: flutter build ipa --release --obfuscate --split-debug-info=build/symbols
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Runner.ipa
+          path: mobile/build/ios/ipa/*.ipa
+
+  # Google Play internal track + TestFlight — triggered manually, needs store secrets.
+  beta-android:
+    runs-on: ubuntu-latest
+    needs: [build-aab]
+    if: github.event_name == 'workflow_dispatch'
+    environment: beta
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+          echo "${{ secrets.GOOGLE_PLAY_JSON_KEY }}" > /tmp/play-key.json
+      - run: bundle exec fastlane android beta
+        env:
+          ANDROID_KEYSTORE_PATH: android/app/upload-keystore.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GOOGLE_PLAY_JSON_KEY: /tmp/play-key.json
+        working-directory: mobile
+
+  beta-ios:
+    runs-on: macos-latest
+    needs: [build-ipa]
+    if: github.event_name == 'workflow_dispatch'
+    environment: beta
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: echo "${{ secrets.APPLE_API_KEY_BASE64 }}" | base64 -d > /tmp/api-key.p8
+      - run: bundle exec fastlane ios beta
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          TESTFLIGHT_GROUPS: ${{ vars.TESTFLIGHT_GROUPS }}
+          TESTFLIGHT_EXTERNAL: ${{ vars.TESTFLIGHT_EXTERNAL }}
+        working-directory: mobile
+
+  # Production promotion — requires IT Unit head approval (protected environment).
+  prod:
+    runs-on: ubuntu-latest
+    needs: [beta-android, beta-ios]
+    if: github.event_name == 'workflow_dispatch'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "Promotion to production requires a human approval in the 'production' environment."
+          echo "Run the Android/IOS promotion lanes here (Play internal -> production; App Store release)."

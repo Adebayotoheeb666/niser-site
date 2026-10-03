@@ -1,0 +1,50 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+
+# Environment
+.env
+.env.local
+.env.dev
+.env.staging
+.env.prod
+
+# Localisation / generated
+*.g.dart
+*.freezed.dart
+
+# Android
+android/.gradle/
+android/local.properties
+android/key.properties
+android/app/src/main/kuy.gif
+android/app/*.jks
+android/app/*.keystore
+android/captures/
+android/.cxx/
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/ephemeral/
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/Flutter/flutter_assets/
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Generated.xcconfig
+ios/Runner/GeneratedPluginRegistrant.*
+
+# IntelliJ / Android Studio
+.idea/
+.vscode/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision

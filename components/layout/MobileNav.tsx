@@ -24,6 +24,7 @@ const sections: NavSection[] = [
     children: [
       { href: "/publications", label: "Publications" },
       { href: "/policy-briefs", label: "Policy Briefs" },
+      { href: "/translate", label: "Translate" },
       { href: "/insights", label: "Insights" },
       { href: "/people", label: "People" },
     ],

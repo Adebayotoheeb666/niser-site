@@ -1,114 +1,11 @@
 import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import HeroSection from '@/components/ui/HeroSection';
-import SectionHeader from '@/components/ui/SectionHeader';
 
 export const metadata: Metadata = {
   title: 'NISER Calendar of Activities | Resources',
   description: 'NISER calendar of activities, events, workshops, and important institutional dates for the year.',
 };
-
-const calendarActivities = [
-  {
-    month: 'January',
-    events: [
-      { date: 'Jan 1', title: 'New Year Holiday', category: 'Holiday', color: 'bg-gray-100' },
-      { date: 'Jan 15-20', title: 'Research Methodology Training (Intensive)', category: 'Training', color: 'bg-blue-50' },
-      { date: 'Jan 25', title: 'Monthly Research Seminar', category: 'Seminar', color: 'bg-green-50' },
-    ],
-  },
-  {
-    month: 'February',
-    events: [
-      { date: 'Feb 5', title: 'Policy Brief Launch - Economic Analysis', category: 'Publication', color: 'bg-purple-50' },
-      { date: 'Feb 14', title: 'Valentine\'s Day', category: 'Holiday', color: 'bg-gray-100' },
-      { date: 'Feb 18-22', title: 'Workshop on Data Analytics', category: 'Workshop', color: 'bg-orange-50' },
-      { date: 'Feb 28', title: 'Quarterly Board Meeting', category: 'Meeting', color: 'bg-red-50' },
-    ],
-  },
-  {
-    month: 'March',
-    events: [
-      { date: 'Mar 8', title: 'International Women\'s Day Lecture', category: 'Seminar', color: 'bg-pink-50' },
-      { date: 'Mar 15-17', title: 'Annual Research Conference', category: 'Conference', color: 'bg-indigo-50' },
-      { date: 'Mar 25', title: 'Staff Retreat & Development', category: 'Event', color: 'bg-cyan-50' },
-    ],
-  },
-  {
-    month: 'April',
-    events: [
-      { date: 'Apr 1', title: 'New Financial Year Begins', category: 'Administrative', color: 'bg-yellow-50' },
-      { date: 'Apr 10-12', title: 'Training: Policy Analysis for Beginners', category: 'Training', color: 'bg-blue-50' },
-      { date: 'Apr 20', title: 'Public Lecture Series - Macroeconomics', category: 'Lecture', color: 'bg-green-50' },
-    ],
-  },
-  {
-    month: 'May',
-    events: [
-      { date: 'May 1', title: 'International Workers\' Day', category: 'Holiday', color: 'bg-gray-100' },
-      { date: 'May 5-7', title: 'Regional Workshop - Environmental Policy', category: 'Workshop', color: 'bg-orange-50' },
-      { date: 'May 29', title: 'Democracy Day', category: 'Holiday', color: 'bg-gray-100' },
-    ],
-  },
-  {
-    month: 'June',
-    events: [
-      { date: 'Jun 12', title: 'Founders\' Day Celebration', category: 'Celebration', color: 'bg-rose-50' },
-      { date: 'Jun 18-20', title: 'International Workshop on Research Methods', category: 'Workshop', color: 'bg-orange-50' },
-      { date: 'Jun 25', title: 'Mid-Year Review Meeting', category: 'Meeting', color: 'bg-red-50' },
-    ],
-  },
-  {
-    month: 'July',
-    events: [
-      { date: 'Jul 1', title: 'Mid-Year Break Begins', category: 'Holiday', color: 'bg-gray-100' },
-      { date: 'Jul 15-17', title: 'Crash Training: Research Proposal Writing', category: 'Training', color: 'bg-blue-50' },
-      { date: 'Jul 25', title: 'Research Seminar Series Resumes', category: 'Seminar', color: 'bg-green-50' },
-    ],
-  },
-  {
-    month: 'August',
-    events: [
-      { date: 'Aug 5-9', title: 'Advanced Data Analytics Workshop', category: 'Workshop', color: 'bg-orange-50' },
-      { date: 'Aug 15', title: 'Independence Day', category: 'Holiday', color: 'bg-gray-100' },
-      { date: 'Aug 25-27', title: 'National Research Forum', category: 'Conference', color: 'bg-indigo-50' },
-    ],
-  },
-  {
-    month: 'September',
-    events: [
-      { date: 'Sep 10-12', title: 'Capacity Building: GIS and Spatial Analysis', category: 'Training', color: 'bg-blue-50' },
-      { date: 'Sep 20', title: 'Policy Brief Launch - Agricultural Sector', category: 'Publication', color: 'bg-purple-50' },
-      { date: 'Sep 28-30', title: 'Inter-institutional Research Collaboration Forum', category: 'Conference', color: 'bg-indigo-50' },
-    ],
-  },
-  {
-    month: 'October',
-    events: [
-      { date: 'Oct 1', title: 'National Independence Day', category: 'Holiday', color: 'bg-gray-100' },
-      { date: 'Oct 8-10', title: 'Training: Gender-Sensitive Research Methods', category: 'Training', color: 'bg-blue-50' },
-      { date: 'Oct 24', title: 'Quarterly Board Meeting', category: 'Meeting', color: 'bg-red-50' },
-    ],
-  },
-  {
-    month: 'November',
-    events: [
-      { date: 'Nov 5-7', title: 'International Seminar on Economic Policy', category: 'Seminar', color: 'bg-green-50' },
-      { date: 'Nov 15', title: 'NISER Appreciation Day', category: 'Celebration', color: 'bg-rose-50' },
-      { date: 'Nov 28-30', title: 'Year-End Research Symposium', category: 'Conference', color: 'bg-indigo-50' },
-    ],
-  },
-  {
-    month: 'December',
-    events: [
-      { date: 'Dec 10', title: 'Human Rights Day Seminar', category: 'Seminar', color: 'bg-green-50' },
-      { date: 'Dec 15', title: 'Christmas Party & Awards Ceremony', category: 'Celebration', color: 'bg-rose-50' },
-      { date: 'Dec 25', title: 'Christmas Day', category: 'Holiday', color: 'bg-gray-100' },
-      { date: 'Dec 31', title: 'New Year\'s Eve', category: 'Holiday', color: 'bg-gray-100' },
-    ],
-  },
-];
 
 const categoryColors = {
   Training: 'text-blue-700 bg-blue-50 border-blue-200',
@@ -124,23 +21,106 @@ const categoryColors = {
   Celebration: 'text-rose-700 bg-rose-50 border-rose-200',
 };
 
-export default function CalendarPage() {
+interface CmsEvent {
+  id?: string;
+  title?: string;
+  startDate?: string;
+  eventType?: string;
+  location?: string;
+  isOnline?: boolean;
+}
+
+interface CalendarEntry {
+  date: string;
+  title: string;
+  category: string;
+  color: string;
+  location?: string;
+}
+
+interface CalendarMonth {
+  month: string;
+  events: CalendarEntry[];
+}
+
+export default async function CalendarPage() {
+  const events = await (async () => {
+    try {
+      const ev = await import('@/lib/cms/client').then((m) => m.getEvents({ limit: 200 }));
+      return ev as CmsEvent[];
+    } catch {
+      return [] as CmsEvent[];
+    }
+  })();
+
+  // Group events by month name
+  const months = [
+    'January','February','March','April','May','June',
+    'July','August','September','October','November','December'
+  ];
+
+  const calendarActivities: CalendarMonth[] = months.map((m) => ({ month: m, events: [] }));
+
+  events.forEach((ev) => {
+    if (!ev.startDate) return;
+    const d = new Date(ev.startDate);
+    if (isNaN(d.getTime())) return;
+    const monthName = months[d.getMonth()];
+    const entry = {
+      date: ev.startDate ?? '',
+      title: ev.title ?? 'Untitled Event',
+      category: ev.eventType ? ev.eventType.charAt(0).toUpperCase() + ev.eventType.slice(1) : 'Event',
+      color: 'bg-gray-100',
+      location: ev.location ?? (ev.isOnline ? 'Virtual Event' : ''),
+    };
+    const slot = calendarActivities.find((c) => c.month === monthName);
+    if (slot) slot.events.push(entry);
+  });
+
+  // For months with no events, calendarActivities already contains empty arrays
+
   return (
     <>
       <Header />
-      <main id="main-content">
-        <HeroSection
-          title="NISER Calendar of Activities"
-          description="Comprehensive schedule of events, trainings, seminars, and important dates"
-          subtitle="Plan your engagement with NISER's institutional activities throughout the year"
-        />
+      <main id="main-content" className="w-full bg-[#f5f7f3] text-slate-900">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0f3d2f] via-[#184f42] to-[#1d7d69] text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(117,204,129,0.15),transparent_35%)]" />
+          <div className="container relative py-16 md:py-20">
+            <div className="max-w-3xl">
+              <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100">
+                Resource calendar
+              </span>
+              <h1 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">NISER Calendar of Activities</h1>
+              <p className="mt-5 max-w-2xl text-base text-emerald-50 md:text-lg">See the institute&apos;s scheduled seminars, trainings, workshops, and institutional milestones across the year.</p>
+            </div>
 
-        <div className="section">
+            <div className="mt-12 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Annual</p>
+                <p className="mt-1 text-sm text-emerald-100">Research calendar</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Workshops</p>
+                <p className="mt-1 text-sm text-emerald-100">Capacity building</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Events</p>
+                <p className="mt-1 text-sm text-emerald-100">Seminars & meetings</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="section py-16 md:py-20">
           <div className="container">
-            {/* Legend */}
-            <div className="mb-12">
-              <h2 className="text-2xl font-bold mb-6">Activity Categories</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="mb-10 max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Activities</p>
+              <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">Planned seminars, trainings, workshops, and highlights</h2>
+            </div>
+
+            <div className="mb-12 rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+              <h3 className="mb-6 text-xl font-bold text-slate-900">Activity categories</h3>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                 {Object.entries(categoryColors).map(([category, colors]) => (
                   <div key={category} className={`px-4 py-3 rounded-lg border text-sm font-medium ${colors}`}>
                     {category}
@@ -149,10 +129,9 @@ export default function CalendarPage() {
               </div>
             </div>
 
-            {/* Calendar by Month */}
             <div className="space-y-12">
               {calendarActivities.map((monthData, idx) => (
-                <div key={idx} className="scroll-mt-20" id={monthData.month.toLowerCase()}>
+                <div key={idx} className="scroll-mt-20 rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]" id={monthData.month.toLowerCase()}>
                   <div className="mb-6">
                     <h2 className="text-3xl font-bold text-gray-900 mb-1">{monthData.month}</h2>
                     <div className="w-20 h-1 bg-gradient-to-r from-green-600 to-teal-600 rounded"></div>
@@ -201,15 +180,14 @@ export default function CalendarPage() {
               ))}
             </div>
 
-            {/* Quick Navigation */}
-            <div className="mt-16 pt-12 border-t">
-              <h2 className="text-2xl font-bold mb-6">Quick Navigation</h2>
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            <div className="mt-16 pt-12 border-t border-slate-200">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900">Quick navigation</h2>
+              <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
                 {calendarActivities.map((monthData) => (
                   <a
                     key={monthData.month}
                     href={`#${monthData.month.toLowerCase()}`}
-                    className="px-4 py-2 text-center text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-green-600 hover:text-white rounded-lg transition-colors"
+                    className="px-4 py-2 text-center text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-emerald-700 hover:text-white rounded-lg transition-colors"
                   >
                     {monthData.month.substring(0, 3)}
                   </a>
@@ -217,26 +195,13 @@ export default function CalendarPage() {
               </div>
             </div>
 
-            {/* Notes */}
-            <div className="mt-12 p-8 bg-blue-50 rounded-lg border border-blue-200">
-              <h3 className="text-lg font-bold text-blue-900 mb-3">Important Notes</h3>
-              <ul className="text-blue-800 space-y-2">
-                <li className="flex gap-3">
-                  <span className="font-bold">•</span>
-                  <span>This calendar is subject to change based on operational requirements and unforeseen circumstances.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="font-bold">•</span>
-                  <span>For specific details about each event, please visit the Events page or contact the relevant department.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="font-bold">•</span>
-                  <span>Training programs require prior registration. Visit the Training page for application details.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="font-bold">•</span>
-                  <span>Subscribe to our newsletter to receive updates about upcoming activities and new announcements.</span>
-                </li>
+            <div className="mt-12 rounded-3xl border border-blue-200 bg-blue-50/70 p-8 shadow-sm">
+              <h3 className="text-lg font-bold text-blue-900 mb-3">Important notes</h3>
+              <ul className="space-y-2 text-blue-800">
+                <li className="flex gap-3"><span className="font-bold">•</span><span>This calendar is subject to change based on operational requirements and unforeseen circumstances.</span></li>
+                <li className="flex gap-3"><span className="font-bold">•</span><span>For specific details about each event, please visit the Events page or contact the relevant department.</span></li>
+                <li className="flex gap-3"><span className="font-bold">•</span><span>Training programs require prior registration. Visit the Training page for application details.</span></li>
+                <li className="flex gap-3"><span className="font-bold">•</span><span>Subscribe to our newsletter to receive updates about upcoming activities and new announcements.</span></li>
               </ul>
             </div>
           </div>

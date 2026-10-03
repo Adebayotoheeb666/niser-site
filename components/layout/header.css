@@ -3,6 +3,9 @@
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
     background: #ffffff;
     border-bottom: 1px solid transparent;
     transition:
@@ -17,8 +20,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
-    padding: 0.45rem 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    row-gap: 0.35rem;
+    padding: 0.45rem 1rem;
     background: #f8faf9;
     color: #1f2937;
     font-size: 0.8rem;
@@ -38,9 +43,20 @@
     padding: 0 1.5rem;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    height: 72px;
+    gap: 0.75rem;
+    min-height: 72px;
     justify-content: space-between;
+    flex-wrap: wrap;
+}
+@media (min-width: 1024px) {
+    .niser-header__inner {
+        padding: 0 3.5rem;
+    }
+}
+@media (min-width: 1536px) {
+    .niser-header__inner {
+        padding: 0 5rem;
+    }
 }
 
 /* ── Logo ─────────────────────────────────────────────────────────────────── */
@@ -81,7 +97,7 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 0.25rem;
 }
 
@@ -353,4 +369,11 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
+}
+
+.niser-topbar__spacer {
+  flex: 1 1 auto;
+}
+@media (max-width: 640px) {
+  .lang-switcher { display: none; }
 }

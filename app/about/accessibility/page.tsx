@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/ui/HeroSection';
 
 export const revalidate = 86400; // Static site generation / 24h ISR
 
@@ -13,6 +14,11 @@ export default function AccessibilityPage() {
   return (
     <>
       <Header />
+      <HeroSection
+        title="Accessibility Statement"
+        description="Learn how NISER is improving digital access and inclusive experiences across its public platforms."
+        subtitle="Committed to clear navigation, readable content, and accessible design"
+      />
       <main id="main-content" style={{ minHeight: '80vh', backgroundColor: 'var(--gray-50)', padding: '3rem 0' }}>
         <div className="container" style={{ maxWidth: '800px' }}>
           <div style={{ backgroundColor: '#fff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: '3rem', boxShadow: 'var(--shadow-sm)' }}>

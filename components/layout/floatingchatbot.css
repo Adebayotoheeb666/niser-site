@@ -1,0 +1,44 @@
+/* ─── Floating chatbot launcher ───────────────────────────────────────── */
+.floating-chatbot {
+  position: fixed;
+  right: var(--spacing-lg);
+  bottom: var(--spacing-lg);
+  z-index: 2000;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--niser-green) 0%, var(--niser-green-light) 100%);
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(0, 107, 63, 0.28);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.floating-chatbot:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0, 107, 63, 0.32);
+}
+
+.floating-chatbot:focus-visible {
+  outline: 3px solid var(--niser-gold);
+  outline-offset: 3px;
+}
+
+.floating-chatbot svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 640px) {
+  .floating-chatbot {
+    right: 1rem;
+    bottom: 1rem;
+    padding: 0.8rem 0.95rem;
+  }
+}

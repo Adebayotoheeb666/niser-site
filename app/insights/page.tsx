@@ -38,8 +38,8 @@ export default async function InsightsPage({ searchParams }: InsightsPageProps) 
       <main id="main-content">
         <HeroSection
           title="Insights & Policy Briefs"
-          description="Expert analysis and actionable intelligence on Nigeria's economy and society"
-          subtitle="Commentary, policy briefs, and rapid-response analysis from NISER researchers"
+          description="Read expert commentary, policy analysis, and rapid-response briefs grounded in NISER research."
+          subtitle="Practical insight for policymakers, researchers, and development partners"
         />
         <div className="section">
           <div className="container">

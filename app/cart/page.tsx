@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import Header from "@/components/layout/Header";
+import HeroSection from '@/components/ui/HeroSection';
 import { useCart } from "@/components/cart/CartProvider";
 
 const nairaFormatter = new Intl.NumberFormat("en-NG", {
@@ -32,8 +33,13 @@ export default function CartPage() {
   return (
     <>
       <Header />
-      <main id="main-content" className="px-6 py-14 lg:px-10">
-        <div className="mx-auto max-w-6xl">
+      <HeroSection
+        title="Your Cart"
+        description="Review selected publications and submit a purchase request for NISER materials."
+        subtitle="Secure your order with a simple request form"
+      />
+      <main id="main-content" className="py-14">
+        <div className="container">
           <div className="mb-10 rounded-3xl border border-surface-gray bg-surface p-8 shadow-sm">
             <h1 className="text-3xl font-semibold text-nigeria-green-deep sm:text-4xl">Your cart</h1>
             <p className="mt-3 max-w-2xl text-body-md text-slate-700">

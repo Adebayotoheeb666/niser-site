@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/ui/HeroSection';
 import Link from 'next/link';
 
 interface DatasetResource {
@@ -96,6 +97,11 @@ export default function DatasetDetailPage() {
   return (
     <>
       <Header />
+      <HeroSection
+        title={dataset.title}
+        description={dataset.notes?.slice(0, 160) ?? 'Explore this dataset and its research context.'}
+        subtitle="Research dataset and preview"
+      />
       <main id="main-content" style={{ minHeight: '80vh', backgroundColor: 'var(--gray-50)', padding: '2rem 0' }}>
         <div className="container">
           {/* Breadcrumb */}

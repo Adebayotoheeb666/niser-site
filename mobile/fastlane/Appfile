@@ -1,0 +1,11 @@
+# Appfile — Fastlane project configuration.
+# Values are read from CI/encrypted secrets; unset locally unless you have access.
+
+app_identifier ENV["IOS_APP_IDENTIFIER"] || "ng.gov.niser.app"
+apple_id ENV["APPLE_ID"]
+team_id ENV["APPLE_TEAM_ID"]
+
+for_platform :android do
+  package_name ENV["ANDROID_PACKAGE_NAME"] || "ng.gov.niser.app"
+  json_key_file ENV["GOOGLE_PLAY_JSON_KEY"]
+end

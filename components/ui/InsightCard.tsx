@@ -35,7 +35,8 @@ function formatDate(dateStr: string): string {
 }
 
 export default function InsightCard({ insight }: InsightCardProps) {
-  const typeLabel = contentTypeLabels[insight.contentType] ?? insight.contentType;
+  const typeLabel =
+    (contentTypeLabels[insight.contentType] ?? insight.contentType) || 'Insight';
   const typeColor = contentTypeColors[insight.contentType] ?? 'badge--gray';
   const excerpt = insight.socialSummary ?? insight.bodyPlaintext?.slice(0, 160) ?? '';
 

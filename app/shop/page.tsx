@@ -1,36 +1,6 @@
-"use client";
-
-import Link from "next/link";
 import Header from "@/components/layout/Header";
-import { useCart } from "@/components/cart/CartProvider";
-
-const formatter = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-
-const products = [
-  {
-    id: "annual-report-2025",
-    name: "NISER Annual Report 2025",
-    description: "Full research findings and policy recommendations from the latest institutional report.",
-    price: 12000,
-  },
-  {
-    id: "policy-brief-collection",
-    name: "Policy Brief Collection",
-    description: "A curated set of NISER policy briefs on economic and social development.",
-    price: 8500,
-  },
-  {
-    id: "research-compendium",
-    name: "Research Compendium",
-    description: "A downloadable compendium of NISER research outputs and key datasets.",
-    price: 15000,
-  },
-];
+import Footer from "@/components/layout/Footer";
+import { ShopPageClient } from "@/components/cart/ShopPageClient";
 
 export const metadata = {
   title: "Shop | NISER",
@@ -38,58 +8,41 @@ export const metadata = {
 };
 
 export default function ShopPage() {
-  const { addItem, count } = useCart();
-
   return (
     <>
       <Header />
-      <main id="main-content" className="px-6 py-14 lg:px-10">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-10 rounded-3xl border border-surface-gray bg-surface p-8 shadow-sm">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-nigeria-green-deep">
-                  Online purchases
-                </p>
-                <h1 className="mt-3 text-3xl font-semibold text-nigeria-green-deep sm:text-4xl">
-                  Buy NISER’s work online
-                </h1>
-                <p className="mt-4 max-w-2xl text-body-md text-slate-700">
-                  Browse current research outputs, reports, and policy briefs. Add items to your cart and complete your purchase with a simple online order form.
-                </p>
+      <main id="main-content" className="w-full bg-[#f5f7f3] text-slate-900">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0f3d2f] via-[#184f42] to-[#1d7d69] text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(117,204,129,0.15),transparent_35%)]" />
+          <div className="container relative py-16 md:py-20">
+            <div className="max-w-3xl">
+              <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100">
+                Online shop
+              </span>
+              <h1 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">Buy NISER’s work online</h1>
+              <p className="mt-5 max-w-2xl text-base text-emerald-50 md:text-lg">Browse publications, reports, and research materials from NISER, and order the resources you need for learning and policy engagement.</p>
+            </div>
+
+            <div className="mt-12 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Reports</p>
+                <p className="mt-1 text-sm text-emerald-100">Institutional outputs</p>
               </div>
-              <div className="rounded-3xl bg-white border border-surface-gray p-4 text-center shadow-sm">
-                <p className="text-sm text-slate-500">Items in cart</p>
-                <p className="mt-2 text-3xl font-semibold text-nigeria-green-deep">{count}</p>
-                <Link href="/cart" className="mt-4 inline-flex items-center justify-center rounded-full border border-nigeria-green-deep bg-nigeria-green-deep px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#055c32]">
-                  View cart & checkout
-                </Link>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Briefs</p>
+                <p className="mt-1 text-sm text-emerald-100">Policy-focused reads</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Orders</p>
+                <p className="mt-1 text-sm text-emerald-100">Simple checkout</p>
               </div>
             </div>
           </div>
+        </section>
 
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-              <article key={product.id} className="rounded-3xl border border-surface-gray bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="rounded-full bg-nigeria-green-pale px-3 py-1 text-sm font-semibold text-nigeria-green-deep">
-                    {formatter.format(product.price)}
-                  </span>
-                </div>
-                <h2 className="text-xl font-semibold text-slate-900">{product.name}</h2>
-                <p className="mt-3 text-body-md text-slate-600">{product.description}</p>
-                <button
-                  type="button"
-                  onClick={() => addItem({ id: product.id, name: product.name, price: product.price })}
-                  className="mt-6 inline-flex items-center justify-center rounded-full bg-nigeria-green-deep px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#055c32]"
-                >
-                  Add to cart
-                </button>
-              </article>
-            ))}
-          </div>
-        </div>
+        <ShopPageClient />
       </main>
+      <Footer />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import HeroSection from "@/components/ui/HeroSection";
 import { getJobs } from "@/lib/cms/client";
 
 export const revalidate = 3600;
@@ -17,10 +18,15 @@ export default async function CareersPage() {
   return (
     <>
       <Header />
+        <HeroSection
+          title="Careers at NISER"
+          description="Explore current vacancies, internship pathways, and professional opportunities at the institute."
+          subtitle="Join a team shaping policy research and public impact"
+        />
       <main id="main-content" className="w-full">
         {/* Hero Section */}
         <section className="bg-surface-container-lowest py-16">
-          <div className="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+          <div className="container">
             <h1 className="font-display-md text-display-md text-nigeria-green-deep mb-4">
               Careers at NISER
             </h1>
@@ -33,7 +39,7 @@ export default async function CareersPage() {
 
         {/* Why Join NISER */}
         <section className="py-16 bg-surface">
-          <div className="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto mb-20">
+          <div className="container mb-20">
             <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-8">
               Why Join NISER?
             </h2>
@@ -73,8 +79,28 @@ export default async function CareersPage() {
             </div>
           </div>
 
-          {/* Open Positions */}
-          <div className="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto border-t border-surface-gray pt-16">
+          <div className="container border-t border-surface-gray pt-16">
+            <div className="mb-10 rounded-2xl border border-surface-gray bg-surface-container-lowest p-6 md:p-8">
+              <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+                <div>
+                  <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-3">
+                    How to apply
+                  </h2>
+                  <p className="text-body-md text-on-surface-variant max-w-2xl">
+                    Candidates can submit applications through the listed openings or contact the HR team for general inquiries about future opportunities.
+                  </p>
+                </div>
+                <div className="rounded-xl bg-surface p-5">
+                  <p className="text-label-md text-nigeria-green-vibrant mb-2">What we look for</p>
+                  <ul className="space-y-2 text-body-md text-on-surface-variant">
+                    <li>• Strong analytical and research capabilities</li>
+                    <li>• Commitment to public impact and collaboration</li>
+                    <li>• Relevant academic or professional experience</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-8">
               Open Positions
             </h2>

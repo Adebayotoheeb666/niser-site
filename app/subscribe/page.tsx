@@ -11,40 +11,55 @@ export default function SubscribePage() {
   return (
     <>
       <Header />
-      <main id="main-content" className="w-full">
-        {/* Hero Section */}
-        <section className="bg-surface-container-lowest py-16">
-          <div className="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
-            <h1 className="font-display-md text-display-md text-nigeria-green-deep mb-4">Stay Connected</h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-              Subscribe to receive NISER&apos;s latest research findings, policy briefs, event invitations, and news updates.
-            </p>
+      <main id="main-content" className="w-full bg-[#f5f7f3] text-slate-900">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0f3d2f] via-[#184f42] to-[#1d7d69] text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(117,204,129,0.15),transparent_35%)]" />
+          <div className="container relative py-16 md:py-20">
+            <div className="max-w-3xl">
+              <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100">
+                Stay connected
+              </span>
+              <h1 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">Subscribe to NISER updates</h1>
+              <p className="mt-5 max-w-2xl text-base text-emerald-50 md:text-lg">Receive the latest research findings, policy briefs, event invitations, and important institutional updates directly in your inbox.</p>
+            </div>
+
+            <div className="mt-12 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Research</p>
+                <p className="mt-1 text-sm text-emerald-100">Latest findings</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">Events</p>
+                <p className="mt-1 text-sm text-emerald-100">Seminars & webinars</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">News</p>
+                <p className="mt-1 text-sm text-emerald-100">Institutional updates</p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Subscription Options */}
-        <section className="py-16 bg-surface">
-          <div className="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto max-w-2xl mx-auto">
-            <div className="bg-surface-container-lowest border border-surface-gray p-8 rounded-lg">
-              <h2 className="font-headline-lg text-headline-lg text-nigeria-green-deep mb-8">Choose Your Newsletter</h2>
-              
-              <form className="space-y-6">
-                {/* Email Input */}
+        <section className="py-16 md:py-20">
+          <div className="container max-w-2xl">
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] md:p-8">
+              <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">Choose your newsletter</h2>
+
+              <form className="mt-8 space-y-6">
                 <div>
-                  <label htmlFor="email" className="block font-label-md text-label-md text-on-surface mb-2">
-                    Email Address
+                  <label htmlFor="email" className="mb-2 block text-sm font-semibold text-slate-700">
+                    Email address
                   </label>
                   <input
                     type="email"
                     id="email"
                     placeholder="your.email@example.com"
-                    className="w-full px-4 py-3 border border-outline rounded-lg font-body-md text-body-md bg-surface-container-lowest"
+                    className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
                   />
                 </div>
 
-                {/* Newsletter Options */}
                 <div>
-                  <h3 className="font-label-md text-label-md text-on-surface mb-4">Select Newsletters:</h3>
+                  <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-slate-700">Select newsletters</h3>
                   <div className="space-y-3">
                     {[
                       { name: 'research-digest', label: 'Research Digest', desc: 'Weekly summary of latest publications' },
@@ -52,23 +67,22 @@ export default function SubscribePage() {
                       { name: 'event-invitations', label: 'Event Invitations', desc: 'Webinars, seminars, and conferences' },
                       { name: 'careers-news', label: 'Careers & Opportunities', desc: 'Job openings and fellowship programs' },
                     ].map((newsletter) => (
-                      <label key={newsletter.name} className="flex items-start gap-3 p-3 rounded-lg hover:bg-surface transition-colors cursor-pointer">
-                        <input type="checkbox" className="mt-1" defaultChecked />
+                      <label key={newsletter.name} className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-3 transition hover:bg-slate-50">
+                        <input type="checkbox" aria-label={newsletter.label} className="mt-1 h-4 w-4 accent-emerald-600" defaultChecked />
                         <div>
-                          <p className="font-label-md text-on-surface">{newsletter.label}</p>
-                          <p className="text-label-sm text-on-surface-variant">{newsletter.desc}</p>
+                          <p className="font-semibold text-slate-900">{newsletter.label}</p>
+                          <p className="text-sm text-slate-600">{newsletter.desc}</p>
                         </div>
                       </label>
                     ))}
                   </div>
                 </div>
 
-                {/* Frequency */}
                 <div>
-                  <label htmlFor="frequency" className="block font-label-md text-label-md text-on-surface mb-2">
-                    Delivery Frequency
+                  <label htmlFor="frequency" className="mb-2 block text-sm font-semibold text-slate-700">
+                    Delivery frequency
                   </label>
-                  <select id="frequency" className="w-full px-4 py-3 border border-outline rounded-lg font-body-md text-body-md bg-surface-container-lowest">
+                  <select id="frequency" className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100">
                     <option>Weekly</option>
                     <option>Bi-weekly</option>
                     <option>Monthly</option>
@@ -76,15 +90,11 @@ export default function SubscribePage() {
                   </select>
                 </div>
 
-                {/* Subscribe Button */}
-                <button
-                  type="submit"
-                  className="w-full bg-nigeria-green-deep text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity"
-                >
+                <button type="submit" className="w-full rounded-full bg-[#0f3d2f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#184f42]">
                   Subscribe
                 </button>
 
-                <p className="text-label-sm text-on-surface-variant text-center">
+                <p className="text-center text-sm text-slate-500">
                   We respect your privacy. Unsubscribe at any time.
                 </p>
               </form>

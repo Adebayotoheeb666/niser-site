@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -24,13 +25,14 @@ export default function DepartmentsPage() {
                 <h2 className="text-2xl font-bold mb-6">Research Departments</h2>
                 
                 <div className="mb-8 flex flex-col md:flex-row gap-8">
-                  <div className="md:w-64 flex-shrink-0">
-                    <div className="w-64 h-80 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <div className="text-center text-gray-500">
-                        <p className="text-sm">Departments</p>
-                        <p className="text-xs mt-2">Image Placeholder</p>
-                      </div>
-                    </div>
+                  <div className="md:w-80 flex-shrink-0">
+                    <Image
+                      src="/research-dept.jpg"
+                      alt="NISER research departments"
+                      width={640}
+                      height={800}
+                      className="h-auto w-full rounded-lg object-cover shadow-sm"
+                    />
                   </div>
                   <div className="flex-1">
                     <p className="mb-6">

@@ -15,6 +15,7 @@ export default function NewsletterForm({
 }: NewsletterFormProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,10 +23,21 @@ export default function NewsletterForm({
 
     setStatus('loading');
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setMessage(data.error ?? 'Subscription failed. Please try again later.');
+        setStatus('error');
+        return;
+      }
       setStatus('success');
       setEmail('');
     } catch {
+      setMessage('Unable to subscribe right now. Please try again later.');
       setStatus('error');
     }
   };
@@ -46,12 +58,17 @@ export default function NewsletterForm({
           disabled={status === 'loading'}
         />
         <button type="submit" className="btn btn--primary" disabled={status === 'loading'}>
-          {status === 'loading' ? '...' : 'Subscribe'}
+          {status === 'loading' ? 'Subscribing…' : 'Subscribe'}
         </button>
       </form>
       {status === 'success' && (
-        <p className="newsletter-success-msg" style={{ fontSize: '0.8125rem', color: 'var(--niser-gold, #ffb81c)', fontWeight: 500 }}>
-          ✓ Thank you for subscribing!
+        <p className="newsletter-success-msg" role="status" style={{ fontSize: '0.8125rem', color: 'var(--niser-gold, #ffb81c)', fontWeight: 500 }}>
+          ✓ Thank you for subscribing! Please check your inbox for a confirmation email.
+        </p>
+      )}
+      {status === 'error' && (
+        <p role="alert" style={{ fontSize: '0.8125rem', color: '#c0392b', fontWeight: 500 }}>
+          {message || 'Something went wrong. Please try again.'}
         </p>
       )}
     </div>

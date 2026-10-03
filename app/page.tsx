@@ -4,12 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import NewsletterForm from "@/components/ui/NewsletterForm";
 import {
   getDivisions,
   getEvents,
   getInsights,
   getNews,
   getPublications,
+  getResearchers,
 } from "@/lib/cms/client";
 
 export const revalidate = 3600;
@@ -22,64 +24,70 @@ export const metadata: Metadata = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const coverGradients: Record<string, string> = {
-  working_paper: "linear-gradient(135deg, #1a3a1a 0%, #006B3F 100%)",
-  policy_brief: "linear-gradient(135deg, #1a2e4a 0%, #1e5fa0 100%)",
-  journal_article: "linear-gradient(135deg, #1a1a3a 0%, #2563eb 100%)",
-  book_chapter: "linear-gradient(135deg, #2d1a3a 0%, #7c3aed 100%)",
-  annual_report: "linear-gradient(135deg, #1a2e1a 0%, #166534 100%)",
-  conference_paper: "linear-gradient(135deg, #1a2e3a 0%, #0e7490 100%)",
-};
-
-const insightGradients: Record<string, string> = {
-  policy_brief: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)",
-  commentary: "linear-gradient(135deg, #1a2e1a 0%, #16a34a 100%)",
-  analysis: "linear-gradient(135deg, #1a1a3a 0%, #4f46e5 100%)",
-  opinion: "linear-gradient(135deg, #3a1a1a 0%, #dc2626 100%)",
-  rapid_response: "linear-gradient(135deg, #1a2e3a 0%, #0891b2 100%)",
-};
-
-const divisionIcons = [
-  "trending_up",
-  "groups",
-  "eco",
-  "account_balance",
-  "factory",
-];
-
 const staticDivisions = [
   {
-    icon: "trending_up",
+    slug: "macroeconomics",
     title: "Macroeconomics",
-    description:
-      "Strategic analysis of fiscal policies and monetary frameworks.",
+    description: "Fiscal policy, monetary frameworks, and economic growth.",
   },
   {
-    icon: "groups",
-    title: "Poverty",
+    slug: "poverty_social",
+    title: "Poverty & Social Policy",
     description: "Social protection strategies and welfare impact assessments.",
   },
   {
-    icon: "eco",
-    title: "Agriculture",
-    description: "Food security, value chains, and rural development policies.",
+    slug: "agriculture",
+    title: "Agriculture & Food Policy",
+    description: "Food security, value chains, and rural development.",
   },
   {
-    icon: "account_balance",
-    title: "Governance",
-    description:
-      "Institutional reform, political economy, and public sector efficiency.",
+    slug: "governance",
+    title: "Governance & Institutions",
+    description: "Institutional reform and public sector efficiency.",
   },
   {
-    icon: "factory",
-    title: "Industry",
-    description:
-      "Industrialization pathways and trade competitiveness studies.",
+    slug: "industry",
+    title: "Industry & Enterprise",
+    description: "Industrialisation pathways and trade competitiveness.",
+  },
+];
+
+const stats = [
+  { value: "60+", label: "Years of research excellence" },
+  { value: "500+", label: "Publications and policy briefs" },
+  { value: "5", label: "Specialised research divisions" },
+  { value: "6", label: "Zonal offices nationwide" },
+];
+
+const purposeItems = [
+  {
+    title: "Our Mission",
+    text: "To consistently generate credible knowledge through quality research, training, and consultancy services in the task of national development.",
+    href: "/about/history",
+  },
+  {
+    title: "Our Vision",
+    text: "To be a world-class think tank in social and economic policy research, recognised for intellectual excellence and policy impact.",
+    href: "/about/history",
+  },
+  {
+    title: "Our Mandate",
+    text: "Established under the NISER Act to conduct policy research, provide consultancy, and build national research capacity since 1960.",
+    href: "/about",
   },
 ];
 
 function formatType(type: string) {
   return type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function formatAuthors(authors?: { titlePrefix?: string; fullName: string }[]) {
+  if (!authors || authors.length === 0) return "";
+  const names = authors.slice(0, 2).map((a) =>
+    `${a.titlePrefix ? a.titlePrefix + ". " : ""}${a.fullName}`,
+  );
+  const joined = names.join(", ");
+  return authors.length > 2 ? `${joined} et al.` : joined;
 }
 
 function formatInsightCategory(ct: string): string {
@@ -93,52 +101,64 @@ function formatInsightCategory(ct: string): string {
   return map[ct] ?? "INSIGHT";
 }
 
+function formatDate(iso: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return isNaN(d.getTime())
+    ? ""
+    : d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const [publications, events, insights, divisions, news] = await Promise.all([
+  const [publications, events, insights, divisions, news, researchers] = await Promise.all([
     getPublications({ limit: 4 }),
     getEvents({ limit: 3 }),
     getInsights({ limit: 3 }),
     getDivisions(),
     getNews({ limit: 3 }),
+    getResearchers({ active: true }).catch(() => []),
   ]);
 
-  // Publication cards — show 2
-  const publicationCards = publications.slice(0, 2).map((pub) => ({
+  // Rotate the featured researcher weekly so profiles get balanced exposure
+  const featuredResearcher = researchers.length > 0
+    ? researchers[
+        Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000)) % researchers.length
+      ]
+    : null;
+
+  const divisionLabel = (division?: string) =>
+    staticDivisions.find((d) => d.slug === division)?.title ??
+    (division ? division.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "");
+
+  const publicationCards = publications.slice(0, 4).map((pub) => ({
     id: pub.id,
     title: pub.title,
     slug: pub.slug,
     category: formatType(pub.publicationType),
-    date: pub.publishedYear ? String(pub.publishedYear) : "",
-    abstract: (pub.abstract ?? "").slice(0, 130),
-    pdfFile: pub.pdfFile ?? null,
-    coverGradient:
-      coverGradients[pub.publicationType] ?? coverGradients.working_paper,
+    year: pub.publishedYear ? String(pub.publishedYear) : "",
+    authors: formatAuthors(pub.authors),
+    abstract: (pub.abstract ?? "").slice(0, 180),
+    isOpenAccess: pub.isOpenAccess,
   }));
 
-  // Event cards — show 3
   const eventCards = events.slice(0, 3).map((ev) => {
     const d = new Date(ev.startDate);
     const valid = !isNaN(d.getTime());
     return {
-      month: valid
-        ? d.toLocaleString("en-US", { month: "short" }).toUpperCase()
-        : "",
+      id: ev.id,
+      slug: ev.slug,
+      month: valid ? d.toLocaleString("en-US", { month: "short" }).toUpperCase() : "",
       day: valid ? String(d.getDate()).padStart(2, "0") : "--",
       title: ev.title,
-      location: ev.location ?? (ev.isOnline ? "Virtual Event via Zoom" : "TBC"),
+      location: ev.location ?? (ev.isOnline ? "Virtual Event" : "TBC"),
       time: valid
-        ? d.toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          }) + " WAT"
+        ? d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }) + " WAT"
         : "",
     };
   });
 
-  // Insight cards — show 3
   const insightCards = insights.slice(0, 3).map((ins) => ({
     id: ins.id,
     title: ins.title,
@@ -147,413 +167,448 @@ export default async function HomePage() {
     author: ins.author
       ? `${ins.author.titlePrefix ? ins.author.titlePrefix + ". " : ""}${ins.author.fullName}`
       : "NISER Research",
-    image: ins.featuredImage ?? null,
-    description:
+    date: formatDate(ins.publishedDate),
+    excerpt:
       ins.socialSummary ??
       ins.bodyPlaintext?.slice(0, 160) ??
       "Evidence-based policy analysis for Nigerian stakeholders and policymakers.",
-    fallbackGradient:
-      insightGradients[ins.contentType] ?? insightGradients.analysis,
   }));
 
-  // Division cards — show 5
-  const divisionCards = divisions.slice(0, 5).map((div, idx) => ({
-    title: div.name,
-    description:
-      div.description ??
-      "Focused research supporting Nigerian socioeconomic policy.",
-    icon: divisionIcons[idx] ?? "analytics",
+  const divisionCards = divisions.slice(0, 5).map((div) => ({
     slug: div.slug,
+    title: div.name,
+    description: div.description ?? "",
   }));
 
   const displayDivisions =
     divisionCards.length > 0 ? divisionCards : staticDivisions;
 
-  // News cards — show 3
   const newsCards = news.slice(0, 3).map((n) => ({
     id: n.id,
     title: n.title,
     slug: n.slug,
-    category: n.category,
-    date: new Date(n.publishedDate).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }),
+    category: n.category === "institutional" ? "NISER" : n.category === "media" ? "Media" : "News",
+    date: formatDate(n.publishedDate),
     summary: n.summary ?? "",
-    image: n.featuredImage ?? null,
     externalUrl: n.externalUrl ?? null,
   }));
 
   return (
     <>
       <Header />
-      <main>
-        {/* ═══════════════════════════════════════════════════════
-            HERO — split layout: text left, building image right
-        ═══════════════════════════════════════════════════════ */}
-        <section className="hero-section">
-          <div className="hero-bg-slider" aria-hidden="true">
-            {Array.from({ length: 10 }, (_, index) => (
-              <div
-                key={index}
-                className={`hero-bg-slide hero-bg-slide-${index + 1}`}
-              />
-            ))}
-          </div>
-
-          {/* Left text panel */}
-          <div className="hero-text-panel">
-            <div className="hero-text-inner">
-              <span className="hero-badge">ESTABLISHED 1960</span>
-              <h1 className="hero-title">
-                Advancing National Development Through Excellence in Policy
-                Research.
+      <main id="main-content">
+        {/* ── Hero: editorial brand statement ───────────────────────────────── */}
+        <section className="home-hero">
+          <div className="container home-hero__inner">
+            <div className="home-hero__content">
+              <span className="home-eyebrow">NISER &middot; Established 1960</span>
+              <h1 className="home-hero__title">
+                Independent research that shapes Nigeria&apos;s policy decisions.
               </h1>
-              <p className="hero-desc">
-                NISER stands as Nigeria&apos;s premier think-tank, dedicated to
-                providing high-quality socioeconomic intelligence and strategic
-                policy frameworks that drive sustainable national growth.
+              <p className="home-hero__lead">
+                The National Institute of Social and Economic Research generates rigorous,
+                multidisciplinary evidence for government, development partners, and civil
+                society — informing the policies that drive national development.
               </p>
-              <div className="hero-actions">
-                <Link href="/publications" className="btn-primary">
-                  Explore Publications
+              <div className="home-hero__actions">
+                <Link href="/publications" className="btn btn--primary">
+                  Explore Our Research
                 </Link>
-                <Link href="/about" className="btn-outline">
+                <Link href="/about" className="btn btn--outline">
                   About the Institute
                 </Link>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════
-            VISION — DG'S WELCOME — MISSION
-        ═══════════════════════════════════════════════════════ */}
-        <section className="section-vision-mission">
-          <div className="container vision-mission-grid">
-            {/* Vision */}
-            <div className="vision-card">
-              <div className="vision-image-placeholder" />
-              <div className="vision-content">
-                <h2 className="vision-mission-title">VISION</h2>
-                <p className="vision-mission-text">
-                  To be a world-class think tank in the area of social and economic policy research
-                </p>
-              </div>
-            </div>
-
-            {/* DG's Welcome */}
-            <div className="dg-welcome-card">
-              <div className="dg-welcome-image-placeholder" />
-              <div className="dg-welcome-content">
-                <h2 className="vision-mission-title">THE DG'S WELCOME</h2>
-                <p className="vision-mission-text">
-                  On behalf of NISER, I would like to welcome you to the institute's website, which presents the institute's profile, activities and output. NISER is an agency of the Federal Ministry of Budget &amp; Economic Planning.
-                </p>
-              </div>
-            </div>
-
-            {/* Mission */}
-            <div className="mission-card">
-              <div className="mission-image-placeholder" />
-              <div className="mission-content">
-                <h2 className="vision-mission-title">MISSION</h2>
-                <p className="vision-mission-text">
-                  To consistently generate credible knowledge through quality research, conduct specialized training and provide consultancy services while interacting with relevant segments of the Nigerian society in the task of national development.
-                </p>
-              </div>
+            <div className="home-hero__media">
+              <Image
+                src="/niser-about.png"
+                alt="NISER headquarters in Ibadan, Nigeria"
+                fill
+                sizes="(max-width: 1024px) 100vw, 560px"
+                priority
+              />
+              <span className="home-hero__caption">NISER headquarters, Ojoo, Ibadan</span>
             </div>
           </div>
         </section>
 
-        {/* ═══════════════════════════════════════════════════════
-            ABOUT US
-        ═══════════════════════════════════════════════════════ */}
-        <section className="section-about">
-          <div className="container about-grid">
-            <div className="about-text">
-              <h2 className="section-title">About Us</h2>
-              <div className="about-content">
-                <p>
-                  Prior to the establishment of NISER, colonial authorities established the West African Institute of Social and Economic Research. The center was founded in 1950 and headquartered in Ibadan with a mission to provide information on economic and social ideas that will be pivotal to the development of British West African countries. The institute was affiliated with University of Ibadan and was publicly funded.
-                </p>
-                <p>
-                  In 1957, Ghana obtained political independence and opted out of the institute. After Nigeria gained independence in 1960, the name of the institute was changed to Nigerian Institute of Social and Economic Research.
-                </p>
-                <p>
-                  In 1977, the military government made NISER an autonomous body. Thereafter, NISER's responsibilities include coordinating social and economic research in federal universities. The institute also carries out independent research on social and economic issues, and provide consultative service to the government based on research findings.
-                </p>
-                <p>
-                  The institute's facilities are used as a venue for seminars and conferences.
-                </p>
-              </div>
-            </div>
-            <div className="about-image-placeholder" />
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════
-            RESEARCH DIVISIONS
-        ═══════════════════════════════════════════════════════ */}
-        <section className="section-divisions">
+        {/* ── Research programs (topics) ────────────────────────────────────── */}
+        <section className="home-topics" aria-labelledby="topics-heading">
           <div className="container">
-            <h2 className="section-title">Research Divisions</h2>
-            <p className="section-subtitle">
-              Our multidisciplinary approach covers the critical pillars of
-              Nigeria&apos;s socioeconomic landscape.
-            </p>
-            <div className="divisions-grid">
-              {displayDivisions.map((div) => (
-                <Link
-                  key={String("slug" in div ? div.slug : div.title)}
-                  href="/research-centers"
-                  className="division-card"
-                >
-                  <span
-                    className="material-symbols-outlined division-icon"
-                    aria-hidden="true"
+            <div className="home-topics__head">
+              <span className="home-eyebrow">Research Programs</span>
+              <Link href="/divisions" className="home-link">
+                Explore the divisions &rarr;
+              </Link>
+            </div>
+            <ul className="home-topics__list" role="list">
+              {displayDivisions.map((div, i) => (
+                <li key={String(div.slug ?? div.title)}>
+                  <Link
+                    href={`/divisions/${div.slug}`}
+                    className="home-topics__row"
                   >
-                    {div.icon}
-                  </span>
-                  <h3 className="division-title">{div.title}</h3>
-                  <p className="division-desc">
-                    {div.description.length > 85
-                      ? div.description.slice(0, 85) + "..."
-                      : div.description}
-                  </p>
+                    <span className="home-topics__num" aria-hidden="true">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="home-topics__body">
+                      <span className="home-topics__title">{div.title}</span>
+                      {div.description && (
+                        <span className="home-topics__desc">{div.description}</span>
+                      )}
+                    </span>
+                    <span className="home-topics__arrow" aria-hidden="true">&rarr;</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* ── Audience pathways ─────────────────────────────────────────────── */}
+        <section className="home-section home-pathways" aria-labelledby="pathways-heading">
+          <div className="container">
+            <div className="home-section__head">
+              <div>
+                <span className="home-eyebrow">Start Here</span>
+                <h2 id="pathways-heading" className="home-section__title">
+                  Find what you need, fast
+                </h2>
+              </div>
+            </div>
+            <ul className="home-pathways__grid" role="list">
+              {[
+                {
+                  title: "For Policymakers",
+                  text: "Evidence-based policy briefs and rapid responses on Nigeria's pressing issues.",
+                  href: "/policy-briefs",
+                  icon: "🏛️",
+                },
+                {
+                  title: "For Researchers",
+                  text: "Working papers, datasets, and 60+ years of social and economic research.",
+                  href: "/publications",
+                  icon: "📚",
+                },
+                {
+                  title: "For Media",
+                  text: "Expert commentary, press releases, and researchers available for interview.",
+                  href: "/insights",
+                  icon: "📰",
+                },
+                {
+                  title: "For Partners & Students",
+                  text: "Collaboration opportunities, training programmes, and internships.",
+                  href: "/training",
+                  icon: "🤝",
+                },
+              ].map((pathway) => (
+                <li key={pathway.title}>
+                  <Link href={pathway.href} className="home-pathways__card">
+                    <span className="home-pathways__icon" aria-hidden="true">{pathway.icon}</span>
+                    <span className="home-pathways__title">{pathway.title}</span>
+                    <span className="home-pathways__text">{pathway.text}</span>
+                    <span className="home-link" aria-hidden="true">Explore &rarr;</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* ── Latest publications ───────────────────────────────────────────── */}
+        <section className="home-section home-research" aria-labelledby="publications-heading">
+          <div className="container">
+            <div className="home-section__head">
+              <div>
+                <span className="home-eyebrow">Latest Publications</span>
+                <h2 id="publications-heading" className="home-section__title">
+                  Recent research
+                </h2>
+              </div>
+              <Link href="/publications" className="home-link">
+                View all publications &rarr;
+              </Link>
+            </div>
+
+            {publicationCards.length > 0 ? (
+              <div className="home-research__grid">
+                {publicationCards.map((pub) => (
+                  <article key={pub.id} className="home-research__card">
+                    <span className="home-card-label">{pub.category}</span>
+                    <h3 className="home-card-title">
+                      <Link href={`/publications/${pub.slug}`}>{pub.title}</Link>
+                    </h3>
+                    <p className="home-card-text">{pub.abstract}</p>
+                    <div className="home-card-meta">
+                      {pub.authors && <span className="home-card-author">{pub.authors}</span>}
+                      {pub.year && <span className="home-card-date">{pub.year}</span>}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-msg">
+                Publications are being prepared. Check back soon.
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* ── Expert insights ───────────────────────────────────────────────── */}
+        <section className="home-section home-insights" aria-labelledby="insights-heading">
+          <div className="container">
+            <div className="home-section__head">
+              <div>
+                <span className="home-eyebrow">Expert Insights</span>
+                <h2 id="insights-heading" className="home-section__title">
+                  Analysis &amp; commentary
+                </h2>
+              </div>
+              <Link href="/insights" className="home-link">
+                View all insights &rarr;
+              </Link>
+            </div>
+
+            {insightCards.length > 0 ? (
+              <div className="home-insights__grid">
+                {insightCards.map((ins) => (
+                  <article key={ins.id} className="home-insight">
+                    <span className="home-card-label">{ins.category}</span>
+                    <h3 className="home-insight__title">
+                      <Link href={`/insights/${ins.slug}`}>{ins.title}</Link>
+                    </h3>
+                    <p className="home-insight__excerpt">{ins.excerpt}</p>
+                    <div className="home-card-meta">
+                      <span className="home-card-author">{ins.author}</span>
+                      {ins.date && <span className="home-card-date">{ins.date}</span>}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-msg">Insights are being prepared. Check back soon.</p>
+            )}
+          </div>
+        </section>
+
+        {/* ── Events ────────────────────────────────────────────────────────── */}
+        <section className="home-section home-events" aria-labelledby="events-heading">
+          <div className="container">
+            <div className="home-section__head">
+              <div>
+                <span className="home-eyebrow">Events &amp; Seminars</span>
+                <h2 id="events-heading" className="home-section__title">
+                  Join our conversations
+                </h2>
+              </div>
+              <Link href="/events" className="home-link">
+                View all events &rarr;
+              </Link>
+            </div>
+
+            {eventCards.length > 0 ? (
+              <ul className="home-events__list" role="list">
+                {eventCards.map((ev) => (
+                  <li key={ev.id}>
+                    <Link href={`/events/${ev.slug}`} className="home-event">
+                      <span className="home-event__date">
+                        <span className="home-event__month">{ev.month || "TBA"}</span>
+                        <span className="home-event__day">{ev.day}</span>
+                      </span>
+                      <span className="home-event__body">
+                        <span className="home-event__title">{ev.title}</span>
+                        <span className="home-event__meta">
+                          {ev.location}
+                          {ev.time ? ` · ${ev.time}` : ""}
+                        </span>
+                      </span>
+                      <span className="home-event__arrow" aria-hidden="true">&rarr;</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="empty-msg">Upcoming events are being planned. Check back soon.</p>
+            )}
+          </div>
+        </section>
+
+        {/* ── News ──────────────────────────────────────────────────────────── */}
+        <section className="home-section home-news" aria-labelledby="news-heading">
+          <div className="container">
+            <div className="home-section__head">
+              <div>
+                <span className="home-eyebrow">News</span>
+                <h2 id="news-heading" className="home-section__title">
+                  Latest from the Institute
+                </h2>
+              </div>
+              <Link href="/news" className="home-link">
+                View all news &rarr;
+              </Link>
+            </div>
+
+            {newsCards.length > 0 ? (
+              <ul className="home-news__list" role="list">
+                {newsCards.map((n) => (
+                  <li key={n.id}>
+                    <Link
+                      href={n.externalUrl || `/news/${n.slug}`}
+                      target={n.externalUrl ? "_blank" : undefined}
+                      rel={n.externalUrl ? "noopener noreferrer" : undefined}
+                      className="home-news__row"
+                    >
+                      <span className="home-news__date">{n.date}</span>
+                      <span className="home-news__body">
+                        <span className="home-news__title">{n.title}</span>
+                        {n.summary && <span className="home-news__summary">{n.summary}</span>}
+                      </span>
+                      <span className="home-news__arrow" aria-hidden="true">&rarr;</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="empty-msg">News is being prepared. Check back soon.</p>
+            )}
+          </div>
+        </section>
+
+        {/* ── Featured researcher ───────────────────────────────────────────── */}
+        {featuredResearcher && (
+          <section className="home-section home-researcher" aria-labelledby="researcher-heading">
+            <div className="container">
+              <div className="home-section__head">
+                <div>
+                  <span className="home-eyebrow">Our People</span>
+                  <h2 id="researcher-heading" className="home-section__title">
+                    Featured researcher
+                  </h2>
+                </div>
+                <Link href="/people" className="home-link">
+                  Meet all researchers &rarr;
                 </Link>
+              </div>
+
+              <div className="home-researcher__card">
+                <div className="home-researcher__photo">
+                  {featuredResearcher.photo ? (
+                    <Image
+                      src={featuredResearcher.photo}
+                      alt={`Photo of ${featuredResearcher.fullName}`}
+                      fill
+                      sizes="(max-width: 640px) 128px, 160px"
+                      style={{ objectFit: "cover" }}
+                    />
+                  ) : (
+                    <span aria-hidden="true">
+                      {featuredResearcher.fullName.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                    </span>
+                  )}
+                </div>
+                <div className="home-researcher__body">
+                  <h3 className="home-researcher__name">
+                    <Link href={`/people/${featuredResearcher.slug}`}>
+                      {featuredResearcher.titlePrefix ? `${featuredResearcher.titlePrefix}. ` : ""}
+                      {featuredResearcher.fullName}
+                    </Link>
+                  </h3>
+                  <p className="home-researcher__role">
+                    {featuredResearcher.position}
+                    {featuredResearcher.division
+                      ? ` · ${divisionLabel(featuredResearcher.division)}`
+                      : ""}
+                  </p>
+                  {featuredResearcher.biography && (
+                    <p className="home-researcher__bio">{featuredResearcher.biography.slice(0, 220)}{featuredResearcher.biography.length > 220 ? "…" : ""}</p>
+                  )}
+                  {featuredResearcher.researchInterests && featuredResearcher.researchInterests.length > 0 && (
+                    <ul className="home-researcher__interests" role="list" aria-label="Research interests">
+                      {featuredResearcher.researchInterests.slice(0, 4).map((interest) => (
+                        <li key={interest}>{interest}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ── Stats band ────────────────────────────────────────────────────── */}
+        <section className="home-stats" aria-label="NISER by the numbers">
+          <div className="container home-stats__inner">
+            {stats.map((stat) => (
+              <div key={stat.label} className="home-stat">
+                <span className="home-stat__value">{stat.value}</span>
+                <span className="home-stat__label">{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Purpose / about strip ─────────────────────────────────────────── */}
+        <section className="home-section home-purpose" aria-labelledby="purpose-heading">
+          <div className="container">
+            <div className="home-purpose__grid">
+              {purposeItems.map((item) => (
+                <article key={item.title} className="home-purpose__card">
+                  <h3 id="purpose-heading" className="home-purpose__title">
+                    {item.title}
+                  </h3>
+                  <p className="home-purpose__text">{item.text}</p>
+                  <Link href={item.href} className="home-link">
+                    Learn more &rarr;
+                  </Link>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ═══════════════════════════════════════════════════════
-            LATEST PUBLICATIONS  +  EVENTS & SEMINARS
-        ═══════════════════════════════════════════════════════ */}
-        <section className="section-pub-events">
-          <div className="container pub-events-grid">
-            {/* ─ Publications ─ */}
-            <div className="pub-col">
-              <div className="pub-header">
-                <h2 className="section-title" style={{ margin: 0 }}>
-                  Latest Publications
-                </h2>
-                <Link href="/publications" className="view-all-link">
-                  View All Publications
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: "1rem" }}
-                  >
-                    arrow_forward
-                  </span>
+        {/* ── AI Studio CTA ─────────────────────────────────────────────────── */}
+        <section className="home-section home-ai" aria-labelledby="ai-cta-heading">
+          <div className="container home-ai__inner">
+            <div className="home-ai__content">
+              <span className="home-eyebrow home-eyebrow--light">Research AI Studio</span>
+              <h2 id="ai-cta-heading" className="home-ai__title">
+                Ask the archive. Cite the source.
+              </h2>
+              <p className="home-ai__desc">
+                Chat with the NISER Assistant, search semantically, synthesise
+                literature, and draft policy briefs — with every answer cited to
+                the NISER repository and labels on anything outside it.
+              </p>
+              <div className="home-ai__actions">
+                <Link href="/ai" className="btn btn--accent">
+                  Explore AI tools
+                </Link>
+                <Link href="/chatbot" className="btn btn--outline">
+                  Open the Assistant
                 </Link>
               </div>
-
-              {publicationCards.length > 0 ? (
-                <div className="pub-grid">
-                  {publicationCards.map((pub) => (
-                    <Link
-                      key={pub.id}
-                      href={`/publications/${pub.slug}`}
-                      className="pub-card"
-                    >
-                      {/* Cover */}
-                      <div
-                        className="pub-cover"
-                        style={{ background: pub.coverGradient }}
-                      >
-                        <div className="pub-cover-pattern" />
-                        <span
-                          className="material-symbols-outlined"
-                          style={{
-                            color: "rgba(255,255,255,0.5)",
-                            fontSize: "2.75rem",
-                          }}
-                          aria-hidden="true"
-                        >
-                          menu_book
-                        </span>
-                      </div>
-                      {/* Body */}
-                      <div className="pub-body">
-                        <span className="pub-type">{pub.category}</span>
-                        <h4 className="pub-title">{pub.title}</h4>
-                        {pub.abstract && (
-                          <p className="pub-abstract">{pub.abstract}</p>
-                        )}
-                        <div className="pub-footer">
-                          <span className="pub-date">{pub.date}</span>
-                          <span className="pub-pdf">
-                            PDF{" "}
-                            <span
-                              className="material-symbols-outlined"
-                              style={{
-                                fontSize: "0.875rem",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              download
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="empty-msg">
-                  No publications yet. Add publications in the WordPress CMS.
-                </p>
-              )}
             </div>
+          </div>
+        </section>
 
-            {/* ─ Events ─ */}
-            <div className="events-col">
-              <h2 className="section-title" style={{ marginBottom: "1.5rem" }}>
-                Events &amp; Seminars
+        {/* ── Newsletter CTA ────────────────────────────────────────────────── */}
+        <section className="home-cta" aria-labelledby="newsletter-heading">
+          <div className="container home-cta__inner">
+            <div className="home-cta__content">
+              <span className="home-eyebrow home-eyebrow--light">Stay Informed</span>
+              <h2 id="newsletter-heading" className="home-cta__title">
+                Subscribe to NISER updates
               </h2>
-
-              {eventCards.length > 0 ? (
-                <div className="events-list">
-                  {eventCards.map((ev, idx) => (
-                    <Link key={idx} href="/events" className="event-item">
-                      <div className="event-badge">
-                        <span className="event-month">{ev.month}</span>
-                        <span className="event-day">{ev.day}</span>
-                      </div>
-                      <div className="event-info">
-                        <p className="event-title">{ev.title}</p>
-                        <p className="event-meta">
-                          {ev.location}
-                          {ev.time ? ` | ${ev.time}` : ""}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="empty-msg">
-                  No upcoming events. Add events in the WordPress CMS.
-                </p>
-              )}
-
-              <Link href="/events" className="view-events-btn">
-                View All Events
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════
-            RECENT INSIGHTS
-        ═══════════════════════════════════════════════════════ */}
-        <section className="section-insights">
-          <div className="container">
-            <h2 className="section-title">Recent Insights</h2>
-            <p className="section-subtitle">
-              Brief, actionable intelligence for policymakers and stakeholders.
-            </p>
-
-            {insightCards.length > 0 ? (
-              <div className="insights-grid">
-                {insightCards.map((ins) => (
-                  <Link
-                    key={ins.id}
-                    href={`/insights/${ins.slug}`}
-                    className="insight-card"
-                  >
-                    {/* Image */}
-                    <div className="insight-img-wrap">
-                      {ins.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={ins.image} alt="" className="insight-img" />
-                      ) : (
-                        <div
-                          className="insight-img-fallback"
-                          style={{ background: ins.fallbackGradient }}
-                        />
-                      )}
-                    </div>
-                    {/* Content */}
-                    <span className="insight-category">{ins.category}</span>
-                    <h3 className="insight-title">{ins.title}</h3>
-                    <p className="insight-desc">{ins.description}</p>
-                    {/* Author */}
-                    <div className="insight-author">
-                      <div className="insight-avatar" aria-hidden="true">
-                        {ins.author
-                          .replace(/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s*/i, "")
-                          .charAt(0)}
-                      </div>
-                      <span className="insight-author-name">{ins.author}</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <p className="empty-msg">
-                No insights yet. Add insights in the WordPress CMS.
+              <p className="home-cta__desc">
+                Get the latest publications, policy briefs, events, and news from the
+                Institute delivered to your inbox.
               </p>
-            )}
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════
-            LATEST NEWS
-        ═══════════════════════════════════════════════════════ */}
-        <section className="section-news">
-          <div className="container">
-            <div className="news-header">
-              <div>
-                <h2 className="section-title">Latest News</h2>
-                <p className="section-subtitle">
-                  Stay informed with the latest updates from NISER.
-                </p>
-              </div>
-              <Link href="/news" className="view-all-link">
-                View All News
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: "1rem" }}
-                >
-                  arrow_forward
-                </span>
-              </Link>
-            </div>
-
-            {newsCards.length > 0 ? (
-              <div className="news-grid">
-                {newsCards.map((n) => (
-                  <Link
-                    key={n.id}
-                    href={n.externalUrl || `/news/${n.slug}`}
-                    target={n.externalUrl ? "_blank" : undefined}
-                    rel={n.externalUrl ? "noopener noreferrer" : undefined}
-                    className="news-card"
-                  >
-                    {/* Image */}
-                    <div className="news-img-wrap">
-                      {n.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={n.image} alt="" className="news-img" />
-                      ) : (
-                        <div className="news-img-fallback" />
-                      )}
-                    </div>
-                    {/* Content */}
-                    <span className="news-category">{n.category}</span>
-                    <h3 className="news-title">{n.title}</h3>
-                    <p className="news-summary">{n.summary}</p>
-                    <span className="news-date">{n.date}</span>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <p className="empty-msg">
-                No news yet. Add news in the WordPress CMS.
+              <NewsletterForm className="home-cta__form" placeholder="Your email address" />
+              <p className="home-cta__note">
+                <Link href="/subscribe">Manage your subscription</Link>
               </p>
-            )}
+            </div>
           </div>
         </section>
       </main>

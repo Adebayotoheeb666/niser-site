@@ -1,0 +1,260 @@
+/* ─── NISER Open Data Catalogue Design System ───────────────────────────
+   Token-driven styles for the data catalogue and dataset pages. Reuses
+   global tokens (.btn, .input, --niser-*, --gray-*, --radius-*, --shadow-*). */
+
+/* Shell */
+.data-shell {
+  min-height: 80vh;
+  background-color: var(--gray-50);
+}
+
+/* Banner */
+.data-banner {
+  background: linear-gradient(135deg, var(--niser-green) 0%, var(--niser-green-dark) 100%);
+  color: #fff;
+  padding: 4rem 0;
+}
+
+.data-banner__title {
+  color: #fff;
+  font-size: 2.75rem;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.data-banner__desc {
+  color: var(--niser-gold-pale);
+  font-size: 1.125rem;
+  max-width: 800px;
+  margin: 0;
+}
+
+/* Layout */
+.data-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Sidebar filters */
+.data-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.data-filter-panel {
+  background: var(--color-background);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+.data-filter-panel__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--niser-green-dark);
+}
+
+.data-filter-group {
+  margin-bottom: 1.25rem;
+}
+
+.data-filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.data-filter-group__label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.data-filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.data-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.data-radio input {
+  accent-color: var(--niser-green);
+}
+
+.data-radio__title {
+  font-size: 0.875rem;
+}
+
+/* Content column */
+.data-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.data-search {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.data-search__input {
+  flex: 1;
+}
+
+.data-count {
+  font-weight: 500;
+  color: var(--gray-600);
+}
+
+/* Dataset cards */
+.data-card {
+  background: var(--color-background);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.data-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.data-org-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--niser-green);
+  background: var(--niser-green-pale);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.data-modified {
+  font-size: 0.8125rem;
+  color: var(--gray-400);
+}
+
+.data-card__title {
+  font-size: 1.375rem;
+  margin: 0;
+  font-family: var(--font-sans);
+}
+
+.data-card__title a {
+  color: var(--niser-green-dark);
+  font-weight: 600;
+}
+
+.data-card__title a:hover {
+  color: var(--niser-green);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.data-card__notes {
+  color: var(--gray-600);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.data-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.data-tag {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  background: var(--gray-100);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+}
+
+.data-card__footer {
+  border-top: var(--border-thin) solid var(--color-border);
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.data-formats {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.data-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.data-badge--csv {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.data-badge--json {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.data-badge--xlsx,
+.data-badge--pdf {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Empty state */
+.data-empty {
+  background: var(--color-background);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.data-empty__title {
+  font-size: 1.25rem;
+  color: var(--gray-500);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .data-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .data-banner__title {
+    font-size: 2.25rem;
+  }
+}

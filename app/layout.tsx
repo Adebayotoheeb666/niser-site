@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/components/cart/CartProvider";
+import MatomoTracker from "@/components/analytics/MatomoTracker";
+import FloatingChatbotButton from "@/components/layout/FloatingChatbotButton";
+import CookieConsent from "@/components/consent/CookieConsent";
+
+const MATOMO_URL = process.env.MATOMO_URL;
+const MATOMO_SITE_ID = process.env.MATOMO_SITE_ID;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://niser.gov.ng"),
@@ -45,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en-NG">
+    <html lang="en">
       <head>
         <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
         <link rel="icon" href="/favicon.png" type="image/png" sizes="16x16" />
@@ -57,6 +63,50 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                '@context': 'https://schema.org',
+                '@type': 'Organization',
+                name: 'National Institute of Social and Economic Research (NISER)',
+                alternateName: 'NISER',
+                url: 'https://niser.gov.ng',
+                logo: 'https://niser.gov.ng/favicon.png',
+                foundingDate: '1960',
+                description: "Nigeria's premier policy research institute, providing evidence-based research and analysis to inform national development policy.",
+                address: {
+                  '@type': 'PostalAddress',
+                  streetAddress: 'KM 17, Idiroko Road',
+                  addressLocality: 'Ibadan',
+                  addressRegion: 'Oyo State',
+                  addressCountry: 'NG',
+                },
+                contactPoint: {
+                  '@type': 'ContactPoint',
+                  email: 'info@niser.gov.ng',
+                  contactType: 'customer service',
+                },
+                sameAs: [
+                  'https://twitter.com/NISERNigeria',
+                  'https://www.linkedin.com/company/niser',
+                ],
+              },
+              {
+                '@context': 'https://schema.org',
+                '@type': 'WebSite',
+                name: 'NISER Digital Platform',
+                url: 'https://niser.gov.ng',
+                potentialAction: {
+                  '@type': 'SearchAction',
+                  target: 'https://niser.gov.ng/search?q={search_term_string}',
+                  'query-input': 'required name=search_term_string',
+                },
+              },
+            ]),
+          }}
+        />
       </head>
       <body>
         {/* Skip navigation for screen readers */}
@@ -64,6 +114,9 @@ export default function RootLayout({
           Skip to main content
         </a>
         <CartProvider>{children}</CartProvider>
+        <FloatingChatbotButton />
+        <MatomoTracker url={MATOMO_URL ?? ""} siteId={MATOMO_SITE_ID ?? ""} />
+        <CookieConsent />
       </body>
     </html>
   );

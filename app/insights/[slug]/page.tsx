@@ -3,6 +3,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import RelatedContent from '@/components/ai/RelatedContent';
+import InsightComments from '@/components/ui/InsightComments';
+import InsightImageViewer from '@/components/ui/InsightImageViewer';
+import SocialShare from '@/components/ui/SocialShare';
 import { getInsightBySlug, getInsights } from '@/lib/cms/client';
 
 export const revalidate = 21600;
@@ -21,8 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!insight) return { title: 'Insight Not Found' };
   return {
     title: insight.title,
-    description: insight.socialSummary ?? insight.bodyPlaintext?.slice(0, 160),
-    openGraph: { title: insight.title, type: 'article' },
+    description: insight.socialSummary ?? undefined,
   };
 }
 
@@ -53,8 +56,12 @@ export default async function InsightDetailPage({ params }: PageProps) {
   const insight = await getInsightBySlug(params.slug);
   if (!insight) notFound();
 
-  const typeLabel = typeLabels[insight.contentType] ?? insight.contentType;
+  const typeLabel = (typeLabels[insight.contentType] ?? insight.contentType) || 'Insight';
   const typeColor = typeColors[insight.contentType] ?? 'badge--gray';
+  const title = insight.title || 'Untitled insight';
+  const shortTitle = title.length > 50 ? `${title.slice(0, 50)}…` : title;
+  const authorName = insight.author?.fullName || 'NISER';
+  const authorInitials = authorName.split(' ').filter(Boolean).map((name) => name[0]).slice(0, 2).join('');
 
   return (
     <>
@@ -68,7 +75,7 @@ export default async function InsightDetailPage({ params }: PageProps) {
               <li aria-hidden="true">›</li>
               <li><Link href="/insights">Insights</Link></li>
               <li aria-hidden="true">›</li>
-              <li aria-current="page">{insight.title.slice(0, 50)}…</li>
+              <li aria-current="page">{shortTitle}</li>
             </ol>
           </div>
         </nav>
@@ -85,16 +92,16 @@ export default async function InsightDetailPage({ params }: PageProps) {
                 </span>
               )}
             </div>
-            <h1 className="insight-detail-title">{insight.title}</h1>
+            <h1 className="insight-detail-title">{title}</h1>
 
             {insight.author && (
               <div className="insight-detail-byline">
                 <div className="insight-detail-avatar" aria-hidden="true">
-                  {insight.author.fullName.split(' ').map((n) => n[0]).slice(0, 2).join('')}
+                  {authorInitials}
                 </div>
                 <div>
                   <Link href={`/people/${insight.author.slug}`} className="insight-detail-author-link">
-                    {insight.author.fullName}
+                    {authorName}
                   </Link>
                   <time dateTime={insight.publishedDate} className="insight-detail-date">
                     {formatDate(insight.publishedDate)}
@@ -105,6 +112,10 @@ export default async function InsightDetailPage({ params }: PageProps) {
 
             {insight.socialSummary && (
               <p className="insight-detail-summary">{insight.socialSummary}</p>
+            )}
+
+            {insight.featuredImage && (
+              <InsightImageViewer imageUrl={insight.featuredImage} alt={insight.title} />
             )}
           </div>
         </div>
@@ -133,6 +144,82 @@ export default async function InsightDetailPage({ params }: PageProps) {
                   ))}
                 </div>
               )}
+
+              {/* Social share */}
+              <SocialShare
+                url={`https://niser.gov.ng/insights/${insight.slug}`}
+                title={title}
+              />
+
+              {/* Documents & Downloads */}
+              {(insight.pdfFile || (insight.documents && insight.documents.length > 0)) && (
+                <div className="mt-8 border-t border-surface-gray pt-6">
+                  <h3 className="font-headline-sm text-headline-sm text-nigeria-green-deep mb-4">
+                    <span className="material-symbols-outlined text-lg align-text-bottom mr-2">download</span>
+                    Resources & Documents
+                  </h3>
+                  <div className="space-y-3">
+                    {/* Legacy PDF file */}
+                    {insight.pdfFile && (
+                      <div className="flex items-center justify-between p-4 border border-outline-variant rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+                        <div>
+                          <p className="font-label-lg text-label-lg text-on-surface">Policy Brief (PDF)</p>
+                          <p className="font-body-sm text-body-sm text-on-surface-variant">Full article in PDF format</p>
+                        </div>
+                        <a
+                          href={insight.pdfFile}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className="flex items-center gap-2 px-3 py-2 rounded-md bg-nigeria-green-vibrant text-on-primary font-label-md hover:bg-nigeria-green-deep transition-colors whitespace-nowrap"
+                        >
+                          <span className="material-symbols-outlined text-base">download</span>
+                          Download
+                        </a>
+                      </div>
+                    )}
+                    
+                    {/* Additional documents */}
+                    {insight.documents && insight.documents.map((doc) => (
+                      <div key={doc.id} className="flex items-center justify-between p-4 border border-outline-variant rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+                        <div className="flex-1">
+                          <p className="font-label-lg text-label-lg text-on-surface">{doc.title}</p>
+                          {doc.description && (
+                            <p className="font-body-sm text-body-sm text-on-surface-variant">{doc.description}</p>
+                          )}
+                          {doc.fileSize && (
+                            <p className="font-label-sm text-label-sm text-outline mt-1">{doc.fileSize}</p>
+                          )}
+                        </div>
+                        <a
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className="flex items-center gap-2 px-3 py-2 rounded-md bg-nigeria-green-vibrant text-on-primary font-label-md hover:bg-nigeria-green-deep transition-colors whitespace-nowrap ml-4"
+                        >
+                          <span className="material-symbols-outlined text-base">download</span>
+                          Download
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <InsightComments insight={insight} />
+
+              <RelatedContent
+                id={`insight:${insight.id}`}
+                title={insight.title}
+                type="insight"
+                slug={insight.slug}
+                excerpt={insight.socialSummary ?? insight.bodyPlaintext ?? insight.body ?? ''}
+                pageContext={`${insight.title} ${insight.socialSummary ?? insight.bodyPlaintext ?? insight.body ?? ''} ${(insight.tags ?? []).join(' ')}`}
+                tags={insight.tags ?? []}
+                publishedDate={insight.publishedDate}
+                contentType={insight.contentType}
+              />
             </article>
           </div>
         </div>

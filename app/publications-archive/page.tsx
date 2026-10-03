@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import PublicationArchiveClient from "@/components/publications/PublicationArchiveClient";
 import { getPublications } from "@/lib/cms/client";
 
 export const revalidate = 3600;
@@ -14,128 +15,55 @@ export const metadata: Metadata = {
 export default async function PublicationsArchivePage() {
   const publications = await getPublications({ limit: 30 });
 
+  const publicationTypes = new Set(
+    publications
+      .map((pub) => (pub.publicationType ?? "Research").replace(/_/g, " "))
+      .filter(Boolean)
+  );
+
+  const years = new Set(
+    publications
+      .map((pub) => pub.publishedYear)
+      .filter((year): year is number => typeof year === "number")
+  );
+
   return (
     <>
       <Header />
-      <main id="main-content" className="w-full">
-        {/* Hero Section */}
-        <section className="bg-surface-container-lowest py-16">
-          <div className="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
-            <h1 className="font-display-md text-display-md text-nigeria-green-deep mb-4">
-              Publications Archive
-            </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-              Explore NISER&apos;s comprehensive collection of research
-              publications, working papers, policy briefs, and policy memos
-              spanning decades of research excellence.
-            </p>
-          </div>
-        </section>
+      <main id="main-content" className="w-full bg-[#f5f7f3] text-slate-900">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0f3d2f] via-[#184f42] to-[#1d7d69] text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(117,204,129,0.15),transparent_35%)]" />
+          <div className="container relative py-16 md:py-20">
+            <div className="max-w-3xl">
+              <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100">
+                Research archive
+              </span>
+              <h1 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">
+                Publications that chart NISER&apos;s research legacy.
+              </h1>
+              <p className="mt-5 max-w-2xl text-base text-emerald-50 md:text-lg">
+                Explore the institute&apos;s collection of working papers, policy briefs, research reports, and archived outputs that reflect years of public-interest scholarship.
+              </p>
+            </div>
 
-        {/* Search and Filter Section */}
-        <section className="border-b border-surface-gray py-12">
-          <div className="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <input
-                type="text"
-                placeholder="Search publications..."
-                className="col-span-1 md:col-span-2 px-4 py-3 border border-outline rounded-lg font-body-md text-body-md bg-surface"
-              />
-              <select className="px-4 py-3 border border-outline rounded-lg font-body-md text-body-md bg-surface">
-                <option>Publication Type</option>
-                <option>Working Paper</option>
-                <option>Policy Brief</option>
-                <option>Research Report</option>
-                <option>Policy Memo</option>
-              </select>
-              <select className="px-4 py-3 border border-outline rounded-lg font-body-md text-body-md bg-surface">
-                <option>Year</option>
-                <option>2024</option>
-                <option>2023</option>
-                <option>2022</option>
-                <option>2021</option>
-              </select>
+            <div className="mt-12 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">{publications.length}</p>
+                <p className="mt-1 text-sm text-emerald-100">Publications archived</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">{publicationTypes.size}</p>
+                <p className="mt-1 text-sm text-emerald-100">Research formats</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                <p className="text-2xl font-bold text-white">{years.size}</p>
+                <p className="mt-1 text-sm text-emerald-100">Years represented</p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Publications Grid */}
-        <section className="py-16 bg-surface">
-          <div className="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
-            {publications.length === 0 ? (
-              <p className="text-body-md text-on-surface-variant py-16 text-center">
-                No publications available yet. Visit our{" "}
-                <a
-                  href="/publications"
-                  className="text-nigeria-green-vibrant underline"
-                >
-                  Publications page
-                </a>
-                .
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {publications.map((pub) => {
-                  const authors = pub.authors.map((a) => a.fullName).join(", ");
-                  const type = pub.publicationType.replace(/_/g, " ");
-                  const division = pub.researchDivision?.replace(/_/g, " ");
-
-                  return (
-                    <div
-                      key={pub.id}
-                      className="bg-surface-container-lowest border border-surface-gray p-6 rounded-lg hover:shadow-lg transition-shadow"
-                    >
-                      <span className="inline-block px-3 py-1 bg-research-blue/10 text-research-blue rounded-full font-label-sm text-label-sm mb-4 capitalize">
-                        {type}
-                      </span>
-                      <h3 className="font-headline-md text-headline-md text-nigeria-green-deep mb-2 line-clamp-2">
-                        {pub.title}
-                      </h3>
-                      <p className="font-body-md text-body-md text-on-surface-variant mb-4 line-clamp-2">
-                        {pub.abstract}
-                      </p>
-                      <div className="flex justify-between items-center text-label-sm text-outline mb-2">
-                        <span>{pub.publishedYear}</span>
-                        {division && (
-                          <span className="capitalize">{division}</span>
-                        )}
-                      </div>
-                      {authors && (
-                        <p className="text-label-sm text-on-surface-variant mb-4 line-clamp-1">
-                          {authors}
-                        </p>
-                      )}
-                      <div className="flex flex-col gap-2">
-                        <a
-                          href={"/publications/" + pub.slug}
-                          className="w-full bg-nigeria-green-deep text-on-primary px-4 py-2 rounded font-label-md text-label-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                        >
-                          <span className="material-symbols-outlined text-base">
-                            open_in_new
-                          </span>{" "}
-                          View Publication
-                        </a>
-                        {pub.pdfFile && (
-                          <a
-                            href={pub.pdfFile}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full border border-nigeria-green-deep text-nigeria-green-deep px-4 py-2 rounded font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2"
-                          >
-                            <span className="material-symbols-outlined text-base">
-                              download
-                            </span>{" "}
-                            Download PDF
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </section>
+        <PublicationArchiveClient publications={publications} />
       </main>
       <Footer />
     </>

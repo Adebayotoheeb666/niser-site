@@ -1,180 +1,50 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import SectionHeader from '@/components/ui/SectionHeader';
+import { getResearchers } from '@/lib/cms/client';
+import './../staff.css';
+
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: 'Staff Directory | About NISER',
   description: 'NISER staff directory and contact information.',
 };
 
-const staffByDepartment = [
-  {
-    department: 'Office of the Director-General',
-    color: 'border-blue-600',
-    staff: [
-      {
-        id: 'prof-antonia-taiye-simbine',
-        name: 'Prof. Antonia Taiye Simbine',
-        position: 'Director-General',
-        email: 'dg@niser.gov.ng',
-        phone: '07033545404',
-      },
-    ],
-  },
-  {
-    department: 'Agricultural and Food Policy Department',
-    color: 'border-green-600',
-    staff: [
-      {
-        id: 'staff-001',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-  {
-    department: 'Economic and Business Policy Department',
-    color: 'border-indigo-600',
-    staff: [
-      {
-        id: 'staff-002',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-  {
-    department: 'Environmental and Physical Infrastructure Policy Department',
-    color: 'border-purple-600',
-    staff: [
-      {
-        id: 'staff-003',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-  {
-    department: 'Human Capital Policy Department',
-    color: 'border-orange-600',
-    staff: [
-      {
-        id: 'staff-004',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-  {
-    department: 'Innovation and Technology Policy Department',
-    color: 'border-red-600',
-    staff: [
-      {
-        id: 'staff-005',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-  {
-    department: 'Social Policy Department',
-    color: 'border-pink-600',
-    staff: [
-      {
-        id: 'staff-006',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-  {
-    department: 'Political and Governance Policy Department',
-    color: 'border-cyan-600',
-    staff: [
-      {
-        id: 'staff-007',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-  {
-    department: 'Knowledge Management Department',
-    color: 'border-teal-600',
-    staff: [
-      {
-        id: 'staff-008',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-  {
-    department: 'Research Management Department',
-    color: 'border-emerald-600',
-    staff: [
-      {
-        id: 'staff-009',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-  {
-    department: 'Administration and Finance Department',
-    color: 'border-amber-600',
-    staff: [
-      {
-        id: 'staff-010',
-        name: 'To be updated',
-        position: 'Head of Department',
-        email: 'contact@niser.gov.ng',
-        phone: '+234 (0) 803 000 0000',
-      },
-    ],
-  },
-];
+const divisionLabels: Record<string, string> = {
+  macroeconomics: 'Macroeconomics',
+  poverty_social: 'Poverty & Social Policy',
+  agriculture: 'Agriculture & Food Policy',
+  governance: 'Governance & Institutions',
+  industry: 'Industry & Enterprise',
+};
 
 const supportServices = [
   {
+    icon: '🛎️',
     title: 'SERVICOM - Service Excellence',
     contact: 'Charter Desk Officer: Teneilabe Millicent O.',
     email: 'mteneilabe@gmail.com',
     phone: '08033492855',
   },
   {
+    icon: '🛡️',
     title: 'ACTU - Anti-Corruption Unit',
     contact: 'Dr. (Mrs) Foluso M. Adeyinka (Chairperson)',
     email: 'actu@niser.gov.ng',
     phone: '+234 (0) 803 000 0000',
   },
   {
+    icon: '⚖️',
     title: 'Legal Unit',
     contact: 'Head, Legal Unit',
     email: 'legal@niser.gov.ng',
     phone: '+234 (0) 803 000 0000',
   },
   {
+    icon: '📋',
     title: 'Internal Audit Unit',
     contact: 'Head, Internal Audit',
     email: 'audit@niser.gov.ng',
@@ -182,155 +52,168 @@ const supportServices = [
   },
 ];
 
-export default function StaffDirectoryPage() {
+export default async function StaffDirectoryPage() {
+  const researchers = await getResearchers({ active: true });
+  const getInitials = (name?: string) =>
+    (name || 'Staff').split(' ').filter(Boolean).map((part) => part[0]).join('').slice(0, 2);
+
+  const staffByDepartment = researchers.reduce<
+    Record<string, { department: string; staff: typeof researchers }>
+  >((acc, researcher) => {
+    const department = researcher.division
+      ? divisionLabels[researcher.division] ?? researcher.division
+      : 'Research Staff';
+    if (!acc[department]) {
+      acc[department] = { department, staff: [] };
+    }
+    acc[department].staff.push(researcher);
+    return acc;
+  }, {});
+
+  const departments = Object.values(staffByDepartment);
+  const totalStaff = researchers.length;
+
   return (
     <>
       <Header />
       <main id="main-content">
-        <div className="section">
-          <div className="container">
-            <SectionHeader
-              title="Staff Directory"
-              description="Find contact information for NISER staff members"
-            />
-
-            <div className="prose max-w-4xl mb-12">
-              <p className="mb-6">
-                Our dedicated team of researchers, administrators, and support staff work together to advance 
-                NISER&apos;s mission of conducting policy research and providing evidence-based recommendations 
-                for national development. Use the directory below to find contact information for staff members 
-                across our various departments.
-              </p>
+        {/* Hero */}
+        <section className="staff-hero">
+          <div className="staff-container">
+            <span className="about-kicker">About NISER &middot; Our People</span>
+            <h1 className="staff-hero__title">Staff Directory</h1>
+            <p className="staff-hero__lead">
+              Meet the researchers, administrators, and support teams who advance NISER&apos;s
+              mission of evidence-based policy research for national development.
+            </p>
+            <div className="staff-hero__meta">
+              <span className="staff-hero__meta-item">
+                <strong>{totalStaff || 0}</strong> staff profiles
+              </span>
+              <span className="staff-hero__meta-item">
+                <strong>{departments.length || 0}</strong> departments
+              </span>
+              <span className="staff-hero__meta-item">
+                <strong>{supportServices.length}</strong> support services
+              </span>
             </div>
+          </div>
+        </section>
 
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-8">Research & Support Departments</h2>
-              <div className="space-y-6">
-                {staffByDepartment.map((dept) => (
-                  <div
-                    key={dept.department}
-                    className={`border-l-4 ${dept.color} bg-white rounded-lg p-6 shadow-sm`}
-                  >
-                    <h3 className="text-xl font-semibold mb-4">{dept.department}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {dept.staff.map((member) => (
-                        <Link key={member.id} href={`/about/staff/${member.id}`}>
-                          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-400 transition-all cursor-pointer h-full">
-                            <div className="aspect-square bg-gray-300 flex items-center justify-center overflow-hidden">
-                              <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                                <div className="text-center text-gray-500">
-                                  <p className="text-sm">Staff Photo</p>
-                                  <p className="text-xs mt-1">Image Placeholder</p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="p-4">
-                              <p className="font-semibold text-gray-900 line-clamp-2">{member.name}</p>
-                              <p className="text-sm text-gray-600 mb-3 line-clamp-1">{member.position}</p>
-                              <div className="space-y-2 text-sm">
-                                <div className="truncate">
-                                  <p className="text-gray-500 text-xs">Email:</p>
-                                  <a
-                                    href={`mailto:${member.email}`}
-                                    className="text-blue-600 hover:underline text-xs truncate block"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    {member.email}
-                                  </a>
-                                </div>
-                                <div className="truncate">
-                                  <p className="text-gray-500 text-xs">Phone:</p>
-                                  <a
-                                    href={`tel:${member.phone}`}
-                                    className="text-blue-600 hover:underline text-xs truncate block"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    {member.phone}
-                                  </a>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+        <div className="staff-container">
+          {totalStaff === 0 ? (
+            <p className="staff-dept__empty">Staff profiles are being prepared and will appear here shortly.</p>
+          ) : (
+            departments.map((dept, deptIdx) => (
+              <section key={dept.department} className="staff-dept" aria-label={dept.department}>
+                <div className="staff-dept__top">
+                  <span className="staff-dept__index" aria-hidden="true">
+                    {String(deptIdx + 1).padStart(2, '0')}
+                  </span>
+                  <h2 className="staff-dept__title">{dept.department}</h2>
+                  <span className="staff-dept__count">
+                    {dept.staff.length} {dept.staff.length === 1 ? 'member' : 'members'}
+                  </span>
+                </div>
+                <div className="staff-grid">
+                  {dept.staff.map((member) => (
+                    <Link
+                      key={member.slug}
+                      href={`/about/staff/${member.slug}`}
+                      className="staff-card"
+                    >
+                      <div className="staff-card__media">
+                        {member.photo ? (
+                          <Image
+                            src={member.photo}
+                            alt={member.fullName}
+                            className="staff-card__img"
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          />
+                        ) : (
+                          <span className="staff-card__initials" aria-hidden="true">
+                            {getInitials(member.fullName)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="staff-card__body">
+                        <h3 className="staff-card__name">{member.fullName}</h3>
+                        <p className="staff-card__position">{member.position}</p>
+                        <span className="staff-card__link">
+                          View profile &rarr;
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            ))
+          )}
+
+          {/* Support services */}
+          <section className="staff-support" aria-labelledby="support-heading">
+            <div className="staff-head">
+              <h2 id="support-heading" className="staff-head__title">
+                Support Services
+              </h2>
+              <p className="staff-head__desc">Units that keep the Institute running.</p>
+            </div>
+            <div className="staff-services">
+              {supportServices.map((service) => (
+                <div key={service.title} className="staff-service">
+                  <span className="staff-service__icon" aria-hidden="true">{service.icon}</span>
+                  <h3 className="staff-service__title">{service.title}</h3>
+                  <p className="staff-service__contact">{service.contact}</p>
+                  <div className="staff-service__row">
+                    <span className="staff-service__row-label">Email</span>
+                    <a href={`mailto:${service.email}`}>{service.email}</a>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-8">Support Services</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {supportServices.map((service) => (
-                  <div key={service.title} className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                    <h3 className="text-lg font-semibold text-blue-900 mb-3">{service.title}</h3>
-                    <div className="space-y-2">
-                      <div>
-                        <p className="text-sm text-blue-700 font-medium">{service.contact}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-blue-600">Email:</p>
-                        <a
-                          href={`mailto:${service.email}`}
-                          className="text-blue-600 hover:underline text-sm"
-                        >
-                          {service.email}
-                        </a>
-                      </div>
-                      <div>
-                        <p className="text-xs text-blue-600">Phone:</p>
-                        <a
-                          href={`tel:${service.phone}`}
-                          className="text-blue-600 hover:underline text-sm"
-                        >
-                          {service.phone}
-                        </a>
-                      </div>
-                    </div>
+                  <div className="staff-service__row">
+                    <span className="staff-service__row-label">Phone</span>
+                    <a href={`tel:${service.phone.replace(/\s/g, '')}`}>{service.phone}</a>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+          </section>
 
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-lg border border-blue-200 mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Main Office Address</h2>
-              <div className="space-y-3 text-gray-700">
-                <p>
-                  <strong>Nigerian Institute of Social and Economic Research (NISER)</strong>
-                </p>
-                <p>
-                  PMB 5 University of Ibadan Post Office<br />
-                  Ibadan, Oyo State<br />
+          {/* Offices */}
+          <section className="staff-info" aria-label="NISER offices">
+            <div className="staff-info__grid">
+              <div className="staff-info__card">
+                <h2 className="staff-info__title">Main Office</h2>
+                <address>
+                  Nigerian Institute of Social and Economic Research (NISER)
+                  <br />
+                  PMB 5, University of Ibadan Post Office
+                  <br />
+                  Ibadan, Oyo State
+                  <br />
                   Nigeria
-                </p>
-                <p>
-                  <strong>Phone:</strong> <a href="tel:+2347033545404" className="text-blue-600 hover:underline">+234 (0) 703 354 5404</a>
-                </p>
-                <p>
-                  <strong>Email:</strong> <a href="mailto:info@niser.gov.ng" className="text-blue-600 hover:underline">info@niser.gov.ng</a>
-                </p>
+                </address>
+                <div className="staff-info__links">
+                  <a href="tel:+2347033545404">+234 (0) 703 354 5404</a>
+                  <a href="mailto:info@niser.gov.ng">info@niser.gov.ng</a>
+                </div>
               </div>
-            </div>
-
-            <div className="bg-green-50 p-8 rounded-lg border border-green-200">
-              <h2 className="text-2xl font-bold text-green-900 mb-4">Liaison Offices</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="staff-info__card">
+                <h2 className="staff-info__title">Liaison Offices</h2>
                 <div>
-                  <h3 className="font-semibold text-green-900 mb-2">Abuja Liaison Office</h3>
-                  <p className="text-sm text-green-800">
+                  <p className="staff-info__sub">Abuja Liaison Office</p>
+                  <p className="staff-info__desc">
                     For inquiries and services in Abuja and Northern Nigeria
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-green-900 mb-2">Lagos Liaison Office</h3>
-                  <p className="text-sm text-green-800">
+                  <p className="staff-info__sub">Lagos Liaison Office</p>
+                  <p className="staff-info__desc">
                     For inquiries and services in Lagos and South-Western Nigeria
                   </p>
                 </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </main>
       <Footer />

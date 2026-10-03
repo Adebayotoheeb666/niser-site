@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -25,12 +26,13 @@ export default function ServicecomPage() {
                 
                 <div className="mb-8 flex flex-col md:flex-row gap-8">
                   <div className="md:w-64 flex-shrink-0">
-                    <div className="w-64 h-80 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <div className="text-center text-gray-500">
-                        <p className="text-sm">SERVICOM</p>
-                        <p className="text-xs mt-2">Image Placeholder</p>
-                      </div>
-                    </div>
+                    <Image
+                      src="/servicom.png"
+                      alt="SERVICOM NISER"
+                      width={256}
+                      height={320}
+                      className="w-64 h-80 object-cover rounded-lg shadow-sm"
+                    />
                   </div>
                   <div className="flex-1">
                     <p className="mb-4">

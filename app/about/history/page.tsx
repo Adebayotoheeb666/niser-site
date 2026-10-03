@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import SectionHeader from '@/components/ui/SectionHeader';
 import './history.css';
 
 export const metadata: Metadata = {
@@ -35,15 +35,23 @@ export default function HistoryPage() {
                     In 1957, Ghana obtained political independence and opted out of the institute. After
                     Nigeria gained independence in 1960, the name of the institute was changed to
                     Nigerian Institute of Social and Economic Research. In 1977, the military government
-                    made NISER an autonomous body. Thereafter, NISER's responsibilities include
+                    made NISER an autonomous body. Thereafter, NISER&apos;s responsibilities include
                     coordinating social and economic research in federal universities. The institute also
                     carries out independent research on social and economic issues, and provides
-                    consultative service to the government based on research findings. The institute's
+                    consultative service to the government based on research findings. The institute&apos;s
                     facilities are used as a venue for seminars and conferences.
                   </p>
                 </div>
               </div>
-              <div className="section-image-placeholder" />
+              <div className="section-image">
+                <Image
+                  src="/about-01.png"
+                  alt="About NISER overview"
+                  fill
+                  className="section-image-img"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -52,7 +60,15 @@ export default function HistoryPage() {
         <section className="history-section">
           <div className="container">
             <div className="section-layout section-layout--left">
-              <div className="section-image-placeholder" />
+              <div className="section-image">
+                <Image
+                  src="/about-02.png"
+                  alt="History of NISER"
+                  fill
+                  className="section-image-img"
+                  priority
+                />
+              </div>
               <div className="section-content">
                 <h2 className="section-title">History of NISER</h2>
                 <div className="prose">
@@ -90,7 +106,15 @@ export default function HistoryPage() {
                   </p>
                 </div>
               </div>
-              <div className="section-image-placeholder" />
+              <div className="section-image">
+                <Image
+                  src="/about-03.png"
+                  alt="Our Vision"
+                  fill
+                  className="section-image-img"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -99,7 +123,15 @@ export default function HistoryPage() {
         <section className="history-section">
           <div className="container">
             <div className="section-layout section-layout--left">
-              <div className="section-image-placeholder" />
+              <div className="section-image">
+                <Image
+                  src="/about-04.png"
+                  alt="Our Mission"
+                  fill
+                  className="section-image-img"
+                  priority
+                />
+              </div>
               <div className="section-content">
                 <h2 className="section-title">Our Mission</h2>
                 <div className="prose">
@@ -143,14 +175,22 @@ export default function HistoryPage() {
                     </li>
                     <li>
                       <strong>Cooperate with Nigerian universities</strong>, research institutes and
-                      other institutions in the mobilization of the country's research potential for the
+                      other institutions in the mobilization of the country&apos;s research potential for the
                       task of national development and dissemination of research findings for the use of
                       policymakers at all levels
                     </li>
                   </ul>
                 </div>
               </div>
-              <div className="section-image-placeholder" />
+              <div className="section-image">
+                <Image
+                  src="/about-05.png"
+                  alt="Our Mandate"
+                  fill
+                  className="section-image-img"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -159,7 +199,15 @@ export default function HistoryPage() {
         <section className="history-section">
           <div className="container">
             <div className="section-layout section-layout--left">
-              <div className="section-image-placeholder" />
+              <div className="section-image">
+                <Image
+                  src="/about-06.png"
+                  alt="Organizational Structure"
+                  fill
+                  className="section-image-img"
+                  priority
+                />
+              </div>
               <div className="section-content">
                 <h2 className="section-title">Organizational Structure</h2>
                 <div className="prose">
@@ -226,7 +274,15 @@ export default function HistoryPage() {
                   </div>
                 </div>
               </div>
-              <div className="section-image-placeholder" />
+              <div className="section-image">
+                <Image
+                  src="/about-07.png"
+                  alt="Regional Framework"
+                  fill
+                  className="section-image-img"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </section>

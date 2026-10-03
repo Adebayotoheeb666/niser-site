@@ -27,11 +27,17 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env.production
 
 # vercel
 .vercel
+
+# deployment artifacts
+certs/
+uploads/
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 .env
+sincere-cortex-451921-i2-firebase-adminsdk-fbsvc-cb5ab342ca.json

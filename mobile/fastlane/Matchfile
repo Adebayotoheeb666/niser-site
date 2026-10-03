@@ -1,0 +1,15 @@
+# Matchfile — Fastlane Match (iOS signing) configuration.
+# Match stores signing certs/profiles in a private Git repo (GH secret MATCH_REPO).
+
+git_url ENV["MATCH_REPO"]
+storage_mode "git"
+
+app_identifier ENV["IOS_APP_IDENTIFIER"] || "ng.gov.niser.app"
+username ENV["APPLE_ID"]
+team_id ENV["APPLE_TEAM_ID"]
+
+type "appstore"
+readonly ENV["CI"] == "true" && ENV["MATCH_READONLY"] == "true"
+
+# Force certificate refresh when generating new dev certs.
+force_for_new_devices true

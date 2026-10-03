@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/ui/HeroSection';
 import { getProcurements } from '@/lib/cms/client';
 
 export const revalidate = 86400; // ISR: 24 hours
@@ -34,6 +35,11 @@ export default async function TendersPage() {
   return (
     <>
       <Header />
+      <HeroSection
+        title="Procurement & Tenders"
+        description="Review active invitations, expressions of interest, and recent procurement notices from NISER."
+        subtitle="Transparent information for suppliers, partners, and stakeholders"
+      />
       <main id="main-content" style={{ minHeight: '80vh', backgroundColor: 'var(--gray-50)' }}>
         {/* Banner Area */}
         <section className="section" style={{ backgroundColor: 'var(--niser-green)', color: '#fff', padding: '4rem 0' }}>

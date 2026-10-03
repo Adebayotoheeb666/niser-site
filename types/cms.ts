@@ -18,6 +18,15 @@ export interface DatasetResource {
   description?: string;
 }
 
+export interface BriefDocument {
+  id: string;
+  title: string;
+  url: string;
+  fileType: string;
+  fileSize?: string;
+  description?: string;
+}
+
 export interface Dataset {
   id: string;
   title: string;
@@ -91,6 +100,9 @@ export interface Researcher {
   googleScholar?: string;
   researchGate?: string;
   email?: string;
+  phone?: string;
+  linkedin?: string;
+  websiteUrl?: string;
   selectedPublications?: Publication[];
   isActive: boolean;
   status: "draft" | "published";
@@ -114,8 +126,11 @@ export interface Insight {
   publishedDate: string;
   body?: string;
   bodyPlaintext?: string;
+  excerpt?: string;
   socialSummary?: string;
   featuredImage?: string;
+  pdfFile?: string;
+  documents?: BriefDocument[];
   tags?: string[];
   isBreaking?: boolean;
   aiGenerated?: boolean;
@@ -203,6 +218,7 @@ export interface PublicationParams {
   type?: PublicationType;
   division?: ResearchDivision;
   year?: number;
+  preview?: boolean;
 }
 
 export interface ResearcherParams {
@@ -214,11 +230,13 @@ export interface InsightParams {
   limit?: number;
   page?: number;
   contentType?: InsightContentType;
+  preview?: boolean;
 }
 
 export interface EventParams {
   upcoming?: boolean;
   limit?: number;
+  preview?: boolean;
 }
 
 export interface NewsParams {
@@ -302,7 +320,7 @@ export interface AnnualReport {
   pdfFile?: string;
   coverImage?: string;
   description?: string;
-  status: "draft" | "published";
+  status: "draft" | "publish" | "published";
 }
 
 // ─── Partner ──────────────────────────────────────────────────────────────────

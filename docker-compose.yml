@@ -1,0 +1,297 @@
+version: '3.8'
+
+services:
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: niser-app
+    restart: unless-stopped
+    env_file:
+      - .env.local
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      # For local development, use localhost URLs
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_URL: http://ollama:11434
+      MATOMO_URL: http://localhost:8081
+      MATOMO_SITE_ID: 1
+      NEXT_PUBLIC_CMS_URL: http://host.docker.internal:10003/wp-json/niser/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - niser-net
+    volumes:
+      - ./app:/app/app
+      - ./lib:/app/lib
+      - ./components:/app/components
+      - ./.next:/.next
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: niser-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+    networks:
+      - niser-net
+
+  # Elasticsearch for Keyword Search & Indexing
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: niser-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: curl -s http://localhost:9200 >/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - niser-net
+
+  # Qdrant Vector Database for Embeddings & Semantic Search
+  qdrant:
+    image: qdrant/qdrant:v1.2.1
+    container_name: niser-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/bash -lc 'cat < /dev/tcp/127.0.0.1/6333 2>/dev/null | head -c 4 | grep -q HTTP' && exit 0 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - qdrant-data:/qdrant/storage
+    networks:
+      - niser-net
+
+  # PostgreSQL Database (for Payload CMS & Matomo)
+  postgres:
+    image: postgres:16-alpine
+    container_name: niser-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-niser}
+      POSTGRES_USER: ${POSTGRES_USER:-niser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-niser-local-dev}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-niser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - niser-net
+
+  # Payload CMS (Headless CMS)
+  cms:
+    image: node:18-alpine
+    container_name: niser-cms
+    restart: unless-stopped
+    working_dir: /cms
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+      DATABASE_URI: postgresql://niser:niser-local-dev@postgres:5432/niser
+      PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3001
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./cms:/cms
+      - cms-node-modules:/cms/node_modules
+    networks:
+      - niser-net
+    profiles:
+      - cms
+
+  # Matomo Analytics Database
+  matomo-db:
+    image: mysql:8.0
+    container_name: niser-matomo-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root-local-dev}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-matomo}
+      MYSQL_USER: ${MYSQL_USER:-matomo}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-matomo-local-dev}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - matomo-db-data:/var/lib/mysql
+    networks:
+      - niser-net
+
+  # Matomo Analytics (Self-Hosted)
+  matomo:
+    image: matomo:5.1
+    container_name: niser-matomo
+    restart: unless-stopped
+    environment:
+      MATOMO_DATABASE_HOST: matomo-db
+      MATOMO_DATABASE_USERNAME: ${MYSQL_USER:-matomo}
+      MATOMO_DATABASE_PASSWORD: ${MYSQL_PASSWORD:-matomo-local-dev}
+      MATOMO_DATABASE_DBNAME: ${MYSQL_DATABASE:-matomo}
+    ports:
+      - "8081:80"
+    depends_on:
+      matomo-db:
+        condition: service_healthy
+    volumes:
+      - matomo-data:/var/www/html
+    networks:
+      - niser-net
+
+  # Ollama for Local LLM Inference (Optional)
+  # Only runs if explicitly enabled
+  ollama:
+    image: ollama/ollama:latest
+    container_name: niser-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - niser-net
+    profiles:
+      - ollama
+    # To use: docker-compose --profile ollama up -d
+    # Then: docker exec niser-ollama ollama pull llama-3.1-8b
+
+  # Redis Cache (Optional, for session management)
+  redis:
+    image: redis:7-alpine
+    container_name: niser-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - niser-net
+    profiles:
+      - cache
+
+  # ─── CKAN Open Data Portal (Optional) ──────────────────────────────────────
+  # Self-hosted CKAN 2.10 stack backing data.niser.gov.ng.
+  # To use: docker-compose --profile ckan up -d
+  # Then set CKAN_API_URL=http://localhost:5000 in .env.local
+
+  # CKAN PostgreSQL database
+  ckan-db:
+    image: postgres:14-alpine
+    container_name: niser-ckan-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${CKAN_DB_NAME:-ckan}
+      POSTGRES_USER: ${CKAN_DB_USER:-ckan}
+      POSTGRES_PASSWORD: ${CKAN_DB_PASSWORD:-ckan-local-dev}
+    volumes:
+      - ckan-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CKAN_DB_USER:-ckan}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - niser-net
+    profiles:
+      - ckan
+
+  # CKAN Solr search index
+  ckan-solr:
+    image: ckan/ckan-solr:2.10
+    container_name: niser-ckan-solr
+    restart: unless-stopped
+    volumes:
+      - ckan-solr-data:/var/solr
+    networks:
+      - niser-net
+    profiles:
+      - ckan
+
+  # CKAN application
+  ckan:
+    image: ckan/ckan-base:2.10
+    container_name: niser-ckan
+    restart: unless-stopped
+    environment:
+      CKAN_SITE_ID: niser
+      CKAN_SITE_URL: ${CKAN_SITE_URL:-http://localhost:5000}
+      CKAN_SQLALCHEMY_URL: postgresql://${CKAN_DB_USER:-ckan}:${CKAN_DB_PASSWORD:-ckan-local-dev}@ckan-db:5432/${CKAN_DB_NAME:-ckan}
+      CKAN_SOLR_URL: http://ckan-solr:8983/solr/ckan
+      CKAN__BEAKER__SESSION__SECRET: ${CKAN_SESSION_SECRET:-change-me-in-production}
+      CKAN__APIKEY: ${CKAN_API_KEY:-}
+      CKAN_EXT_DATAPUSHER_URL: ""
+    ports:
+      - "5000:5000"
+    depends_on:
+      ckan-db:
+        condition: service_healthy
+      ckan-solr:
+        condition: service_started
+    volumes:
+      - ckan-storage:/var/lib/ckan
+    healthcheck:
+      test: curl -s http://localhost:5000/api/3/action/site_read >/dev/null || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - niser-net
+    profiles:
+      - ckan
+
+networks:
+  niser-net:
+    driver: bridge
+
+volumes:
+  elasticsearch-data:
+  qdrant-data:
+  postgres-data:
+  matomo-db-data:
+  matomo-data:
+  ollama-data:
+  redis-data:
+  cms-node-modules:
+  ckan-db-data:
+  ckan-solr-data:
+  ckan-storage:

@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/ui/HeroSection';
-import EventCard from '@/components/ui/EventCard';
-import SectionHeader from '@/components/ui/SectionHeader';
+import EventsFilter from '@/components/ui/EventsFilter';
 import { getEvents } from '@/lib/cms/client';
 
 export const revalidate = 3600; // 1 hour ISR
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-  const events = await getEvents({ limit: 30 });
+  const events = await getEvents({ limit: 50 });
   const now = new Date();
 
   const upcoming = events.filter((e) => {
@@ -25,14 +24,41 @@ export default async function EventsPage() {
     try { return new Date(e.startDate) < now; } catch { return false; }
   });
 
+  // JSON-LD for upcoming events
+  const jsonLd = upcoming.slice(0, 10).map((e) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: e.title,
+    startDate: e.startDate,
+    endDate: e.endDate ?? undefined,
+    description: e.summary ?? undefined,
+    location: {
+      '@type': 'Place',
+      name: e.location ?? 'NISER, Ibadan, Nigeria',
+      address: 'KM 17, Idiroko Road, Ibadan, Oyo State, Nigeria',
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: 'National Institute of Social and Economic Research (NISER)',
+      url: 'https://niser.gov.ng',
+    },
+    url: e.slug ? `https://niser.gov.ng/events/${e.slug}` : 'https://niser.gov.ng/events',
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
+  }));
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
       <main id="main-content">
         <HeroSection
           title="Events & Seminars"
-          description="Join our latest webinars, workshops, and research seminars"
-          subtitle="Engaging with policymakers, researchers, and development partners"
+          description="Join webinars, workshops, and research seminars that connect NISER with policymakers and partners."
+          subtitle="Discover upcoming gatherings and past recordings in one place"
         />
         <div className="events-hero animate-fade-in">
           <div className="container">
@@ -46,43 +72,8 @@ export default async function EventsPage() {
 
         <div className="section">
           <div className="container">
-            {/* Upcoming */}
-            {upcoming.length > 0 ? (
-              <>
-                <SectionHeader
-                  title="Upcoming Events"
-                  description={`${upcoming.length} event${upcoming.length !== 1 ? 's' : ''} coming up`}
-                />
-                <div className="grid--2" style={{ marginBottom: '3rem' }}>
-                  {upcoming.map((evt, idx) => (
-                    <div key={evt.id} className="animate-slide-up" style={{ animationDelay: `${(idx % 4) * 50}ms` }}>
-                      <EventCard event={evt} />
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className="events-empty" style={{ marginBottom: '3rem' }}>
-                <p>No upcoming events scheduled at this time. Check back soon.</p>
-              </div>
-            )}
-
-            {/* Past */}
-            {past.length > 0 && (
-              <>
-                <SectionHeader
-                  title="Past Events"
-                  description="Browse recordings and materials from previous NISER events."
-                />
-                <div className="grid--2">
-                  {past.map((evt, idx) => (
-                    <div key={evt.id} className="animate-slide-up" style={{ animationDelay: `${(idx % 4) * 50}ms` }}>
-                      <EventCard event={evt} />
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
+            {/* Client-side filter component */}
+            <EventsFilter upcoming={upcoming} past={past} />
           </div>
         </div>
       </main>

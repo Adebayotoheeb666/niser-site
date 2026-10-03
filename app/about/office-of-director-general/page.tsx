@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -25,12 +26,13 @@ export default function OfficeOfDirectorGeneralPage() {
                 
                 <div className="mb-8 flex flex-col md:flex-row gap-8">
                   <div className="md:w-64 flex-shrink-0">
-                    <div className="w-64 h-80 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <div className="text-center text-gray-500">
-                        <p className="text-sm">Director General</p>
-                        <p className="text-xs mt-2">Image Placeholder</p>
-                      </div>
-                    </div>
+                    <Image
+                      src="/dg.png"
+                      alt="Professor Antonia Taiye Simbine, Director-General of NISER"
+                      width={256}
+                      height={320}
+                      className="w-64 h-80 rounded-lg object-cover"
+                    />
                   </div>
                   <div className="flex-1">
                     <div className="bg-gray-50 p-6 rounded-lg h-full">
@@ -38,7 +40,7 @@ export default function OfficeOfDirectorGeneralPage() {
                   <p className="mb-4">
                     Prof A.T Simbine (nee Okoosi) (PhD, Ibadan) is a Professor of Political Science & International Relations. 
                     She was appointed as NISER Director-General (DG) by President Muhammadu Buhari on May 20, 2022. Her appointment 
-                    took effect from June 1, 2022. Prof Simbine is the first woman to be appointed DG of Nigeria's 62-year-old premiere Think Tank.
+                    took effect from June 1, 2022. Prof Simbine is the first woman to be appointed DG of Nigeria&apos;s 62-year-old premiere Think Tank.
                   </p>
                   <p>
                     Until her appointment as DG, she was Research Professor in the Political and Governance Policy Department (PGPD) 
@@ -94,7 +96,7 @@ export default function OfficeOfDirectorGeneralPage() {
                     <li>Faculty Member and Reviewer for the New York-based Next Generation Social Sciences in Africa Fellowship Program of the Social Science Research Council (2013)</li>
                     <li>Member, INEC Registration and Election Review Committee (IRERC) (2011)</li>
                     <li>Consultant to the Presidency&apos;s Electoral Reform Committee (ERC), and Sub-Committee on Electoral Systems (2008)</li>
-                    <li>Resource Person for the International Institute for Democracy and Electoral Assistance (IDEA) on "Democracy Assessment in Nigeria" (2000)</li>
+                    <li>Resource Person for the International Institute for Democracy and Electoral Assistance (IDEA) on &quot;Democracy Assessment in Nigeria&quot; (2000)</li>
                   </ul>
                 </div>
 

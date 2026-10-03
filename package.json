@@ -2,25 +2,49 @@
   "name": "niser",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "tsx test/index.test.ts",
+    "policy-monitor": "node ./scripts/run-policy-monitor.js",
+    "policy-monitor-schedule": "node ./scripts/policy-monitor-scheduler.js",
+    "policy-monitor-worker": "node ./scripts/policy-monitor-worker.js",
+    "admin-ingest": "node ./scripts/run-admin-ingest.js",
+    "smoke-tests": "node ./scripts/smoke-tests.js"
+    ,
+    "mock-nllb": "node ./scripts/mock-nllb.js",
+    "wcag-audit": "node scripts/wcag-audit.js",
+    "matomo-report": "node scripts/matomo-report.js",
+    "matomo-goals": "node scripts/matomo-goals.js",
+    "benchmark": "node scripts/quality-benchmark.js"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.62.0",
+    "firebase-admin": "^14.1.0",
+    "jspdf": "^4.2.1",
+    "mammoth": "^1.12.1",
+    "next": "14.2.35",
+    "pdf-parse": "^1.1.1",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.35"
+    "react-dom": "^18"
+  },
+  "optionalDependencies": {
+    "ioredis": "^5.3.2"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.35"
+    "tsx": "^4.12.0",
+    "typescript": "^5"
   }
 }

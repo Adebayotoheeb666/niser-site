@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MobileNav from "./MobileNav";
 import CartButton from "@/components/cart/CartButton";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import "./header.css";
 
 // ── Nav structure — nested items become dropdowns ─────────────────────────────
@@ -16,6 +17,7 @@ type NavItem =
 
 const navLinks: NavItem[] = [
   { href: "/", label: "Home" },
+  { href: "/ai", label: "AI STUDIO" },
   {
     href: "/about",
     label: "ABOUT",
@@ -48,6 +50,7 @@ const navLinks: NavItem[] = [
       { href: "/policy-briefs", label: "Briefs" },
     ],
   },
+  { href: "/translate", label: "TRANSLATE" },
   {
     href: "/gallery",
     label: "GALLERY",
@@ -82,8 +85,10 @@ const navLinks: NavItem[] = [
 // Flat list kept for MobileNav (which expects the original flat shape)
 const flatNavLinks = [
   { href: "/", label: "Home" },
+  { href: "/ai", label: "Research AI" },
   { href: "/publications", label: "Publications" },
   { href: "/policy-briefs", label: "Policy Briefs" },
+  { href: "/translate", label: "Translate" },
   { href: "/insights", label: "Insights" },
   { href: "/people", label: "People" },
   { href: "/data", label: "Data" },
@@ -124,9 +129,12 @@ export default function Header() {
           <a href="tel:+2347033545404">+234 703 354 5404</a>
           <span aria-hidden="true">•</span>
           <a href="tel:+23422912230">+234 229 12230</a>
+          <span className="niser-topbar__spacer" aria-hidden="true" />
+          <LanguageSwitcher />
         </div>
 
         <div className="niser-header__inner">
+
           {/* Logo */}
           <Link
             href="/"

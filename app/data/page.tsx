@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import HeroSection from '@/components/ui/HeroSection';
 import Link from 'next/link';
+import './data.css';
 
 interface DatasetResource {
   id: string;
@@ -87,14 +87,12 @@ export default function DataPage() {
   return (
     <>
       <Header />
-      <main id="main-content" style={{ minHeight: '80vh', backgroundColor: 'var(--gray-50)' }}>
+      <main id="main-content" className="data-shell">
         {/* Banner Area */}
-        <section className="section" style={{ backgroundColor: 'var(--niser-green)', color: '#fff', padding: '4rem 0' }}>
+        <section className="data-banner">
           <div className="container">
-            <h1 style={{ color: '#fff', fontSize: '2.75rem', fontFamily: 'var(--font-serif)', marginBottom: '1rem' }}>
-              Open Data Catalogue
-            </h1>
-            <p style={{ color: 'var(--niser-gold-pale)', fontSize: '1.125rem', maxWidth: '800px', margin: 0 }}>
+            <h1 className="data-banner__title">Open Data Catalogue</h1>
+            <p className="data-banner__desc">
               Access, download, and analyse social and economic datasets curated by NISER researchers. Supporting transparency and evidence-based development in Nigeria.
             </p>
           </div>
@@ -103,46 +101,32 @@ export default function DataPage() {
         {/* Content Area */}
         <section className="section">
           <div className="container">
-            <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '2rem' }} className="data-layout">
-              <style jsx global>{`
-                @media (max-width: 768px) {
-                  .data-layout {
-                    grid-template-columns: 1fr !important;
-                  }
-                }
-              `}</style>
-
+            <div className="data-layout">
               {/* Sidebar Filters */}
-              <aside style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <div style={{ backgroundColor: '#fff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '1.25rem' }}>
-                  <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--niser-green-dark)' }}>
-                    Filter Options
-                  </h2>
+              <aside className="data-sidebar">
+                <div className="data-filter-panel">
+                  <h2 className="data-filter-panel__title">Filter Options</h2>
 
                   {/* Format Filter */}
-                  <div style={{ marginBottom: '1.25rem' }}>
-                    <p style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--gray-500)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                      Resource Format
-                    </p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9375rem', cursor: 'pointer' }}>
+                  <div className="data-filter-group">
+                    <p className="data-filter-group__label">Resource Format</p>
+                    <div className="data-filter-options">
+                      <label className="data-radio">
                         <input
                           type="radio"
                           name="format"
                           checked={selectedFormat === 'all'}
                           onChange={() => setSelectedFormat('all')}
-                          style={{ accentColor: 'var(--niser-green)' }}
                         />
                         <span>All Formats</span>
                       </label>
                       {formats.map((f) => (
-                        <label key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9375rem', cursor: 'pointer' }}>
+                        <label key={f} className="data-radio">
                           <input
                             type="radio"
                             name="format"
                             checked={selectedFormat === f}
                             onChange={() => setSelectedFormat(f)}
-                            style={{ accentColor: 'var(--niser-green)' }}
                           />
                           <span>{f}</span>
                         </label>
@@ -151,127 +135,87 @@ export default function DataPage() {
                   </div>
 
                   {/* Division Filter */}
-                  <div>
-                    <p style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--gray-500)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                      Organization
-                    </p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9375rem', cursor: 'pointer' }}>
+                  <div className="data-filter-group">
+                    <p className="data-filter-group__label">Organization</p>
+                    <div className="data-filter-options">
+                      <label className="data-radio">
                         <input
                           type="radio"
                           name="org"
                           checked={selectedOrg === 'all'}
                           onChange={() => setSelectedOrg('all')}
-                          style={{ accentColor: 'var(--niser-green)' }}
                         />
                         <span>All Organizations</span>
                       </label>
                       {organizations.map(([name, title]) => (
-                        <label key={name} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9375rem', cursor: 'pointer' }}>
+                        <label key={name} className="data-radio">
                           <input
                             type="radio"
                             name="org"
                             checked={selectedOrg === name}
                             onChange={() => setSelectedOrg(name)}
-                            style={{ accentColor: 'var(--niser-green)' }}
                           />
-                          <span style={{ fontSize: '0.875rem' }}>{title}</span>
+                          <span className="data-radio__title">{title}</span>
                         </label>
                       ))}
                     </div>
                   </div>
-
                 </div>
               </aside>
 
               {/* Dataset listing */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div className="data-content">
                 {/* Search field */}
-                <div style={{ display: 'flex', gap: '0.75rem', width: '100%' }}>
+                <div className="data-search">
                   <input
                     type="text"
                     placeholder="Search datasets..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{
-                      flex: 1,
-                      padding: '0.75rem 1rem',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: 'var(--radius-md)',
-                      outline: 'none',
-                      fontSize: '0.9375rem',
-                      boxShadow: 'var(--shadow-sm)',
-                    }}
+                    className="input data-search__input"
+                    aria-label="Search datasets"
                   />
                 </div>
 
-                <p style={{ fontWeight: 500, color: 'var(--gray-600)' }}>
+                <p className="data-count" role="status" aria-live="polite">
                   {loading ? 'Loading datasets...' : `Displaying ${filteredDatasets.length} dataset${filteredDatasets.length === 1 ? '' : 's'}`}
                 </p>
 
                 {/* List cards */}
                 {loading ? (
-                  <div style={{ padding: '4rem', textAlign: 'center' }}>
-                    <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid var(--gray-200)', borderTop: '4px solid var(--niser-green)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                  <div className="spinner-wrap">
+                    <div className="spinner" role="status" aria-label="Loading datasets" />
                   </div>
                 ) : filteredDatasets.length > 0 ? (
                   filteredDatasets.map((dataset) => (
-                    <div
-                      key={dataset.id}
-                      style={{
-                        backgroundColor: '#fff',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: 'var(--radius-md)',
-                        padding: '1.5rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.75rem',
-                        boxShadow: 'var(--shadow-sm)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--niser-green)', background: 'var(--niser-green-pale)', padding: '0.25rem 0.5rem', borderRadius: 'var(--radius-sm)' }}>
-                          🏛️ {dataset.organization.title}
-                        </span>
-                        <span style={{ fontSize: '0.8125rem', color: 'var(--gray-400)' }}>
+                    <article key={dataset.id} className="data-card">
+                      <div className="data-card__top">
+                        <span className="data-org-badge">🏛️ {dataset.organization.title}</span>
+                        <span className="data-modified">
                           Modified: {new Date(dataset.metadataModified).toLocaleDateString()}
                         </span>
                       </div>
-                      <h2 style={{ fontSize: '1.375rem', margin: 0, fontFamily: 'var(--font-sans)' }}>
-                        <Link href={`/data/${dataset.id}`} style={{ color: 'var(--niser-green-dark)', fontWeight: 600 }}>
-                          {dataset.title}
-                        </Link>
+                      <h2 className="data-card__title">
+                        <Link href={`/data/${dataset.id}`}>{dataset.title}</Link>
                       </h2>
-                      <p style={{ color: 'var(--gray-600)', fontSize: '0.9375rem', margin: 0 }}>
+                      <p className="data-card__notes">
                         {dataset.notes.length > 200 ? dataset.notes.substring(0, 200) + '...' : dataset.notes}
                       </p>
-                      
+
                       {/* Tags */}
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+                      <div className="data-tags">
                         {dataset.tags.map((tag) => (
-                          <span key={tag} style={{ fontSize: '0.75rem', color: 'var(--gray-500)', background: 'var(--gray-100)', padding: '0.125rem 0.375rem', borderRadius: 'var(--radius-sm)' }}>
-                            #{tag}
-                          </span>
+                          <span key={tag} className="data-tag">#{tag}</span>
                         ))}
                       </div>
 
                       {/* Resources / Downloads */}
-                      <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <div className="data-card__footer">
+                        <div className="data-formats">
                           {dataset.resources.map((res) => (
                             <span
                               key={res.id}
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.25rem',
-                                fontSize: '0.75rem',
-                                fontWeight: 700,
-                                background: res.format === 'CSV' ? '#e0f2fe' : res.format === 'JSON' ? '#fef3c7' : '#fee2e2',
-                                color: res.format === 'CSV' ? '#0369a1' : res.format === 'JSON' ? '#b45309' : '#b91c1c',
-                                padding: '0.25rem 0.5rem',
-                                borderRadius: 'var(--radius-sm)',
-                              }}
+                              className={`data-badge data-badge--${res.format.toLowerCase()}`}
                             >
                               {res.format}
                             </span>
@@ -280,18 +224,15 @@ export default function DataPage() {
                         <Link
                           href={`/data/${dataset.id}`}
                           className="btn btn--outline btn--sm"
-                          style={{ padding: '0.375rem 0.75rem', fontSize: '0.875rem' }}
                         >
                           View Details & Explore →
                         </Link>
                       </div>
-                    </div>
+                    </article>
                   ))
                 ) : (
-                  <div style={{ backgroundColor: '#fff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '4rem 2rem', textAlign: 'center' }}>
-                    <p style={{ fontSize: '1.25rem', color: 'var(--gray-500)' }}>
-                      No datasets matches your search criteria.
-                    </p>
+                  <div className="data-empty">
+                    <p className="data-empty__title">No datasets matches your search criteria.</p>
                   </div>
                 )}
               </div>

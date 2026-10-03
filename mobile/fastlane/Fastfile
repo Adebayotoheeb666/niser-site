@@ -1,0 +1,59 @@
+# Fastfile — NISER mobile release automation.
+#
+#   bundle exec fastlane android beta    # Play internal track
+#   bundle exec fastlane ios beta        # TestFlight (IT unit as testers)
+#
+# Secrets (set in CI): ANDROID_KEYSTORE_PATH/BASE64, ANDROID_KEYSTORE_PASSWORD,
+# ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD, GOOGLE_PLAY_JSON_KEY, APPLE_ID,
+# APPLE_TEAM_ID, MATCH_REPO, MATCH_PASSWORD.
+
+default_platform(:android)
+
+platform :android do
+  desc "Build a signed release AAB and upload to the Play internal track"
+  lane :beta do
+    setup_keystore
+    gradle(task: "bundleRelease")
+    supply(
+      track: "internal",
+      aab: "build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+
+  lane :setup_keystore do
+    keystore_path = ENV["ANDROID_KEYSTORE_PATH"]
+    if ENV["ANDROID_KEYSTORE_BASE64"] && (!keystore_path || keystore_path.empty?)
+      keystore_path = File.expand_path("../android/app/upload-keystore.jks", Dir.pwd)
+      File.write(keystore_path, Base64.decode64(ENV["ANDROID_KEYSTORE_BASE64"]))
+    end
+    if keystore_path && !keystore_path.empty?
+      File.write(File.expand_path("../android/key.properties", Dir.pwd), <<~PROPS)
+        storeFile=#{keystore_path}
+        storePassword=#{ENV["ANDROID_KEYSTORE_PASSWORD"]}
+        keyAlias=#{ENV["ANDROID_KEY_ALIAS"]}
+        keyPassword=#{ENV["ANDROID_KEY_PASSWORD"]}
+      PROPS
+    end
+  end
+end
+
+platform :ios do
+  desc "Fetch signing, build the IPA and upload to TestFlight"
+  lane :beta do
+    match(type: "appstore")
+    build_app(
+      scheme: "Runner",
+      export_method: "app-store",
+      clean: true,
+    )
+    pilot(
+      app_identifier: ENV["IOS_APP_IDENTIFIER"] || "ng.gov.niser.app",
+      groups: ENV["TESTFLIGHT_GROUPS"],
+      distribute_external: ENV["TESTFLIGHT_EXTERNAL"] == "true",
+    )
+  end
+end
